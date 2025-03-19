@@ -1,0 +1,42 @@
+deployment:
+  kind: DaemonSet
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+
+service:
+  type: ClusterIP
+
+ports:
+  web:
+    hostPort: 80
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+        permanent: true
+  websecure:
+    hostPort: 443
+    tls:
+      enabled: true
+
+securityContext:
+  capabilities:
+    add:
+      - NET_BIND_SERVICE
+
+ingressRoute:
+  dashboard:
+    enabled: true
+    entryPoints:
+      - websecure
+    matchRule: Host(`traefik.kakatkarakshay.dev`)
+    tls:
+      secretName: traefik-web-ui-tls
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 0
