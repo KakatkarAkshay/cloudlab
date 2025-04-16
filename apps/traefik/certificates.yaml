@@ -11,3 +11,16 @@ spec:
   issuerRef:
     name: cloudflare-clusterissuer
     kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-default-cert
+  namespace: traefik
+spec:
+  secretName: traefik-default-tls
+  dnsNames:
+    - "*.kakatkarakshay.dev"
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer

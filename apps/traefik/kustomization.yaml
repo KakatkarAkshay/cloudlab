@@ -6,7 +6,7 @@ resources:
   - namespace.yaml
   - repo.yaml
   - release.yaml
-  - certificate.yaml
+  - certificates.yaml
   - middleware.yaml
 configMapGenerator:
   - name: traefik-values

@@ -37,6 +37,11 @@ ingressRoute:
     tls:
       secretName: traefik-web-ui-tls
 
+tlsStore:
+  default:
+    defaultCertificate:
+      secretName: traefik-default-tls
+
 updateStrategy:
   type: RollingUpdate
   rollingUpdate:
