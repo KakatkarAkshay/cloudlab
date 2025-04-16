@@ -1,0 +1,22 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: loki
+spec:
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: prometheus
+  chart:
+    spec:
+      chart: loki
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: loki-repo
+      version: 6.29.0
+  valuesFrom:
+    - kind: ConfigMap
+      name: loki-values
+  interval: 1m0s

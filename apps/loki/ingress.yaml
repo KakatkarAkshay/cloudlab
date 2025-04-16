@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: loki-ingress
+  namespace: loki
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`loki.kakatkarakshay.dev`)
+      kind: Rule
+      services:
+        - name: loki-gateway
+          port: 80
+      middlewares:
+        - name: loki-middleware
+  tls:
+    secretName: loki-tls
