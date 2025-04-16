@@ -1,0 +1,98 @@
+fullnameOverride: prometheus
+
+alertmanager:
+  fullnameOverride: alertmanager
+
+grafana:
+  fullnameOverride: grafana
+  defaultDashboardsTimezone: Asia/Kolkata
+
+  grafana.ini:
+    server:
+      root_url: "https://grafana.kakatkarakshay.dev"
+
+  persistence:
+    enabled: true
+    type: sts
+    accessModes:
+      - ReadWriteMany
+    size: 20Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
+
+kubelet:
+  serviceMonitor:
+    metricRelabelings:
+      - action: replace
+        sourceLabels:
+          - node
+        targetLabel: instance
+
+kubeStateMetrics:
+  enabled: true
+
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
+  selfMonitor:
+    enabled: true
+  prometheus:
+    monitor:
+      enabled: true
+      relabelings:
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+          targetLabel: kubernetes_node
+
+nodeExporter:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - action: replace
+        regex: (.*)
+        replacement: $1
+        sourceLabels:
+          - __meta_kubernetes_pod_node_name
+        targetLabel: kubernetes_node
+
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+  prometheus:
+    relabelings:
+      - action: replace
+        regex: (.*)
+        replacement: $1
+        sourceLabels:
+          - __meta_kubernetes_pod_node_name
+        targetLabel: kubernetes_node
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 2048Mi
+
+prometheusOperator:
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 50Mi
+      limits:
+        memory: 100Mi
+
+prometheus:
+  prometheusSpec:
+    replicas: 1
+    replicaExternalLabelName: "replica"
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    retention: 6h
+    enableAdminAPI: true
+    walCompression: true
+    scrapeInterval: 30s
+    evaluationInterval: 30s

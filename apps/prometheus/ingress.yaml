@@ -1,0 +1,22 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana-ingress
+  namespace: prometheus
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`grafana.kakatkarakshay.dev`)
+      kind: Rule
+      services:
+        - name: grafana
+          port: 80
+          sticky:
+            cookie:
+              httpOnly: true
+              name: grafana
+              secure: true
+              sameSite: none
+  tls:
+    secretName: grafana-tls
