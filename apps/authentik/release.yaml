@@ -1,0 +1,21 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik-release
+  namespace: authentik
+spec:
+  chart:
+    spec:
+      chart: authentik
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: authentik-repo
+      version: 2025.2.4
+  valuesFrom:
+    - kind: ConfigMap
+      name: authentik-values
+    - kind: Secret
+      name: authentik-secret-values
+  interval: 1m0s
