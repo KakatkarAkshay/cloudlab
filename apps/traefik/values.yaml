@@ -32,6 +32,8 @@ ingressRoute:
     entryPoints:
       - websecure
     matchRule: Host(`traefik.kakatkarakshay.dev`)
+    middlewares:
+      - name: traefik-middleware
     tls:
       secretName: traefik-web-ui-tls
 
