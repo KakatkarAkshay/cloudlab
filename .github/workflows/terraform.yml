@@ -1,0 +1,84 @@
+name: Terraform
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform.yml"
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_VAR_oci_private_key: ${{ secrets.OCI_PRIVATE_KEY }}
+      TF_VAR_oci_region: ${{ vars.OCI_REGION }}
+      TF_VAR_oci_fingerprint: ${{ vars.OCI_FINGERPRINT }}
+      TF_VAR_tenancy_1_ocid: ${{ secrets.TENANCY_1_OCID }}
+      TF_VAR_tenancy_1_user_ocid: ${{ secrets.TENANCY_1_USER_OCID }}
+      TF_VAR_tenancy_1_compartment_ocid: ${{ secrets.TENANCY_1_COMPARTMENT_OCID }}
+      TF_VAR_tenancy_2_ocid: ${{ secrets.TENANCY_2_OCID }}
+      TF_VAR_tenancy_2_user_ocid: ${{ secrets.TENANCY_2_USER_OCID }}
+      TF_VAR_tenancy_2_compartment_ocid: ${{ secrets.TENANCY_2_COMPARTMENT_OCID }}
+      TF_VAR_requestor_group_name: ${{ vars.OCI_REQUESTOR_GROUP_NAME }}
+      TF_VAR_requestor_group_ocid: ${{ secrets.OCI_REQUESTOR_GROUP_OCID }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.8"
+
+      - name: Configure OCI API key
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/oci_api_key.pem"
+          printf '%s' "$TF_VAR_oci_private_key" > "$RUNNER_TEMP/oci_api_key.pem"
+
+      - name: Build Talos OCI image
+        run: |
+          mkdir -p build
+          curl --fail --location --silent --show-error \
+            "https://factory.talos.dev/image/4a0d65c669d46663f377e7161e50cfd570c401f26fd9e7bda34a0216b6f1922b/v1.13.6/oracle-arm64.qcow2" \
+            --output build/oracle-arm64.qcow2
+          cp image_metadata.json build/image_metadata.json
+          tar -C build -czf build/talos-oracle-arm64.oci oracle-arm64.qcow2 image_metadata.json
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialize
+        run: >-
+          terraform init -input=false
+          -backend-config="tenancy_ocid=$TF_VAR_tenancy_1_ocid"
+          -backend-config="user_ocid=$TF_VAR_tenancy_1_user_ocid"
+          -backend-config="fingerprint=$TF_VAR_oci_fingerprint"
+          -backend-config="private_key_path=$RUNNER_TEMP/oci_api_key.pem"
+
+      - name: Validate
+        run: terraform validate
+
+      - name: Plan
+        run: terraform plan -input=false -no-color -out=tfplan
+
+      - name: Apply
+        if: github.event_name != 'pull_request'
+        run: terraform apply -input=false -no-color tfplan

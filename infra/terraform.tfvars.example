@@ -1,0 +1,21 @@
+oci_region      = "ap-mumbai-1"
+oci_fingerprint = "aa:bb:cc:dd:ee:ff"
+
+tenancy_1_ocid             = "ocid1.tenancy.oc1..replace-me"
+tenancy_1_user_ocid        = "ocid1.user.oc1..replace-me"
+tenancy_1_compartment_ocid = "ocid1.compartment.oc1..replace-me"
+
+tenancy_2_ocid             = "ocid1.tenancy.oc1..replace-me"
+tenancy_2_user_ocid        = "ocid1.user.oc1..replace-me"
+tenancy_2_compartment_ocid = "ocid1.compartment.oc1..replace-me"
+
+requestor_group_name = "Administrators"
+requestor_group_ocid = "ocid1.group.oc1..replace-me"
+
+tenancy_1_object_storage_namespace = "replace-me"
+tenancy_2_object_storage_namespace = "replace-me"
+
+tenancy_1_vcn_cidr    = "10.0.0.0/16"
+tenancy_1_subnet_cidr = "10.0.0.0/24"
+tenancy_2_vcn_cidr    = "10.1.0.0/16"
+tenancy_2_subnet_cidr = "10.1.0.0/24"

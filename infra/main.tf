@@ -1,0 +1,51 @@
+module "tenancy_1_vcn" {
+  source = "./modules/vcn"
+
+  compartment_id = var.tenancy_1_compartment_ocid
+  cidr_block     = var.tenancy_1_vcn_cidr
+  display_name   = "cloudlab-tenancy-1"
+  dns_label      = "cloudlab1"
+
+  providers = {
+    oci = oci.tenancy_1
+  }
+}
+
+module "tenancy_2_vcn" {
+  source = "./modules/vcn"
+
+  compartment_id = var.tenancy_2_compartment_ocid
+  cidr_block     = var.tenancy_2_vcn_cidr
+  display_name   = "cloudlab-tenancy-2"
+  dns_label      = "cloudlab2"
+
+  providers = {
+    oci = oci.tenancy_2
+  }
+}
+
+module "cross_tenancy_peering" {
+  source = "./modules/peering"
+
+  tenancy_1_ocid             = var.tenancy_1_ocid
+  tenancy_1_compartment_ocid = var.tenancy_1_compartment_ocid
+  tenancy_1_vcn_id           = module.tenancy_1_vcn.id
+  tenancy_1_vcn_cidr         = module.tenancy_1_vcn.cidr_block
+  tenancy_1_vcn_ipv6_cidr    = module.tenancy_1_vcn.ipv6_cidr_block
+  tenancy_1_subnet_cidr      = var.tenancy_1_subnet_cidr
+
+  tenancy_2_ocid             = var.tenancy_2_ocid
+  tenancy_2_compartment_ocid = var.tenancy_2_compartment_ocid
+  tenancy_2_vcn_id           = module.tenancy_2_vcn.id
+  tenancy_2_vcn_cidr         = module.tenancy_2_vcn.cidr_block
+  tenancy_2_vcn_ipv6_cidr    = module.tenancy_2_vcn.ipv6_cidr_block
+  tenancy_2_subnet_cidr      = var.tenancy_2_subnet_cidr
+
+  requestor_group_name = var.requestor_group_name
+  requestor_group_ocid = var.requestor_group_ocid
+
+  providers = {
+    oci.tenancy_1 = oci.tenancy_1
+    oci.tenancy_2 = oci.tenancy_2
+  }
+}
