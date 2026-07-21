@@ -18,11 +18,11 @@ locals {
 resource "tailscale_tailnet_key" "node" {
   for_each = local.tailscale_nodes
 
-  reusable            = false
+  reusable            = true
   ephemeral           = true
   preauthorized       = true
   expiry              = 86400
-  recreate_if_invalid = "never"
+  recreate_if_invalid = "always"
   tags                = ["tag:kubernetes-node"]
   description         = "Cloudlab ${each.value}"
 }
