@@ -319,7 +319,7 @@ resource "oci_network_load_balancer_backend" "kubernetes" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   ip_address               = local.control_plane_ip
   port                     = 6443
-  name                     = "control-plane"
+  name                     = "triton"
 }
 
 resource "oci_network_load_balancer_backend" "kubernetes_ipv6" {
@@ -329,7 +329,7 @@ resource "oci_network_load_balancer_backend" "kubernetes_ipv6" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   ip_address               = local.control_plane_ipv6
   port                     = 6443
-  name                     = "control-plane-kubernetes-ipv6"
+  name                     = "triton-kubernetes-ipv6"
 }
 
 resource "oci_network_load_balancer_backend" "talos" {
@@ -339,7 +339,7 @@ resource "oci_network_load_balancer_backend" "talos" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   ip_address               = local.control_plane_ip
   port                     = 50000
-  name                     = "control-plane-talos"
+  name                     = "triton-talos"
 }
 
 resource "oci_network_load_balancer_backend" "talos_ipv6" {
@@ -349,7 +349,7 @@ resource "oci_network_load_balancer_backend" "talos_ipv6" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   ip_address               = local.control_plane_ipv6
   port                     = 50000
-  name                     = "control-plane-talos-ipv6"
+  name                     = "triton-talos-ipv6"
 }
 
 resource "oci_network_load_balancer_listener" "kubernetes" {
@@ -391,6 +391,9 @@ data "talos_machine_configuration" "control_plane" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
+        network = {
+          hostname = "triton"
+        }
         sysctls = {
           "net.ipv4.ip_forward"          = "1"
           "net.ipv6.conf.all.forwarding" = "1"
@@ -443,6 +446,9 @@ data "talos_machine_configuration" "worker" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
+        network = {
+          hostname = "scorpion"
+        }
         sysctls = {
           "net.ipv4.ip_forward"          = "1"
           "net.ipv6.conf.all.forwarding" = "1"
@@ -482,7 +488,7 @@ resource "oci_core_instance" "control_plane" {
 
   availability_domain = data.oci_identity_availability_domains.tenancy_1.availability_domains[0].name
   compartment_id      = var.tenancy_1_compartment_ocid
-  display_name        = "cloudlab-control-plane"
+  display_name        = "cloudlab-triton"
   shape               = "VM.Standard.A1.Flex"
   metadata = {
     user_data = base64encode(data.talos_machine_configuration.control_plane.machine_configuration)
@@ -496,7 +502,7 @@ resource "oci_core_instance" "control_plane" {
   create_vnic_details {
     assign_ipv6ip    = true
     assign_public_ip = "false"
-    hostname_label   = "control-plane"
+    hostname_label   = "triton"
     private_ip       = local.control_plane_ip
     subnet_id        = module.cross_tenancy_peering.tenancy_1_subnet_id
 
@@ -533,7 +539,7 @@ resource "oci_core_instance" "worker" {
 
   availability_domain = data.oci_identity_availability_domains.tenancy_2.availability_domains[0].name
   compartment_id      = var.tenancy_2_compartment_ocid
-  display_name        = "cloudlab-worker"
+  display_name        = "cloudlab-scorpion"
   shape               = "VM.Standard.A1.Flex"
   metadata = {
     user_data = base64encode(data.talos_machine_configuration.worker.machine_configuration)
@@ -547,7 +553,7 @@ resource "oci_core_instance" "worker" {
   create_vnic_details {
     assign_ipv6ip    = true
     assign_public_ip = "false"
-    hostname_label   = "worker"
+    hostname_label   = "scorpion"
     private_ip       = local.worker_ip
     subnet_id        = module.cross_tenancy_peering.tenancy_2_subnet_id
 

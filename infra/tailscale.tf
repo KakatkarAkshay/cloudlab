@@ -19,7 +19,7 @@ resource "tailscale_tailnet_key" "node" {
   for_each = local.tailscale_nodes
 
   reusable            = false
-  ephemeral           = false
+  ephemeral           = true
   preauthorized       = true
   expiry              = 86400
   recreate_if_invalid = "never"
