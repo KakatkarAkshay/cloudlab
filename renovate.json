@@ -1,0 +1,89 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":maintainLockFilesWeekly",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "automerge": true,
+  "hostRules": [
+    {
+      "hostType": "docker",
+      "matchHost": "ghcr.io",
+      "username": "x-access-token",
+      "password": "{{ secrets.GHCR_READ_PAT }}"
+    }
+  ],
+  "flux": {
+    "managerFilePatterns": [
+      "clusters/**/*.yaml",
+      "clusters/**/*.yml",
+      "apps/**/*.yaml",
+      "apps/**/*.yml",
+      "infrastructure/**/*.yaml",
+      "infrastructure/**/*.yml"
+    ]
+  },
+  "kubernetes": {
+    "managerFilePatterns": [
+      "clusters/**/*.yaml",
+      "clusters/**/*.yml",
+      "apps/**/*.yaml",
+      "apps/**/*.yml",
+      "infrastructure/**/*.yaml",
+      "infrastructure/**/*.yml"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["kubernetes"],
+      "matchFileNames": ["**/gotk-components.yaml"],
+      "enabled": false
+    },
+    {
+      "matchDatasources": ["docker"],
+      "pinDigests": true
+    },
+    {
+      "matchManagers": ["flux"],
+      "matchDatasources": ["git-refs"],
+      "matchFileNames": [
+        "clusters/cloudlab/gateway-api.yaml",
+        "infrastructure/controllers/local-path-provisioner/repository.yaml"
+      ],
+      "enabled": false
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "jsonata",
+      "fileFormat": "yaml",
+      "managerFilePatterns": [
+        "clusters/cloudlab/gateway-api.yaml",
+        "infrastructure/controllers/local-path-provisioner/repository.yaml"
+      ],
+      "matchStrings": [
+        "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
+      ],
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["cluster-versions.json"],
+      "matchStrings": ["{'depName': 'siderolabs/talos', 'currentValue': talos}"],
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["cluster-versions.json"],
+      "matchStrings": ["{'depName': 'siderolabs/kubelet', 'currentValue': kubernetes}"],
+      "datasourceTemplate": "docker",
+      "packageNameTemplate": "ghcr.io/siderolabs/kubelet",
+      "versioningTemplate": "semver"
+    }
+  ]
+}
