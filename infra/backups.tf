@@ -2,7 +2,7 @@ resource "oci_core_volume_backup_policy" "control_plane" {
   provider = oci.tenancy_1
 
   compartment_id = var.tenancy_1_compartment_ocid
-  display_name   = "cloudlab-control-plane-daily"
+  display_name   = "cloudlab-triton-daily"
 
   schedules {
     backup_type       = "INCREMENTAL"
@@ -18,7 +18,7 @@ resource "oci_core_volume_backup_policy" "worker" {
   provider = oci.tenancy_2
 
   compartment_id = var.tenancy_2_compartment_ocid
-  display_name   = "cloudlab-worker-daily"
+  display_name   = "cloudlab-scorpion-daily"
 
   schedules {
     backup_type       = "INCREMENTAL"
