@@ -6,6 +6,7 @@ metadata:
 spec:
   dependsOn:
     - name: cloudnative-pg
+    - name: cert-manager
   interval: 30m
   releaseName: plugin-barman-cloud
   targetNamespace: cnpg-system
