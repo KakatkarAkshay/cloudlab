@@ -8,3 +8,17 @@ resource "flux_bootstrap_git" "cluster" {
     "image-reflector-controller",
   ]
 }
+
+resource "kubernetes_secret_v1" "sops_age" {
+  depends_on = [flux_bootstrap_git.cluster]
+
+  metadata {
+    name      = "sops-age"
+    namespace = "flux-system"
+  }
+
+  data_wo = {
+    "age.agekey" = var.sops_age_key
+  }
+  data_wo_revision = var.sops_age_key_revision
+}

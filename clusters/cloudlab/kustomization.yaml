@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - flux-system
   - kubelet-serving-cert-approver.yaml
+  - gateway-api.yaml
   - infrastructure.yaml
   - apps.yaml

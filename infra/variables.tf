@@ -75,6 +75,19 @@ variable "flux_git_ssh_private_key" {
   ephemeral   = true
 }
 
+variable "sops_age_key" {
+  description = "Age private key used by Flux to decrypt SOPS-encrypted Kubernetes Secrets."
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+}
+
+variable "sops_age_key_revision" {
+  description = "Revision of the write-only SOPS Age key. Increment when rotating the key."
+  type        = number
+  default     = 1
+}
+
 variable "tenancy_1_object_storage_namespace" {
   description = "Object Storage namespace for tenancy 1."
   type        = string
