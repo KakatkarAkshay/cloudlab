@@ -88,6 +88,10 @@ resource "oci_core_image" "talos_tenancy_1" {
     operating_system         = "Talos"
     operating_system_version = trimprefix(local.talos_image.version, "v")
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "oci_core_image" "talos_tenancy_2" {
@@ -104,6 +108,10 @@ resource "oci_core_image" "talos_tenancy_2" {
     object_name              = oci_objectstorage_object.talos_tenancy_2.object
     operating_system         = "Talos"
     operating_system_version = trimprefix(local.talos_image.version, "v")
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
