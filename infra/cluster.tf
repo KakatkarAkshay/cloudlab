@@ -399,6 +399,9 @@ data "talos_machine_configuration" "control_plane" {
           servers = ["169.254.169.254"]
         }
         kubelet = {
+          extraArgs = {
+            rotate-server-certificates = "true"
+          }
           nodeIP = {
             validSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
           }
@@ -449,6 +452,9 @@ data "talos_machine_configuration" "worker" {
           servers = ["169.254.169.254"]
         }
         kubelet = {
+          extraArgs = {
+            rotate-server-certificates = "true"
+          }
           nodeIP = {
             validSubnets = [var.tenancy_2_vcn_cidr, module.tenancy_2_vcn.ipv6_cidr_block]
           }
