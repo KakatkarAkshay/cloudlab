@@ -16,7 +16,7 @@ Terraform configuration for a two-node Talos Kubernetes cluster spanning two OCI
 - IPv6 internet egress through an Internet Gateway with ingress prohibited on node subnets
 - A public dual-stack Network Load Balancer for Kubernetes `6443` and Talos `50000`
 - Daily incremental boot-volume backups retained for two days
-- Terraform-managed Flux controllers reconciling this repository from the root
+- Terraform-managed Flux bootstrap reconciling `clusters/cloudlab`
 
 The Talos nodes have no public IPv4 addresses. Their globally routable IPv6 addresses cannot receive internet-initiated traffic because the node subnets prohibit internet ingress and their security lists only admit traffic from the two VCNs. The public Talos API endpoint requires mutual TLS.
 
@@ -95,7 +95,7 @@ NETBIRD_MANAGEMENT_URL
 
 ## GitOps
 
-Terraform installs Flux and configures it to reconcile the `main` branch from the repository root. The root `kustomization.yaml` explicitly lists deployable resources so unrelated repository YAML is not applied to the cluster.
+Terraform bootstraps Flux into `clusters/cloudlab` using the Flux Terraform provider. The provider commits the controller and synchronization manifests to `main`, and Flux manages subsequent changes from Git.
 
 ## Cluster Access
 

@@ -17,6 +17,10 @@ terraform {
       source  = "siderolabs/talos"
       version = "~> 0.11.0"
     }
+    flux = {
+      source  = "fluxcd/flux"
+      version = "~> 1.9"
+    }
     helm = {
       source  = "hashicorp/helm"
       version = "~> 3.1"

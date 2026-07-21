@@ -1,6 +1,25 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
+provider "registry.terraform.io/fluxcd/flux" {
+  version     = "1.9.2"
+  constraints = "~> 1.9"
+  hashes = [
+    "h1:pQlyoogdpkspbZz/T8Y+ZBEWp0mPgqMGDYbUu2cxhXU=",
+    "zh:079b459e1e74d76d753b61e1e5cadf8f29199671587cc60b0488f0e7cf7b0428",
+    "zh:1fd2c90ad985f6f1f4d9e0014efc3eb64eb0cf3c5d0ada4d30b57b0c7b92f874",
+    "zh:20d89a3f7a50b58c2bafd5f01cbd25f18a1230375e485f3e075728b8a718e9b3",
+    "zh:45409ebaf29ba5dfcbb0058312476202e73681343b2a12feb56e7868e7245fff",
+    "zh:573169535a531118033bb97e0b117679d3439528d6916f22ea4c3ccf83f6c963",
+    "zh:61c1c58102463f6c8a27c37041275c6dc2ba52bcfe3e483cfb5fee17a67a442b",
+    "zh:856cddbb3a605d0e592eff935bcd93c058293aeb9acc8bb2875020350e2af712",
+    "zh:cadb469c9e903c9b82dd7a2adbaf514551bb8bfc55429102f643c4a3871b3f96",
+    "zh:d3753e03ca7101ec4512d3984178257444d6df53ac8014464a78ff21ecca4054",
+    "zh:e95cb0dde576c46cd164f33cbea5bdf4c2fa924ad83b164198c9a5918747408d",
+    "zh:fb9c4dc6fc75531a348e155be264dd3e3f6ac42058d0b2d7276920d95027589a",
+  ]
+}
+
 provider "registry.terraform.io/hashicorp/helm" {
   version     = "3.2.0"
   constraints = "~> 3.1"
