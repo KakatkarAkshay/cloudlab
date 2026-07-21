@@ -7,6 +7,10 @@ on:
         description: Type "destroy cloudlab" to confirm
         required: true
         type: string
+      force_unlock_id:
+        description: Stale Terraform lock ID to clear before destroy
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -65,6 +69,10 @@ jobs:
           -backend-config="user_ocid=$TF_VAR_tenancy_1_user_ocid"
           -backend-config="fingerprint=$TF_VAR_oci_fingerprint"
           -backend-config="private_key_path=$RUNNER_TEMP/oci_api_key.pem"
+
+      - name: Clear stale state lock
+        if: inputs.force_unlock_id != ''
+        run: terraform force-unlock -force "${{ inputs.force_unlock_id }}"
 
       - name: Plan destroy
         run: terraform plan -destroy -input=false -no-color -out=tfdestroy
