@@ -17,3 +17,10 @@ provider "oci" {
   private_key  = var.oci_private_key
   region       = var.oci_region
 }
+
+provider "tailscale" {
+  oauth_client_id     = var.tailscale_oauth_client_id
+  oauth_client_secret = var.tailscale_oauth_client_secret
+  tailnet             = var.tailscale_tailnet
+  scopes              = ["auth_keys", "policy_file"]
+}

@@ -1,13 +1,15 @@
 locals {
-  talos_image_object = "talos-${var.talos_version}-oracle-arm64.oci"
+  talos_image        = jsondecode(file("${path.module}/talos-image.json"))
+  talos_image_object = "talos-${local.talos_image.version}-${local.talos_image.schematic_id}-oracle-arm64.oci"
   control_plane_ip   = cidrhost(var.tenancy_1_subnet_cidr, 10)
   worker_ip          = cidrhost(var.tenancy_2_subnet_cidr, 10)
   cluster_api_ip = one([
     for address in oci_network_load_balancer_network_load_balancer.control_plane.ip_addresses : address.ip_address
-    if address.ip_version == "IPV4"
+    if address.ip_version == "IPV4" && address.is_public
   ])
   cluster_api_addresses = [
     for address in oci_network_load_balancer_network_load_balancer.control_plane.ip_addresses : address.ip_address
+    if address.is_public
   ]
 }
 
@@ -50,6 +52,11 @@ resource "oci_objectstorage_object" "talos_tenancy_1" {
   namespace = var.tenancy_1_object_storage_namespace
   object    = local.talos_image_object
   source    = "${path.module}/build/talos-oracle-arm64.oci"
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [source]
+  }
 }
 
 resource "oci_objectstorage_object" "talos_tenancy_2" {
@@ -59,13 +66,18 @@ resource "oci_objectstorage_object" "talos_tenancy_2" {
   namespace = var.tenancy_2_object_storage_namespace
   object    = local.talos_image_object
   source    = "${path.module}/build/talos-oracle-arm64.oci"
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [source]
+  }
 }
 
 resource "oci_core_image" "talos_tenancy_1" {
   provider = oci.tenancy_1
 
   compartment_id = var.tenancy_1_compartment_ocid
-  display_name   = "Talos ${var.talos_version} ARM64"
+  display_name   = "Talos ${local.talos_image.version} ARM64"
   launch_mode    = "PARAVIRTUALIZED"
 
   image_source_details {
@@ -74,7 +86,7 @@ resource "oci_core_image" "talos_tenancy_1" {
     bucket_name              = oci_objectstorage_bucket.talos_tenancy_1.name
     object_name              = oci_objectstorage_object.talos_tenancy_1.object
     operating_system         = "Talos"
-    operating_system_version = trimprefix(var.talos_version, "v")
+    operating_system_version = trimprefix(local.talos_image.version, "v")
   }
 }
 
@@ -82,7 +94,7 @@ resource "oci_core_image" "talos_tenancy_2" {
   provider = oci.tenancy_2
 
   compartment_id = var.tenancy_2_compartment_ocid
-  display_name   = "Talos ${var.talos_version} ARM64"
+  display_name   = "Talos ${local.talos_image.version} ARM64"
   launch_mode    = "PARAVIRTUALIZED"
 
   image_source_details {
@@ -91,7 +103,7 @@ resource "oci_core_image" "talos_tenancy_2" {
     bucket_name              = oci_objectstorage_bucket.talos_tenancy_2.name
     object_name              = oci_objectstorage_object.talos_tenancy_2.object
     operating_system         = "Talos"
-    operating_system_version = trimprefix(var.talos_version, "v")
+    operating_system_version = trimprefix(local.talos_image.version, "v")
   }
 }
 
@@ -271,33 +283,35 @@ resource "oci_network_load_balancer_backend" "talos" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   ip_address               = local.control_plane_ip
   port                     = 50000
-  name                     = "control-plane"
+  name                     = "control-plane-talos"
 }
 
 resource "oci_network_load_balancer_listener" "kubernetes" {
   provider = oci.tenancy_1
+  for_each = toset(["IPV4", "IPV6"])
 
   default_backend_set_name = oci_network_load_balancer_backend_set.kubernetes.name
-  name                     = "kubernetes"
+  name                     = "kubernetes-${lower(each.value)}"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   port                     = 6443
   protocol                 = "TCP"
-  ip_version               = "IPV4_AND_IPV6"
+  ip_version               = each.value
 }
 
 resource "oci_network_load_balancer_listener" "talos" {
   provider = oci.tenancy_1
+  for_each = toset(["IPV4", "IPV6"])
 
   default_backend_set_name = oci_network_load_balancer_backend_set.talos.name
-  name                     = "talos"
+  name                     = "talos-${lower(each.value)}"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   port                     = 50000
   protocol                 = "TCP"
-  ip_version               = "IPV4_AND_IPV6"
+  ip_version               = each.value
 }
 
 resource "talos_machine_secrets" "cluster" {
-  talos_version = var.talos_version
+  talos_version = local.talos_image.version
 }
 
 data "talos_machine_configuration" "control_plane" {
@@ -305,33 +319,46 @@ data "talos_machine_configuration" "control_plane" {
   machine_type     = "controlplane"
   cluster_endpoint = "https://${local.cluster_api_ip}:6443"
   machine_secrets  = talos_machine_secrets.cluster.machine_secrets
-  talos_version    = var.talos_version
+  talos_version    = local.talos_image.version
 
-  config_patches = [yamlencode({
-    machine = {
-      certSANs = local.cluster_api_addresses
-      time = {
-        servers = ["169.254.169.254"]
-      }
-      kubelet = {
-        nodeIP = {
-          validSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
+  config_patches = [
+    yamlencode({
+      machine = {
+        certSANs = local.cluster_api_addresses
+        time = {
+          servers = ["169.254.169.254"]
+        }
+        kubelet = {
+          nodeIP = {
+            validSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
+          }
         }
       }
-    }
-    cluster = {
-      network = {
-        podSubnets     = ["10.244.0.0/16", "fd00:10:244::/56"]
-        serviceSubnets = ["10.96.0.0/20", "fd00:10:96::/112"]
+      cluster = {
+        network = {
+          podSubnets     = var.kubernetes_pod_subnets
+          serviceSubnets = var.kubernetes_service_subnets
+        }
+        apiServer = {
+          certSANs = local.cluster_api_addresses
+        }
+        etcd = {
+          advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
+        }
       }
-      apiServer = {
-        certSANs = local.cluster_api_addresses
-      }
-      etcd = {
-        advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
-      }
-    }
-  })]
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "ExtensionServiceConfig"
+      name       = "tailscale"
+      environment = [
+        "TS_AUTHKEY=${tailscale_tailnet_key.node["control-plane"].key}",
+        "TS_HOSTNAME=Triton",
+        "TS_AUTH_ONCE=true",
+        "TS_ROUTES=${join(",", local.tailscale_advertised_routes)}",
+      ]
+    }),
+  ]
 }
 
 data "talos_machine_configuration" "worker" {
@@ -339,27 +366,40 @@ data "talos_machine_configuration" "worker" {
   machine_type     = "worker"
   cluster_endpoint = "https://${local.cluster_api_ip}:6443"
   machine_secrets  = talos_machine_secrets.cluster.machine_secrets
-  talos_version    = var.talos_version
+  talos_version    = local.talos_image.version
 
-  config_patches = [yamlencode({
-    machine = {
-      certSANs = local.cluster_api_addresses
-      time = {
-        servers = ["169.254.169.254"]
-      }
-      kubelet = {
-        nodeIP = {
-          validSubnets = [var.tenancy_2_vcn_cidr, module.tenancy_2_vcn.ipv6_cidr_block]
+  config_patches = [
+    yamlencode({
+      machine = {
+        certSANs = local.cluster_api_addresses
+        time = {
+          servers = ["169.254.169.254"]
+        }
+        kubelet = {
+          nodeIP = {
+            validSubnets = [var.tenancy_2_vcn_cidr, module.tenancy_2_vcn.ipv6_cidr_block]
+          }
         }
       }
-    }
-    cluster = {
-      network = {
-        podSubnets     = ["10.244.0.0/16", "fd00:10:244::/56"]
-        serviceSubnets = ["10.96.0.0/20", "fd00:10:96::/112"]
+      cluster = {
+        network = {
+          podSubnets     = var.kubernetes_pod_subnets
+          serviceSubnets = var.kubernetes_service_subnets
+        }
       }
-    }
-  })]
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "ExtensionServiceConfig"
+      name       = "tailscale"
+      environment = [
+        "TS_AUTHKEY=${tailscale_tailnet_key.node["worker"].key}",
+        "TS_HOSTNAME=Scorpion",
+        "TS_AUTH_ONCE=true",
+        "TS_ROUTES=${join(",", local.tailscale_advertised_routes)}",
+      ]
+    }),
+  ]
 }
 
 resource "oci_core_instance" "control_plane" {
@@ -463,8 +503,29 @@ resource "talos_machine_bootstrap" "cluster" {
   }
 }
 
-resource "talos_cluster_kubeconfig" "cluster" {
+resource "talos_machine_configuration_apply" "control_plane" {
   depends_on = [talos_machine_bootstrap.cluster]
+
+  node                        = local.control_plane_ip
+  endpoint                    = local.cluster_api_ip
+  client_configuration        = talos_machine_secrets.cluster.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.control_plane.machine_configuration
+}
+
+resource "talos_machine_configuration_apply" "worker" {
+  depends_on = [talos_machine_bootstrap.cluster]
+
+  node                        = local.worker_ip
+  endpoint                    = local.cluster_api_ip
+  client_configuration        = talos_machine_secrets.cluster.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
+}
+
+resource "talos_cluster_kubeconfig" "cluster" {
+  depends_on = [
+    talos_machine_configuration_apply.control_plane,
+    talos_machine_configuration_apply.worker,
+  ]
 
   node                 = local.control_plane_ip
   endpoint             = local.cluster_api_ip
