@@ -12,6 +12,10 @@ tenancy_2_compartment_ocid = "ocid1.compartment.oc1..replace-me"
 requestor_group_name = "Administrators"
 requestor_group_ocid = "ocid1.group.oc1..replace-me"
 
+tailscale_oauth_client_id     = "replace-me"
+tailscale_oauth_client_secret = "replace-me"
+tailscale_tailnet             = "replace-me"
+
 tenancy_1_object_storage_namespace = "replace-me"
 tenancy_2_object_storage_namespace = "replace-me"
 
@@ -19,3 +23,6 @@ tenancy_1_vcn_cidr    = "10.0.0.0/16"
 tenancy_1_subnet_cidr = "10.0.0.0/24"
 tenancy_2_vcn_cidr    = "10.1.0.0/16"
 tenancy_2_subnet_cidr = "10.1.0.0/24"
+
+kubernetes_pod_subnets     = ["10.244.0.0/16", "fd00:10:244::/56"]
+kubernetes_service_subnets = ["10.96.0.0/20", "fd00:10:96::/112"]

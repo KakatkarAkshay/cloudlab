@@ -40,16 +40,18 @@ The state contains Talos and Kubernetes private keys. Access to the state bucket
 OCI does not publish an official Talos image. Build the Oracle-compatible image archive before planning locally:
 
 ```bash
+TALOS_VERSION="$(jq -r '.version' infra/talos-image.json)"
+TALOS_SCHEMATIC_ID="$(jq -r '.schematic_id' infra/talos-image.json)"
 mkdir -p infra/build
 curl --fail --location \
-  "https://factory.talos.dev/image/4a0d65c669d46663f377e7161e50cfd570c401f26fd9e7bda34a0216b6f1922b/v1.13.6/oracle-arm64.qcow2" \
+  "https://factory.talos.dev/image/$TALOS_SCHEMATIC_ID/$TALOS_VERSION/oracle-arm64.qcow2" \
   --output infra/build/oracle-arm64.qcow2
 cp infra/image_metadata.json infra/build/image_metadata.json
 tar -C infra/build -czf infra/build/talos-oracle-arm64.oci oracle-arm64.qcow2 image_metadata.json
 ```
 
 Terraform uploads the archive to a private Object Storage bucket in each tenancy and imports it as a custom image.
-The pinned Image Factory schematic is recorded in `infra/talos-schematic.yaml`. It installs Tailscale on both nodes; joining a tailnet still requires a Talos machine configuration patch with an appropriate Tailscale authentication method.
+The pinned Image Factory schematic is recorded in `infra/talos-schematic.yaml`. Terraform registers the control plane as `Triton` and the worker as `Scorpion` in the dedicated Tailscale tailnet.
 
 ## Variables
 
@@ -75,6 +77,7 @@ TENANCY_2_OCID
 TENANCY_2_USER_OCID
 TENANCY_2_COMPARTMENT_OCID
 OCI_REQUESTOR_GROUP_OCID
+TAILSCALE_OAUTH_CLIENT_SECRET
 ```
 
 Repository variables:
@@ -83,6 +86,8 @@ Repository variables:
 OCI_REGION
 OCI_FINGERPRINT
 OCI_REQUESTOR_GROUP_NAME
+TAILSCALE_OAUTH_CLIENT_ID
+TAILSCALE_TAILNET
 ```
 
 ## Cluster Access
