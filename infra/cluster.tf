@@ -34,7 +34,6 @@ resource "oci_objectstorage_bucket" "talos_tenancy_1" {
   namespace      = var.tenancy_1_object_storage_namespace
   name           = "cloudlab-talos-images"
   access_type    = "NoPublicAccess"
-  versioning     = "Enabled"
 }
 
 resource "oci_objectstorage_bucket" "talos_tenancy_2" {
@@ -44,7 +43,6 @@ resource "oci_objectstorage_bucket" "talos_tenancy_2" {
   namespace      = var.tenancy_2_object_storage_namespace
   name           = "cloudlab-talos-images"
   access_type    = "NoPublicAccess"
-  versioning     = "Enabled"
 }
 
 resource "oci_objectstorage_object" "talos_tenancy_1" {
