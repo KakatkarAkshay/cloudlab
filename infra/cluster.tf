@@ -417,7 +417,7 @@ data "talos_machine_configuration" "control_plane" {
           certSANs = local.cluster_api_addresses
         }
         etcd = {
-          advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
+          advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block, "100.64.0.0/10"]
         }
       }
     }),
