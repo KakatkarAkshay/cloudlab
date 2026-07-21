@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "automerge": true,
   "customManagers": [
     {
       "customType": "regex",
@@ -21,13 +22,6 @@
       "depNameTemplate": "kubernetes/kubernetes",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
-    }
-  ],
-  "packageRules": [
-    {
-      "description": "Keep cluster upgrades separate and manually approved",
-      "matchFileNames": ["cluster-versions.json"],
-      "automerge": false
     }
   ]
 }
