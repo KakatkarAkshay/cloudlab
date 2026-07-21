@@ -1,0 +1,36 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: idrive-e2
+  namespace: postgresql
+spec:
+  configuration:
+    destinationPath: s3://cloudnativepg-backup/
+    endpointURL: https://s3.eu-central-2.idrivee2.com
+    s3Credentials:
+      accessKeyId:
+        name: idrive-e2-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: idrive-e2-credentials
+        key: ACCESS_SECRET_KEY
+      region:
+        name: idrive-e2-credentials
+        key: AWS_REGION
+    data:
+      compression: gzip
+    wal:
+      compression: gzip
+      maxParallel: 2
+  retentionPolicy: 30d
+  instanceSidecarConfiguration:
+    retentionPolicyIntervalSeconds: 3600
+    env:
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: when_required
+      - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+        value: when_required
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
