@@ -53,8 +53,6 @@ tar -C infra/build -czf infra/build/talos-oracle-arm64.oci oracle-arm64.qcow2 im
 Terraform uploads the archive to a private Object Storage bucket in each tenancy and imports it as a custom image.
 The pinned Image Factory schematic is recorded in `infra/talos-schematic.yaml`. The version in `infra/talos-image.json` is the immutable bootstrap image version; changing it replaces the OCI instances. Runtime versions are tracked separately in `cluster-versions.json` and do not affect Terraform resources. Terraform registers the nodes as `Triton` and `Scorpion` in NetBird's `oci` group. That group provides HA routing for the Triton VPC, Scorpion VPC, pod, and service Networks. Add user devices to `cloudlab-clients` to receive these routes without advertising them back to the OCI nodes.
 
-The first migration apply also destroys the Terraform-managed Tailscale ACL and auth keys. After that apply, remove the migration-only Tailscale provider, variables, workflow environment values, and repository credentials.
-
 ## Variables
 
 Copy `infra/terraform.tfvars.example` to `infra/terraform.tfvars` and replace the placeholder OCIDs. Export the shared API key without placing it in a variable file:
@@ -82,7 +80,6 @@ TENANCY_2_USER_OCID
 TENANCY_2_COMPARTMENT_OCID
 OCI_REQUESTOR_GROUP_OCID
 NETBIRD_TOKEN
-TAILSCALE_OAUTH_CLIENT_SECRET (migration only)
 ```
 
 Repository variables:
@@ -92,8 +89,6 @@ OCI_REGION
 OCI_FINGERPRINT
 OCI_REQUESTOR_GROUP_NAME
 NETBIRD_MANAGEMENT_URL
-TAILSCALE_OAUTH_CLIENT_ID (migration only)
-TAILSCALE_TAILNET (migration only)
 ```
 
 ## Cluster Access

@@ -66,23 +66,6 @@ variable "netbird_management_url" {
   default     = "https://api.netbird.io"
 }
 
-# Remove these variables and the provider after the first successful migration apply.
-variable "tailscale_oauth_client_id" {
-  description = "OAuth client ID used to destroy the previous Tailscale resources."
-  type        = string
-}
-
-variable "tailscale_oauth_client_secret" {
-  description = "OAuth client secret used to destroy the previous Tailscale resources."
-  type        = string
-  sensitive   = true
-}
-
-variable "tailscale_tailnet" {
-  description = "ID of the previous Tailscale tailnet."
-  type        = string
-}
-
 variable "tenancy_1_object_storage_namespace" {
   description = "Object Storage namespace for tenancy 1."
   type        = string
