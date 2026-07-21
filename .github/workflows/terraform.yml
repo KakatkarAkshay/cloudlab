@@ -20,7 +20,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  plan:
+  terraform:
+    name: ${{ github.event_name == 'pull_request' && 'Plan' || 'Plan and Apply' }}
     runs-on: ubuntu-latest
     defaults:
       run:
