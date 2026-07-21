@@ -54,6 +54,18 @@ variable "requestor_group_ocid" {
   type        = string
 }
 
+variable "netbird_token" {
+  description = "Personal access token used to manage the NetBird account."
+  type        = string
+  sensitive   = true
+}
+
+variable "netbird_management_url" {
+  description = "NetBird management API URL."
+  type        = string
+  default     = "https://api.netbird.io"
+}
+
 variable "tenancy_1_object_storage_namespace" {
   description = "Object Storage namespace for tenancy 1."
   type        = string
@@ -66,16 +78,32 @@ variable "tenancy_2_object_storage_namespace" {
   default     = "bmj3ksc63hbp"
 }
 
-variable "talos_version" {
-  description = "Talos Linux version used for the OCI image and machine configuration."
-  type        = string
-  default     = "v1.13.6"
-}
-
 variable "cluster_name" {
   description = "Talos and Kubernetes cluster name."
   type        = string
   default     = "cloudlab"
+}
+
+variable "kubernetes_pod_subnets" {
+  description = "IPv4 and IPv6 CIDRs assigned to Kubernetes pods."
+  type        = list(string)
+  default     = ["10.244.0.0/16", "fd00:10:244::/56"]
+
+  validation {
+    condition     = length(var.kubernetes_pod_subnets) == 2 && alltrue([for cidr in var.kubernetes_pod_subnets : can(cidrhost(cidr, 0))])
+    error_message = "kubernetes_pod_subnets must contain valid IPv4 and IPv6 CIDRs."
+  }
+}
+
+variable "kubernetes_service_subnets" {
+  description = "IPv4 and IPv6 CIDRs assigned to Kubernetes services."
+  type        = list(string)
+  default     = ["10.96.0.0/20", "fd00:10:96::/112"]
+
+  validation {
+    condition     = length(var.kubernetes_service_subnets) == 2 && alltrue([for cidr in var.kubernetes_service_subnets : can(cidrhost(cidr, 0))])
+    error_message = "kubernetes_service_subnets must contain valid IPv4 and IPv6 CIDRs."
+  }
 }
 
 variable "tenancy_1_vcn_cidr" {
