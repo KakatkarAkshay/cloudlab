@@ -64,7 +64,7 @@ terraform -chdir=infra plan
 
 ## GitHub Actions
 
-The workflow uses Terraform `1.15.8` and builds the Talos image archive on the runner. Pull requests run formatting, validation, and planning. Pushes to `main` and manual runs apply the exact saved plan. Applies run serially because concurrent NetBird resource creation can lose shared group assignments.
+The workflow uses Terraform `1.15.8` and builds the Talos image archive on the runner. Pull requests run formatting, validation, and planning. Pushes to `main` and manual runs apply the exact saved plan.
 
 Renovate proposes and automerges dependency updates, including separate Talos and Kubernetes runtime updates in `cluster-versions.json`. A runtime version update to `main` starts the **Cluster Upgrade** workflow automatically, and the workflow can also be run manually for retries. It validates that the requested release is no more than one minor version ahead, upgrades the control plane and worker sequentially, and checks Talos, Kubernetes node, and NetBird health after each change. Terraform apply, destroy, and cluster upgrade runs share a concurrency lock so they cannot modify the cluster simultaneously.
 
