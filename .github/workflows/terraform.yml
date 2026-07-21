@@ -86,4 +86,4 @@ jobs:
 
       - name: Apply
         if: github.event_name != 'pull_request'
-        run: terraform apply -input=false -no-color tfplan
+        run: terraform apply -input=false -no-color -parallelism=1 tfplan
