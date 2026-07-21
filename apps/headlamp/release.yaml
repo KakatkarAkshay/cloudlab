@@ -1,0 +1,44 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: headlamp
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: headlamp
+  targetNamespace: headlamp
+  chart:
+    spec:
+      chart: headlamp
+      version: 0.43.0
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: headlamp
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    replicaCount: 2
+    config:
+      unsafeUseServiceAccountToken: true
+      oidc:
+        secret:
+          create: false
+    serviceAccount:
+      create: true
+    clusterRoleBinding:
+      create: true
+      clusterRoleName: cluster-admin
+    service:
+      type: ClusterIP
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
