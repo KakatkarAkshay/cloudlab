@@ -55,6 +55,7 @@ jobs:
 
       - name: Empty Talos image buckets
         run: |
+          set -o pipefail
           python -m pip install --disable-pip-version-check oci-cli
           install -m 600 /dev/null "$RUNNER_TEMP/oci_config"
           printf '%s\n' \
@@ -84,7 +85,7 @@ jobs:
             oci --config-file "$RUNNER_TEMP/oci_config" --profile "$profile" \
               os object list-object-versions --namespace-name "$namespace" \
               --bucket-name cloudlab-talos-images --all | \
-              jq -r '.data.items[] | [.name, ."version-id"] | @tsv' | \
+              jq -r '.data[] | [.name, ."version-id"] | @tsv' | \
               while IFS=$'\t' read -r object_name version_id; do
                 oci --config-file "$RUNNER_TEMP/oci_config" --profile "$profile" \
                   os object delete --namespace-name "$namespace" \
