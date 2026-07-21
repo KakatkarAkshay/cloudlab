@@ -393,6 +393,10 @@ data "talos_machine_configuration" "control_plane" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
+        sysctls = {
+          "net.ipv4.ip_forward"          = "1"
+          "net.ipv6.conf.all.forwarding" = "1"
+        }
         time = {
           servers = ["169.254.169.254"]
         }
@@ -440,6 +444,10 @@ data "talos_machine_configuration" "worker" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
+        sysctls = {
+          "net.ipv4.ip_forward"          = "1"
+          "net.ipv6.conf.all.forwarding" = "1"
+        }
         time = {
           servers = ["169.254.169.254"]
         }
