@@ -8,7 +8,7 @@ Terraform configuration for a two-node Talos Kubernetes cluster spanning two OCI
 - One `VM.Standard.A1.Flex` worker in tenancy 2
 - 2 ARM OCPUs and 12 GB RAM per node
 - 200 GB boot volume at 120 VPUs/GB per node
-- Talos Linux 1.13.7 and dual-stack Kubernetes networking
+- Talos Linux 1.13.7, Kubernetes 1.36.0, and dual-stack networking
 - Talos-managed Flannel CNI and kube-proxy with dual-stack pod and service networks
 - Official `siderolabs/tailscale` Talos system extension
 - Private dual-stack node subnets joined by cross-tenancy LPG peering
@@ -51,7 +51,7 @@ tar -C infra/build -czf infra/build/talos-oracle-arm64.oci oracle-arm64.qcow2 im
 ```
 
 Terraform uploads the archive to a private Object Storage bucket in each tenancy and imports it as a custom image.
-The pinned Image Factory schematic is recorded in `infra/talos-schematic.yaml`. Terraform registers the control plane as `Triton` and the worker as `Scorpion` in the dedicated Tailscale tailnet.
+The pinned Image Factory schematic is recorded in `infra/talos-schematic.yaml`. The version in `infra/talos-image.json` is the immutable bootstrap image version; changing it replaces the OCI instances. Runtime versions are tracked separately in `cluster-versions.json` and do not affect Terraform resources. Terraform registers the control plane as `Triton` and the worker as `Scorpion` in the dedicated Tailscale tailnet.
 
 ## Variables
 
@@ -65,6 +65,8 @@ terraform -chdir=infra plan
 ## GitHub Actions
 
 The workflow uses Terraform `1.15.8` and builds the Talos image archive on the runner. Pull requests run formatting, validation, and planning. Pushes to `main` and manual runs apply the exact saved plan.
+
+Renovate proposes separate Talos and Kubernetes runtime updates in `cluster-versions.json`. After reviewing and merging an update, run the **Cluster Upgrade** workflow and enter `upgrade cloudlab`. The workflow validates that the requested release is no more than one minor version ahead, upgrades the control plane and worker sequentially, and checks Talos, Kubernetes node, and Tailscale health after each change. Terraform apply, destroy, and cluster upgrade runs share a concurrency lock so they cannot modify the cluster simultaneously.
 
 Repository secrets:
 

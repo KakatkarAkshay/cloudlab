@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^cluster-versions\\.json$/"],
+      "matchStrings": [
+        "\"talos\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      ],
+      "depNameTemplate": "siderolabs/talos",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^cluster-versions\\.json$/"],
+      "matchStrings": [
+        "\"kubernetes\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      ],
+      "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Keep cluster upgrades separate and manually approved",
+      "matchFileNames": ["cluster-versions.json"],
+      "automerge": false
+    }
+  ]
+}
