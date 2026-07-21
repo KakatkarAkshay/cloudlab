@@ -24,7 +24,7 @@ resource "tailscale_tailnet_key" "node" {
   expiry              = 86400
   recreate_if_invalid = "never"
   tags                = ["tag:kubernetes-node"]
-  description         = each.value
+  description         = "Cloudlab ${each.value}"
 }
 
 resource "tailscale_acl" "cloudlab" {

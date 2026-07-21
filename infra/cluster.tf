@@ -523,6 +523,10 @@ resource "oci_core_instance" "control_plane" {
     network_type                        = "PARAVIRTUALIZED"
     remote_data_volume_type             = "PARAVIRTUALIZED"
   }
+
+  lifecycle {
+    ignore_changes = [metadata["user_data"]]
+  }
 }
 
 resource "oci_core_instance" "worker" {
@@ -569,6 +573,10 @@ resource "oci_core_instance" "worker" {
     is_pv_encryption_in_transit_enabled = true
     network_type                        = "PARAVIRTUALIZED"
     remote_data_volume_type             = "PARAVIRTUALIZED"
+  }
+
+  lifecycle {
+    ignore_changes = [metadata["user_data"]]
   }
 }
 
