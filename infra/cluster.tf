@@ -405,6 +405,7 @@ data "talos_machine_configuration" "control_plane" {
         }
       }
       cluster = {
+        allowSchedulingOnControlPlanes = true
         network = {
           podSubnets     = var.kubernetes_pod_subnets
           serviceSubnets = var.kubernetes_service_subnets
