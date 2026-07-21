@@ -12,6 +12,7 @@ variable "oci_private_key" {
   description = "PEM-encoded private key shared by the two OCI users."
   type        = string
   sensitive   = true
+  ephemeral   = true
 }
 
 variable "tenancy_1_ocid" {
@@ -58,12 +59,20 @@ variable "netbird_token" {
   description = "Personal access token used to manage the NetBird account."
   type        = string
   sensitive   = true
+  ephemeral   = true
 }
 
 variable "netbird_management_url" {
   description = "NetBird management API URL."
   type        = string
   default     = "https://api.netbird.io"
+}
+
+variable "flux_git_ssh_private_key" {
+  description = "OpenSSH private key used by Flux to read the CloudLab Git repository."
+  type        = string
+  sensitive   = true
+  ephemeral   = true
 }
 
 variable "tenancy_1_object_storage_namespace" {

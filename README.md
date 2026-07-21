@@ -8,7 +8,7 @@ Terraform configuration for a two-node Talos Kubernetes cluster spanning two OCI
 - One `VM.Standard.A1.Flex` worker in tenancy 2
 - 2 ARM OCPUs and 12 GB RAM per node
 - 200 GB boot volume at 120 VPUs/GB per node
-- Talos Linux 1.13.7, Kubernetes 1.36.0, and dual-stack networking
+- Talos Linux 1.13.7, Kubernetes 1.36.2, and dual-stack networking
 - Talos-managed Flannel CNI and kube-proxy with dual-stack pod and service networks
 - Official `siderolabs/netbird` Talos system extension
 - Private dual-stack node subnets joined by cross-tenancy LPG peering
@@ -16,6 +16,7 @@ Terraform configuration for a two-node Talos Kubernetes cluster spanning two OCI
 - IPv6 internet egress through an Internet Gateway with ingress prohibited on node subnets
 - A public dual-stack Network Load Balancer for Kubernetes `6443` and Talos `50000`
 - Daily incremental boot-volume backups retained for two days
+- Terraform-managed Flux controllers reconciling this repository from the root
 
 The Talos nodes have no public IPv4 addresses. Their globally routable IPv6 addresses cannot receive internet-initiated traffic because the node subnets prohibit internet ingress and their security lists only admit traffic from the two VCNs. The public Talos API endpoint requires mutual TLS.
 
@@ -33,7 +34,7 @@ terraform -chdir=infra init \
   -backend-config="private_key_path=$HOME/.oci/cloudlab_shared_api_key.pem"
 ```
 
-The state contains Talos and Kubernetes private keys. Access to the state bucket must remain restricted to administrators.
+The state contains Talos and Kubernetes private keys. Credential inputs are ephemeral, but access to the state bucket must still remain restricted to administrators.
 
 ## Talos Image
 
@@ -80,6 +81,7 @@ TENANCY_2_USER_OCID
 TENANCY_2_COMPARTMENT_OCID
 OCI_REQUESTOR_GROUP_OCID
 NETBIRD_TOKEN
+FLUX_GIT_SSH_PRIVATE_KEY
 ```
 
 Repository variables:
@@ -90,6 +92,10 @@ OCI_FINGERPRINT
 OCI_REQUESTOR_GROUP_NAME
 NETBIRD_MANAGEMENT_URL
 ```
+
+## GitOps
+
+Terraform installs Flux and configures it to reconcile the `main` branch from the repository root. The root `kustomization.yaml` explicitly lists deployable resources so unrelated repository YAML is not applied to the cluster.
 
 ## Cluster Access
 

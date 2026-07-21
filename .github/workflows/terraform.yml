@@ -43,6 +43,7 @@ jobs:
       TF_VAR_requestor_group_ocid: ${{ secrets.OCI_REQUESTOR_GROUP_OCID }}
       TF_VAR_netbird_token: ${{ secrets.NETBIRD_TOKEN }}
       TF_VAR_netbird_management_url: ${{ vars.NETBIRD_MANAGEMENT_URL }}
+      TF_VAR_flux_git_ssh_private_key: ${{ secrets.FLUX_GIT_SSH_PRIVATE_KEY }}
 
     steps:
       - uses: actions/checkout@v7
