@@ -8,7 +8,7 @@ Terraform configuration for a two-node Talos Kubernetes cluster spanning two OCI
 - One `VM.Standard.A1.Flex` worker in tenancy 2
 - 2 ARM OCPUs and 12 GB RAM per node
 - 200 GB boot volume at 120 VPUs/GB per node
-- Talos Linux 1.13.6 and dual-stack Kubernetes networking
+- Talos Linux 1.13.7 and dual-stack Kubernetes networking
 - Talos-managed Flannel CNI and kube-proxy with dual-stack pod and service networks
 - Official `siderolabs/tailscale` Talos system extension
 - Private dual-stack node subnets joined by cross-tenancy LPG peering
