@@ -3,6 +3,8 @@ locals {
   talos_image_object = "talos-${local.talos_image.version}-${local.talos_image.schematic_id}-oracle-arm64.oci"
   control_plane_ip   = cidrhost(var.tenancy_1_subnet_cidr, 10)
   worker_ip          = cidrhost(var.tenancy_2_subnet_cidr, 10)
+  control_plane_ipv6 = cidrhost(cidrsubnet(module.tenancy_1_vcn.ipv6_cidr_block, 8, 0), 10)
+  worker_ipv6        = cidrhost(cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 0), 10)
   cluster_api_ip = one([
     for address in oci_network_load_balancer_network_load_balancer.control_plane.ip_addresses : address.ip_address
     if address.ip_version == "IPV4" && address.is_public
@@ -256,6 +258,26 @@ resource "oci_network_load_balancer_backend_set" "kubernetes" {
   }
 }
 
+resource "oci_network_load_balancer_backend_set" "kubernetes_ipv6" {
+  provider = oci.tenancy_1
+
+  name                     = "kubernetes-ipv6"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  policy                   = "TWO_TUPLE"
+  is_preserve_source       = false
+  ip_version               = "IPV6"
+
+  health_checker {
+    protocol           = "HTTPS"
+    port               = 6443
+    url_path           = "/readyz"
+    return_code        = 401
+    interval_in_millis = 10000
+    timeout_in_millis  = 3000
+    retries            = 3
+  }
+}
+
 resource "oci_network_load_balancer_backend_set" "talos" {
   provider = oci.tenancy_1
 
@@ -264,6 +286,24 @@ resource "oci_network_load_balancer_backend_set" "talos" {
   policy                   = "TWO_TUPLE"
   is_preserve_source       = false
   ip_version               = "IPV4"
+
+  health_checker {
+    protocol           = "TCP"
+    port               = 50000
+    interval_in_millis = 10000
+    timeout_in_millis  = 3000
+    retries            = 3
+  }
+}
+
+resource "oci_network_load_balancer_backend_set" "talos_ipv6" {
+  provider = oci.tenancy_1
+
+  name                     = "talos-ipv6"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  policy                   = "TWO_TUPLE"
+  is_preserve_source       = false
+  ip_version               = "IPV6"
 
   health_checker {
     protocol           = "TCP"
@@ -284,6 +324,16 @@ resource "oci_network_load_balancer_backend" "kubernetes" {
   name                     = "control-plane"
 }
 
+resource "oci_network_load_balancer_backend" "kubernetes_ipv6" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.kubernetes_ipv6.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = local.control_plane_ipv6
+  port                     = 6443
+  name                     = "control-plane-kubernetes-ipv6"
+}
+
 resource "oci_network_load_balancer_backend" "talos" {
   provider = oci.tenancy_1
 
@@ -294,11 +344,21 @@ resource "oci_network_load_balancer_backend" "talos" {
   name                     = "control-plane-talos"
 }
 
+resource "oci_network_load_balancer_backend" "talos_ipv6" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.talos_ipv6.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = local.control_plane_ipv6
+  port                     = 50000
+  name                     = "control-plane-talos-ipv6"
+}
+
 resource "oci_network_load_balancer_listener" "kubernetes" {
   provider = oci.tenancy_1
   for_each = toset(["IPV4", "IPV6"])
 
-  default_backend_set_name = oci_network_load_balancer_backend_set.kubernetes.name
+  default_backend_set_name = each.value == "IPV4" ? oci_network_load_balancer_backend_set.kubernetes.name : oci_network_load_balancer_backend_set.kubernetes_ipv6.name
   name                     = "kubernetes-${lower(each.value)}"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   port                     = 6443
@@ -310,7 +370,7 @@ resource "oci_network_load_balancer_listener" "talos" {
   provider = oci.tenancy_1
   for_each = toset(["IPV4", "IPV6"])
 
-  default_backend_set_name = oci_network_load_balancer_backend_set.talos.name
+  default_backend_set_name = each.value == "IPV4" ? oci_network_load_balancer_backend_set.talos.name : oci_network_load_balancer_backend_set.talos_ipv6.name
   name                     = "talos-${lower(each.value)}"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
   port                     = 50000
@@ -432,6 +492,11 @@ resource "oci_core_instance" "control_plane" {
     hostname_label   = "control-plane"
     private_ip       = local.control_plane_ip
     subnet_id        = module.cross_tenancy_peering.tenancy_1_subnet_id
+
+    ipv6address_ipv6subnet_cidr_pair_details {
+      ipv6address     = local.control_plane_ipv6
+      ipv6subnet_cidr = cidrsubnet(module.tenancy_1_vcn.ipv6_cidr_block, 8, 0)
+    }
   }
 
   source_details {
@@ -474,6 +539,11 @@ resource "oci_core_instance" "worker" {
     hostname_label   = "worker"
     private_ip       = local.worker_ip
     subnet_id        = module.cross_tenancy_peering.tenancy_2_subnet_id
+
+    ipv6address_ipv6subnet_cidr_pair_details {
+      ipv6address     = local.worker_ipv6
+      ipv6subnet_cidr = cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 0)
+    }
   }
 
   source_details {

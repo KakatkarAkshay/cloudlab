@@ -38,9 +38,19 @@ output "control_plane_private_ip" {
   value       = local.control_plane_ip
 }
 
+output "control_plane_ipv6" {
+  description = "IPv6 address of the Talos control-plane node."
+  value       = local.control_plane_ipv6
+}
+
 output "worker_private_ip" {
   description = "Private IP of the Talos worker node."
   value       = local.worker_ip
+}
+
+output "worker_ipv6" {
+  description = "IPv6 address of the Talos worker node."
+  value       = local.worker_ipv6
 }
 
 output "talosconfig" {
