@@ -16,8 +16,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: terraform-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'pull_request' && format('terraform-{0}', github.ref) || 'cloudlab-infrastructure' }}
+  cancel-in-progress: false
 
 jobs:
   plan:

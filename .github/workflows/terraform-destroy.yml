@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: terraform-${{ github.ref }}
+  group: cloudlab-infrastructure
   cancel-in-progress: false
 
 jobs:
