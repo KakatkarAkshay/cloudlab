@@ -79,24 +79,11 @@ spec:
       - apiVersion: traefik.io/v1alpha1
         kind: Middleware
         metadata:
-          name: oauth2-errors
-          namespace: oauth2-proxy
-        spec:
-          errors:
-            status:
-              - 401-403
-            service:
-              name: oauth2-proxy
-              port: 80
-            query: /oauth2/sign_in?rd={url}
-      - apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        metadata:
           name: oauth2-forward-auth
           namespace: oauth2-proxy
         spec:
           forwardAuth:
-            address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local/oauth2/auth
+            address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local/
             trustForwardHeader: true
             maxResponseBodySize: 1048576
             authResponseHeaders:
@@ -106,16 +93,6 @@ spec:
               - X-Auth-Request-Groups
               - X-Auth-Request-Preferred-Username
               - X-Auth-Request-User
-      - apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        metadata:
-          name: oauth2
-          namespace: oauth2-proxy
-        spec:
-          chain:
-            middlewares:
-              - name: oauth2-errors
-              - name: oauth2-forward-auth
       - apiVersion: traefik.io/v1alpha1
         kind: Middleware
         metadata:
@@ -147,7 +124,7 @@ spec:
             - kind: Rule
               match: Host(`traefik.kakatkarakshay.dev`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
               middlewares:
-                - name: oauth2
+                - name: oauth2-forward-auth
               services:
                 - kind: TraefikService
                   name: api@internal
