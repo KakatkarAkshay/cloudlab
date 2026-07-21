@@ -32,11 +32,28 @@ provider "flux" {
   }
 
   git = {
-    url    = "ssh://git@github.com/abyssal-labs/cloudlab.git"
+    url    = "ssh://git@github.com/${var.github_owner}/${var.github_repository}.git"
     branch = "main"
     ssh = {
       username    = "git"
-      private_key = var.flux_git_ssh_private_key
+      private_key = tls_private_key.flux_git.private_key_openssh
     }
   }
+}
+
+# Reads CLOUDFLARE_API_TOKEN from the environment.
+provider "cloudflare" {}
+
+# Uses OIDC in CI and Universal Auth for local administration.
+provider "infisical" {
+  host = var.infisical_host
+  auth = {
+    oidc      = var.infisical_auth_method == "oidc" ? {} : null
+    universal = var.infisical_auth_method == "universal" ? {} : null
+  }
+}
+
+# Reads GITHUB_TOKEN from the environment.
+provider "github" {
+  owner = var.github_owner
 }
