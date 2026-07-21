@@ -85,7 +85,6 @@ TENANCY_2_COMPARTMENT_OCID
 OCI_REQUESTOR_GROUP_OCID
 NETBIRD_TOKEN
 FLUX_GIT_SSH_PRIVATE_KEY
-SOPS_AGE_KEY
 ```
 
 Repository variables:
@@ -113,8 +112,6 @@ apps/cloudlab/               # Applications enabled for CloudLab
 The `apps` Flux Kustomization depends on `infrastructure`, so platform services become ready before applications are reconciled. Add reusable components under `infrastructure/controllers`, then include them from `infrastructure/cloudlab/kustomization.yaml`. Add application manifests or overlays under `apps/cloudlab`.
 
 Gateway API standard-channel CRDs are reconciled from the pinned upstream `v1.6.1` release before infrastructure. Traefik is exposed only through a `ClusterIP` service; no node port or cloud load balancer is created. Two `cloudflared` replicas connect the remotely managed tunnel to Traefik, while ExternalDNS creates proxied Cloudflare records for Kubernetes `Ingress`, Gateway API `HTTPRoute`, and Traefik `IngressRoute` hostnames. A centralized oauth2-proxy instance at `auth.kakatkarakshay.dev` restricts the Traefik dashboard to an explicitly allowed Google account.
-
-Application and infrastructure Secrets, including the Cloudflare API and tunnel tokens, are encrypted in Git with SOPS and Age. Terraform bootstraps the Age private key from the `SOPS_AGE_KEY` repository secret into `flux-system/sops-age` through the Kubernetes provider's write-only Secret field, so the key is not persisted in Terraform state. Increment `sops_age_key_revision` when rotating the key.
 
 ## Cluster Access
 

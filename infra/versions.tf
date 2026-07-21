@@ -21,10 +21,6 @@ terraform {
       source  = "fluxcd/flux"
       version = "~> 1.9"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 3.2"
-    }
     netbird = {
       source  = "netbirdio/netbird"
       version = "~> 0.0.9"
