@@ -107,13 +107,13 @@ resource "netbird_policy" "networks" {
 
 resource "netbird_policy" "oci_peers" {
   name        = "CloudLab OCI peer access"
-  description = "Allow non-OCI CloudLab clients to reach OCI peers"
+  description = "Allow OCI peers and non-OCI CloudLab clients to reach each other"
   enabled     = true
 
   rule {
     name          = "CloudLab OCI peers"
     action        = "accept"
-    bidirectional = false
+    bidirectional = true
     enabled       = true
     protocol      = "all"
     sources       = [netbird_group.clients.id]
