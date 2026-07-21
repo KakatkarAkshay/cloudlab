@@ -1,16 +1,44 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": ["config:recommended", ":maintainLockFilesWeekly"],
   "automerge": true,
+  "flux": {
+    "managerFilePatterns": ["/(?:clusters|apps|infrastructure)/.+\\.ya?ml$/"]
+  },
+  "kubernetes": {
+    "managerFilePatterns": ["/(?:clusters|apps|infrastructure)/.+\\.ya?ml$/"]
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["kubernetes"],
+      "matchFileNames": ["**/gotk-components.yaml"],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^cluster-versions\\.json$/"],
+      "managerFilePatterns": [
+        "/^cluster-versions\\.json$/",
+        "/^infra/talos-image\\.json$/"
+      ],
       "matchStrings": [
-        "\"talos\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
+        "\"talos\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\"",
+        "\"version\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
       ],
       "depNameTemplate": "siderolabs/talos",
       "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^infra/image_metadata\\.json$/"],
+      "matchStrings": [
+        "\"operatingSystemVersion\"\\s*:\\s*\"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      ],
+      "depNameTemplate": "siderolabs/talos",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$",
       "versioningTemplate": "semver"
     },
     {
@@ -20,6 +48,16 @@
         "\"kubernetes\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
       ],
       "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "terraform_version:\\s*[\"']?(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)"
+      ],
+      "depNameTemplate": "hashicorp/terraform",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
     }
