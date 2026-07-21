@@ -131,6 +131,8 @@ spec:
         metadata:
           name: traefik-dashboard
           namespace: oauth2-proxy
+          annotations:
+            external-dns.alpha.kubernetes.io/target: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
         spec:
           entryPoints:
             - web
