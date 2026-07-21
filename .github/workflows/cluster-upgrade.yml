@@ -1,12 +1,11 @@
 name: Cluster Upgrade
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "cluster-versions.json"
   workflow_dispatch:
-    inputs:
-      confirmation:
-        description: Type "upgrade cloudlab" to confirm
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -17,7 +16,6 @@ concurrency:
 
 jobs:
   upgrade:
-    if: inputs.confirmation == 'upgrade cloudlab'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     defaults:
