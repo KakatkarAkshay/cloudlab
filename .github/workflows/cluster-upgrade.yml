@@ -1,0 +1,194 @@
+name: Cluster Upgrade
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "cluster-versions.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudlab-infrastructure
+  cancel-in-progress: false
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_VAR_oci_private_key: ${{ secrets.OCI_PRIVATE_KEY }}
+      TF_VAR_oci_fingerprint: ${{ vars.OCI_FINGERPRINT }}
+      TF_VAR_tenancy_1_ocid: ${{ secrets.TENANCY_1_OCID }}
+      TF_VAR_tenancy_1_user_ocid: ${{ secrets.TENANCY_1_USER_OCID }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Read target versions
+        id: versions
+        run: |
+          TALOS_VERSION="$(jq -er '.talos | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))' cluster-versions.json)"
+          KUBERNETES_VERSION="$(jq -er '.kubernetes | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))' cluster-versions.json)"
+          echo "talos=$TALOS_VERSION" >> "$GITHUB_OUTPUT"
+          echo "kubernetes=$KUBERNETES_VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
+
+      - name: Configure OCI API key
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/oci_api_key.pem"
+          printf '%s' "$TF_VAR_oci_private_key" > "$RUNNER_TEMP/oci_api_key.pem"
+
+      - name: Initialize Terraform
+        working-directory: infra
+        run: >-
+          terraform init -input=false
+          -backend-config="tenancy_ocid=$TF_VAR_tenancy_1_ocid"
+          -backend-config="user_ocid=$TF_VAR_tenancy_1_user_ocid"
+          -backend-config="fingerprint=$TF_VAR_oci_fingerprint"
+          -backend-config="private_key_path=$RUNNER_TEMP/oci_api_key.pem"
+
+      - name: Load cluster credentials
+        working-directory: infra
+        run: |
+          terraform output -raw talosconfig > "$RUNNER_TEMP/talosconfig"
+          terraform output -raw kubeconfig > "$RUNNER_TEMP/kubeconfig"
+          chmod 600 "$RUNNER_TEMP/talosconfig" "$RUNNER_TEMP/kubeconfig"
+
+      - name: Install clients
+        env:
+          TALOS_VERSION: ${{ steps.versions.outputs.talos }}
+          KUBERNETES_VERSION: ${{ steps.versions.outputs.kubernetes }}
+        run: |
+          curl --fail --location --silent --show-error \
+            "https://github.com/siderolabs/talos/releases/download/$TALOS_VERSION/talosctl-linux-amd64" \
+            --output "$RUNNER_TEMP/talosctl-linux-amd64"
+          curl --fail --location --silent --show-error \
+            "https://github.com/siderolabs/talos/releases/download/$TALOS_VERSION/sha256sum.txt" \
+            --output "$RUNNER_TEMP/sha256sum.txt"
+          grep ' talosctl-linux-amd64$' "$RUNNER_TEMP/sha256sum.txt" > "$RUNNER_TEMP/talosctl.sha256"
+          (cd "$RUNNER_TEMP" && sha256sum --check talosctl.sha256)
+          mkdir -p "$RUNNER_TEMP/bin"
+          install -m 755 "$RUNNER_TEMP/talosctl-linux-amd64" "$RUNNER_TEMP/bin/talosctl"
+
+          curl --fail --location --silent --show-error \
+            "https://dl.k8s.io/release/$KUBERNETES_VERSION/bin/linux/amd64/kubectl" \
+            --output "$RUNNER_TEMP/kubectl"
+          curl --fail --location --silent --show-error \
+            "https://dl.k8s.io/release/$KUBERNETES_VERSION/bin/linux/amd64/kubectl.sha256" \
+            --output "$RUNNER_TEMP/kubectl.sha256"
+          printf '%s  %s\n' "$(< "$RUNNER_TEMP/kubectl.sha256")" "$RUNNER_TEMP/kubectl" | sha256sum --check
+          install -m 755 "$RUNNER_TEMP/kubectl" "$RUNNER_TEMP/bin/kubectl"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Upgrade cluster
+        env:
+          TALOSCONFIG: ${{ runner.temp }}/talosconfig
+          KUBECONFIG: ${{ runner.temp }}/kubeconfig
+          TARGET_TALOS: ${{ steps.versions.outputs.talos }}
+          TARGET_KUBERNETES: ${{ steps.versions.outputs.kubernetes }}
+          CONTROL_PLANE: 10.0.0.10
+          WORKER: 10.1.0.10
+        run: |
+          set -euo pipefail
+
+          SCHEMATIC_ID="$(terraform -chdir=infra output -raw talos_schematic_id)"
+
+          current_talos_version() {
+            local output version
+            output="$(talosctl version --short --nodes "$1")"
+            version="$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+' <<< "$output" | tail -n 1)"
+            test -n "$version"
+            printf '%s' "$version"
+          }
+
+          check_upgrade_path() {
+            local component="$1" current="${2#v}" target="${3#v}"
+            local current_major current_minor current_patch target_major target_minor target_patch
+            IFS=. read -r current_major current_minor current_patch <<< "$current"
+            IFS=. read -r target_major target_minor target_patch <<< "$target"
+
+            if (( target_major != current_major || target_minor < current_minor || target_minor > current_minor + 1 )); then
+              echo "Unsupported $component upgrade path: v$current to v$target" >&2
+              return 1
+            fi
+            if (( target_minor == current_minor && target_patch < current_patch )); then
+              echo "$component downgrades are not allowed: v$current to v$target" >&2
+              return 1
+            fi
+          }
+
+          check_health() {
+            local attempt node healthy
+            for attempt in {1..60}; do
+              healthy=true
+              for node in "$CONTROL_PLANE" "$WORKER"; do
+                if ! talosctl get machinestatus --nodes "$node" --output json \
+                  | jq -e '.spec.stage == "running" and .spec.status.ready == true' > /dev/null; then
+                  healthy=false
+                fi
+                if ! talosctl service ext-netbird status --nodes "$node" | grep -q 'Running'; then
+                  healthy=false
+                fi
+              done
+
+              if ! talosctl etcd status --nodes "$CONTROL_PLANE" > /dev/null; then
+                healthy=false
+              fi
+              if ! kubectl get --raw=/readyz > /dev/null; then
+                healthy=false
+              fi
+              if ! kubectl wait --for=condition=Ready nodes --all --timeout=10s > /dev/null; then
+                healthy=false
+              fi
+
+              if [[ "$healthy" == true ]]; then
+                return
+              fi
+              sleep 10
+            done
+
+            echo "Cluster did not become healthy within 10 minutes" >&2
+            return 1
+          }
+
+          check_health
+
+          for node in "$CONTROL_PLANE" "$WORKER"; do
+            current_talos="$(current_talos_version "$node")"
+            check_upgrade_path Talos "$current_talos" "$TARGET_TALOS"
+            if [[ "$current_talos" != "$TARGET_TALOS" ]]; then
+              talosctl upgrade \
+                --nodes "$node" \
+                --image "factory.talos.dev/installer/$SCHEMATIC_ID:$TARGET_TALOS" \
+                --wait \
+                --timeout 30m
+              test "$(current_talos_version "$node")" = "$TARGET_TALOS"
+              check_health
+            fi
+          done
+
+          current_kubernetes="$(kubectl version -o json | jq -r '.serverVersion.gitVersion')"
+          check_upgrade_path Kubernetes "$current_kubernetes" "$TARGET_KUBERNETES"
+          if [[ "$current_kubernetes" != "$TARGET_KUBERNETES" ]]; then
+            talosctl upgrade-k8s \
+              --nodes "$CONTROL_PLANE" \
+              --to "${TARGET_KUBERNETES#v}" \
+              --dry-run
+            talosctl upgrade-k8s \
+              --nodes "$CONTROL_PLANE" \
+              --to "${TARGET_KUBERNETES#v}"
+            check_health
+            test "$(kubectl version -o json | jq -r '.serverVersion.gitVersion')" = "$TARGET_KUBERNETES"
+          fi
+
+          check_health
