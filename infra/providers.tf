@@ -17,3 +17,8 @@ provider "oci" {
   private_key  = var.oci_private_key
   region       = var.oci_region
 }
+
+provider "netbird" {
+  token          = var.netbird_token
+  management_url = var.netbird_management_url
+}

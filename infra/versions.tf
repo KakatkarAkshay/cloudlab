@@ -17,5 +17,9 @@ terraform {
       source  = "siderolabs/talos"
       version = "~> 0.11.0"
     }
+    netbird = {
+      source  = "netbirdio/netbird"
+      version = "~> 0.0.9"
+    }
   }
 }
