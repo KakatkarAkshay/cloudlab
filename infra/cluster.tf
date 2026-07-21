@@ -421,12 +421,10 @@ data "talos_machine_configuration" "control_plane" {
     yamlencode({
       apiVersion = "v1alpha1"
       kind       = "ExtensionServiceConfig"
-      name       = "tailscale"
+      name       = "netbird"
       environment = [
-        "TS_AUTHKEY=${tailscale_tailnet_key.node["control-plane"].key}",
-        "TS_HOSTNAME=Triton",
-        "TS_AUTH_ONCE=true",
-        "TS_ROUTES=${join(",", local.tailscale_advertised_routes)}",
+        "NB_SETUP_KEY=${netbird_setup_key.node["control-plane"].key}",
+        "NB_MANAGEMENT_URL=${var.netbird_management_url}",
       ]
     }),
   ]
@@ -466,12 +464,10 @@ data "talos_machine_configuration" "worker" {
     yamlencode({
       apiVersion = "v1alpha1"
       kind       = "ExtensionServiceConfig"
-      name       = "tailscale"
+      name       = "netbird"
       environment = [
-        "TS_AUTHKEY=${tailscale_tailnet_key.node["worker"].key}",
-        "TS_HOSTNAME=Scorpion",
-        "TS_AUTH_ONCE=true",
-        "TS_ROUTES=${join(",", local.tailscale_advertised_routes)}",
+        "NB_SETUP_KEY=${netbird_setup_key.node["worker"].key}",
+        "NB_MANAGEMENT_URL=${var.netbird_management_url}",
       ]
     }),
   ]

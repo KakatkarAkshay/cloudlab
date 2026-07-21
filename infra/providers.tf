@@ -18,6 +18,12 @@ provider "oci" {
   region       = var.oci_region
 }
 
+provider "netbird" {
+  token          = var.netbird_token
+  management_url = var.netbird_management_url
+}
+
+# Retained for one migration apply so Terraform can destroy the old resources.
 provider "tailscale" {
   oauth_client_id     = var.tailscale_oauth_client_id
   oauth_client_secret = var.tailscale_oauth_client_secret
