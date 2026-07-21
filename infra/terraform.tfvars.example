@@ -15,11 +15,6 @@ requestor_group_ocid = "ocid1.group.oc1..replace-me"
 netbird_token          = "replace-me"
 netbird_management_url = "https://api.netbird.io"
 
-# Required only for the first apply that destroys the previous Tailscale resources.
-tailscale_oauth_client_id     = "replace-me"
-tailscale_oauth_client_secret = "replace-me"
-tailscale_tailnet             = "replace-me"
-
 tenancy_1_object_storage_namespace = "replace-me"
 tenancy_2_object_storage_namespace = "replace-me"
 

@@ -21,9 +21,5 @@ terraform {
       source  = "netbirdio/netbird"
       version = "~> 0.0.9"
     }
-    tailscale = {
-      source  = "tailscale/tailscale"
-      version = "~> 0.29.2"
-    }
   }
 }

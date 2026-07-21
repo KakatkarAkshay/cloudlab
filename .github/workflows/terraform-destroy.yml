@@ -39,9 +39,6 @@ jobs:
       TF_VAR_requestor_group_ocid: ${{ secrets.OCI_REQUESTOR_GROUP_OCID }}
       TF_VAR_netbird_token: ${{ secrets.NETBIRD_TOKEN }}
       TF_VAR_netbird_management_url: ${{ vars.NETBIRD_MANAGEMENT_URL }}
-      TF_VAR_tailscale_oauth_client_id: ${{ vars.TAILSCALE_OAUTH_CLIENT_ID }}
-      TF_VAR_tailscale_oauth_client_secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
-      TF_VAR_tailscale_tailnet: ${{ vars.TAILSCALE_TAILNET }}
 
     steps:
       - uses: actions/checkout@v7
