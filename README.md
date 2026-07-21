@@ -17,6 +17,7 @@ Terraform configuration for a two-node Talos Kubernetes cluster spanning two OCI
 - A public dual-stack Network Load Balancer for Kubernetes `6443` and Talos `50000`
 - Daily incremental boot-volume backups retained for two days
 - Terraform-managed Flux bootstrap reconciling `clusters/cloudlab`
+- CA-signed kubelet serving certificates with automatic rotation and approval
 
 The Talos nodes have no public IPv4 addresses. Their globally routable IPv6 addresses cannot receive internet-initiated traffic because the node subnets prohibit internet ingress and their security lists only admit traffic from the two VCNs. The public Talos API endpoint requires mutual TLS.
 
@@ -96,6 +97,17 @@ NETBIRD_MANAGEMENT_URL
 ## GitOps
 
 Terraform bootstraps Flux into `clusters/cloudlab` using the Flux Terraform provider. The provider commits the controller and synchronization manifests to `main`, and Flux manages subsequent changes from Git.
+
+The repository is split into reconciliation and workload layers:
+
+```text
+clusters/cloudlab/           # Cluster entrypoints and generated Flux bootstrap
+infrastructure/controllers/  # Reusable platform components
+infrastructure/cloudlab/     # Platform components enabled for CloudLab
+apps/cloudlab/               # Applications enabled for CloudLab
+```
+
+The `apps` Flux Kustomization depends on `infrastructure`, so platform services become ready before applications are reconciled. Add reusable components under `infrastructure/controllers`, then include them from `infrastructure/cloudlab/kustomization.yaml`. Add application manifests or overlays under `apps/cloudlab`.
 
 ## Cluster Access
 
