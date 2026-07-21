@@ -21,10 +21,6 @@ terraform {
       source  = "fluxcd/flux"
       version = "~> 1.9"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 3.1"
-    }
     netbird = {
       source  = "netbirdio/netbird"
       version = "~> 0.0.9"
