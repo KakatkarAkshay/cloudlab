@@ -1,0 +1,14 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: github-actions-cache-server
+  namespace: flux-system
+spec:
+  interval: 24h
+  url: oci://ghcr.io/falcondev-oss/charts/github-actions-cache-server
+  ref:
+    tag: 1.1.2
+    digest: sha256:172ba0d435e54b826c7a9b40d32d65802f6f3f0003895c9efd0653fa9d14f786
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
