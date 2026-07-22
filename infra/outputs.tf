@@ -53,6 +53,11 @@ output "worker_ipv6" {
   value       = local.worker_ipv6
 }
 
+output "talos_schematic_id" {
+  description = "Image Factory schematic ID used by the cluster."
+  value       = talos_image_factory_schematic.cluster.id
+}
+
 output "talosconfig" {
   description = "Talos client configuration for cluster administration."
   value = yamlencode({

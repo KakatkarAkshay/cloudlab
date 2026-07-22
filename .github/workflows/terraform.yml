@@ -68,17 +68,6 @@ jobs:
             core.setSecret(jwt)
             core.exportVariable("INFISICAL_AUTH_JWT", jwt)
 
-      - name: Build Talos OCI image
-        run: |
-          TALOS_VERSION="$(jq -r '.version' talos-image.json)"
-          TALOS_SCHEMATIC_ID="$(jq -r '.schematic_id' talos-image.json)"
-          mkdir -p build
-          curl --fail --location --silent --show-error \
-            "https://factory.talos.dev/image/$TALOS_SCHEMATIC_ID/$TALOS_VERSION/oracle-arm64.qcow2" \
-            --output build/oracle-arm64.qcow2
-          cp image_metadata.json build/image_metadata.json
-          tar -C build -czf build/talos-oracle-arm64.oci oracle-arm64.qcow2 image_metadata.json
-
       - name: Check formatting
         run: terraform fmt -check -recursive
 
