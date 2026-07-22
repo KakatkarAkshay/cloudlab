@@ -82,16 +82,6 @@ jobs:
       - name: Validate
         run: terraform validate
 
-      - name: Recover worker state after interrupted apply
-        run: |
-          TRACKED_WORKER_ID="$(terraform state pull | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "worker") | .instances[0].attributes.id')"
-          if [[ "$TRACKED_WORKER_ID" == "ocid1.instance.oc1.ap-mumbai-1.anrg6ljr4ydp4qqczfmxijl2dywf5mhneyp6njgn67bv2pzuojp2eywfmg2a" ]]; then
-            terraform state rm oci_core_instance.worker
-            terraform import -input=false \
-              oci_core_instance.worker \
-              ocid1.instance.oc1.ap-mumbai-1.anrg6ljr4ydp4qqcmuketmutxmyaamgkzyshjjntufvwh3voxz6afxflkaaa
-          fi
-
       - name: Plan
         run: terraform plan -input=false -no-color -out=tfplan
 
