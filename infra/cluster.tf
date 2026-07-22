@@ -32,7 +32,7 @@ resource "oci_objectstorage_bucket" "talos_tenancy_1" {
   provider = oci.tenancy_1
 
   compartment_id = var.tenancy_1_compartment_ocid
-  namespace      = var.tenancy_1_object_storage_namespace
+  namespace      = data.oci_objectstorage_namespace.tenancy_1.namespace
   name           = "cloudlab-talos-images"
   access_type    = "NoPublicAccess"
 }
@@ -41,7 +41,7 @@ resource "oci_objectstorage_bucket" "talos_tenancy_2" {
   provider = oci.tenancy_2
 
   compartment_id = var.tenancy_2_compartment_ocid
-  namespace      = var.tenancy_2_object_storage_namespace
+  namespace      = data.oci_objectstorage_namespace.tenancy_2.namespace
   name           = "cloudlab-talos-images"
   access_type    = "NoPublicAccess"
 }
@@ -50,7 +50,7 @@ resource "oci_objectstorage_object" "talos_tenancy_1" {
   provider = oci.tenancy_1
 
   bucket    = oci_objectstorage_bucket.talos_tenancy_1.name
-  namespace = var.tenancy_1_object_storage_namespace
+  namespace = data.oci_objectstorage_namespace.tenancy_1.namespace
   object    = local.talos_image_object
   source    = "${path.module}/build/talos-oracle-arm64.oci"
 
@@ -64,7 +64,7 @@ resource "oci_objectstorage_object" "talos_tenancy_2" {
   provider = oci.tenancy_2
 
   bucket    = oci_objectstorage_bucket.talos_tenancy_2.name
-  namespace = var.tenancy_2_object_storage_namespace
+  namespace = data.oci_objectstorage_namespace.tenancy_2.namespace
   object    = local.talos_image_object
   source    = "${path.module}/build/talos-oracle-arm64.oci"
 
@@ -83,7 +83,7 @@ resource "oci_core_image" "talos_tenancy_1" {
 
   image_source_details {
     source_type              = "objectStorageTuple"
-    namespace_name           = var.tenancy_1_object_storage_namespace
+    namespace_name           = data.oci_objectstorage_namespace.tenancy_1.namespace
     bucket_name              = oci_objectstorage_bucket.talos_tenancy_1.name
     object_name              = oci_objectstorage_object.talos_tenancy_1.object
     operating_system         = "Talos"
@@ -104,7 +104,7 @@ resource "oci_core_image" "talos_tenancy_2" {
 
   image_source_details {
     source_type              = "objectStorageTuple"
-    namespace_name           = var.tenancy_2_object_storage_namespace
+    namespace_name           = data.oci_objectstorage_namespace.tenancy_2.namespace
     bucket_name              = oci_objectstorage_bucket.talos_tenancy_2.name
     object_name              = oci_objectstorage_object.talos_tenancy_2.object
     operating_system         = "Talos"

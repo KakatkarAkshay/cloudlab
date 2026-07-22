@@ -1,3 +1,26 @@
+data "oci_objectstorage_namespace" "tenancy_1" {
+  provider = oci.tenancy_1
+
+  compartment_id = var.tenancy_1_compartment_ocid
+}
+
+data "oci_objectstorage_namespace" "tenancy_2" {
+  provider = oci.tenancy_2
+
+  compartment_id = var.tenancy_2_compartment_ocid
+}
+
+data "oci_identity_groups" "requestor" {
+  provider = oci.tenancy_1
+
+  compartment_id = var.tenancy_1_ocid
+
+  filter {
+    name   = "name"
+    values = [var.requestor_group_name]
+  }
+}
+
 module "tenancy_1_vcn" {
   source = "./modules/vcn"
 
@@ -42,7 +65,7 @@ module "cross_tenancy_peering" {
   tenancy_2_subnet_cidr      = var.tenancy_2_subnet_cidr
 
   requestor_group_name = var.requestor_group_name
-  requestor_group_ocid = var.requestor_group_ocid
+  requestor_group_ocid = data.oci_identity_groups.requestor.groups[0].id
 
   providers = {
     oci.tenancy_1 = oci.tenancy_1

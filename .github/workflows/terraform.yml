@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('terraform-{0}', github.ref) || 'cloudlab-infrastructure' }}
@@ -40,10 +41,12 @@ jobs:
       TF_VAR_tenancy_2_user_ocid: ${{ secrets.TENANCY_2_USER_OCID }}
       TF_VAR_tenancy_2_compartment_ocid: ${{ secrets.TENANCY_2_COMPARTMENT_OCID }}
       TF_VAR_requestor_group_name: ${{ vars.OCI_REQUESTOR_GROUP_NAME }}
-      TF_VAR_requestor_group_ocid: ${{ secrets.OCI_REQUESTOR_GROUP_OCID }}
       TF_VAR_netbird_token: ${{ secrets.NETBIRD_TOKEN }}
       TF_VAR_netbird_management_url: ${{ vars.NETBIRD_MANAGEMENT_URL }}
-      TF_VAR_flux_git_ssh_private_key: ${{ secrets.FLUX_GIT_SSH_PRIVATE_KEY }}
+      TF_VAR_infisical_org_id: ${{ vars.INFISICAL_ORG_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      INFISICAL_MACHINE_IDENTITY_ID: ${{ vars.INFISICAL_MACHINE_IDENTITY_ID }}
+      GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v7
@@ -56,6 +59,14 @@ jobs:
         run: |
           install -m 600 /dev/null "$RUNNER_TEMP/oci_api_key.pem"
           printf '%s' "$TF_VAR_oci_private_key" > "$RUNNER_TEMP/oci_api_key.pem"
+
+      - name: Fetch OIDC token for Infisical
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const jwt = await core.getIDToken("cloudlab-terraform")
+            core.setSecret(jwt)
+            core.exportVariable("INFISICAL_AUTH_JWT", jwt)
 
       - name: Build Talos OCI image
         run: |

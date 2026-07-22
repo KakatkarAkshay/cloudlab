@@ -50,11 +50,6 @@ variable "requestor_group_name" {
   type        = string
 }
 
-variable "requestor_group_ocid" {
-  description = "OCID of the same tenancy 1 IAM group, used by the tenancy 2 admission policy."
-  type        = string
-}
-
 variable "netbird_token" {
   description = "Personal access token used to manage the NetBird account."
   type        = string
@@ -68,23 +63,15 @@ variable "netbird_management_url" {
   default     = "https://api.netbird.io"
 }
 
-variable "flux_git_ssh_private_key" {
-  description = "OpenSSH private key used by Flux to read the CloudLab Git repository."
+variable "infisical_org_id" {
+  description = "Infisical organization ID that owns the CloudLab project."
   type        = string
-  sensitive   = true
-  ephemeral   = true
 }
 
-variable "tenancy_1_object_storage_namespace" {
-  description = "Object Storage namespace for tenancy 1."
+variable "cloudflare_zone" {
+  description = "Cloudflare DNS zone served by the cluster."
   type        = string
-  default     = "bms1yohq0tse"
-}
-
-variable "tenancy_2_object_storage_namespace" {
-  description = "Object Storage namespace for tenancy 2."
-  type        = string
-  default     = "bmj3ksc63hbp"
+  default     = "kakatkarakshay.dev"
 }
 
 variable "cluster_name" {
