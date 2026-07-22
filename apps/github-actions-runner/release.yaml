@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: abyssal-labs-runner
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: abyssal-labs-runner
+  targetNamespace: arc-runners
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    githubConfigUrl: https://github.com/abyssal-labs
+    githubConfigSecret: github-actions-runner
+    runnerScaleSetName: abyssal-labs-runner
+    controllerServiceAccount:
+      name: actions-runner-controller-gha-rs-controller
+      namespace: arc-system
+    scaleSetLabels:
+      - self-hosted
+    containerMode:
+      type: dind
+    template:
+      spec:
+        containers:
+          - name: runner
+            image: ghcr.io/falcondev-oss/actions-runner:latest
+            command:
+              - /home/runner/run.sh
+            env:
+              - name: CUSTOM_ACTIONS_RESULTS_URL
+                value: http://github-actions-cache-server.github-actions-cache:3000/
