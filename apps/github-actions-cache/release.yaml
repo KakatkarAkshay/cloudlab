@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: ghcr.io/falcondev-oss/github-actions-cache-server
-      tag: 9.6.2
+      tag: 9.6.2@sha256:a473eded701722b816fd17899570f3055a4393a181507021961e61cf4e739a60
     replicaCount: 1
     config:
       storage:
