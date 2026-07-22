@@ -32,7 +32,7 @@ spec:
       spec:
         containers:
           - name: runner
-            image: ghcr.io/falcondev-oss/actions-runner:latest
+            image: ghcr.io/falcondev-oss/actions-runner:latest@sha256:396bad82ba63cbf574293dccc3f936aae60ef55450721d58a11978abaebb7a89
             command:
               - /home/runner/run.sh
             env:
