@@ -1,5 +1,6 @@
 locals {
   talos_image        = jsondecode(file("${path.module}/talos-image.json"))
+  cluster_versions   = jsondecode(file("${path.module}/../cluster-versions.json"))
   talos_image_object = "talos-${local.talos_image.version}-${local.talos_image.schematic_id}-oracle-arm64.oci"
   control_plane_ip   = cidrhost(var.tenancy_1_subnet_cidr, 10)
   worker_ip          = cidrhost(var.tenancy_2_subnet_cidr, 10)
@@ -381,11 +382,12 @@ resource "talos_machine_secrets" "cluster" {
 }
 
 data "talos_machine_configuration" "control_plane" {
-  cluster_name     = var.cluster_name
-  machine_type     = "controlplane"
-  cluster_endpoint = "https://${local.cluster_api_ip}:6443"
-  machine_secrets  = talos_machine_secrets.cluster.machine_secrets
-  talos_version    = local.talos_image.version
+  cluster_name       = var.cluster_name
+  machine_type       = "controlplane"
+  cluster_endpoint   = "https://${local.cluster_api_ip}:6443"
+  machine_secrets    = talos_machine_secrets.cluster.machine_secrets
+  talos_version      = local.talos_image.version
+  kubernetes_version = local.cluster_versions.kubernetes
 
   config_patches = [
     yamlencode({
@@ -434,11 +436,12 @@ data "talos_machine_configuration" "control_plane" {
 }
 
 data "talos_machine_configuration" "worker" {
-  cluster_name     = var.cluster_name
-  machine_type     = "worker"
-  cluster_endpoint = "https://${local.cluster_api_ip}:6443"
-  machine_secrets  = talos_machine_secrets.cluster.machine_secrets
-  talos_version    = local.talos_image.version
+  cluster_name       = var.cluster_name
+  machine_type       = "worker"
+  cluster_endpoint   = "https://${local.cluster_api_ip}:6443"
+  machine_secrets    = talos_machine_secrets.cluster.machine_secrets
+  talos_version      = local.talos_image.version
+  kubernetes_version = local.cluster_versions.kubernetes
 
   config_patches = [
     yamlencode({
