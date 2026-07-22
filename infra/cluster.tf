@@ -750,6 +750,13 @@ resource "talos_machine_bootstrap" "cluster" {
   timeouts = {
     create = "15m"
   }
+
+  lifecycle {
+    replace_triggered_by = [
+      oci_core_image.talos_tenancy_1,
+      oci_core_image.talos_tenancy_2,
+    ]
+  }
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
