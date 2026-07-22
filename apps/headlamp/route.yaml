@@ -1,23 +1,26 @@
-apiVersion: gateway.networking.k8s.io/v1beta1
-kind: ReferenceGrant
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
 metadata:
-  name: oauth2-proxy-headlamp
+  name: oauth2-forward-auth
   namespace: headlamp
 spec:
-  from:
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
-      namespace: oauth2-proxy
-  to:
-    - group: ""
-      kind: Service
-      name: headlamp
+  forwardAuth:
+    address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local/
+    trustForwardHeader: true
+    maxResponseBodySize: 1048576
+    authResponseHeaders:
+      - Authorization
+      - X-Auth-Request-Access-Token
+      - X-Auth-Request-Email
+      - X-Auth-Request-Groups
+      - X-Auth-Request-Preferred-Username
+      - X-Auth-Request-User
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: headlamp
-  namespace: oauth2-proxy
+  namespace: headlamp
 spec:
   parentRefs:
     - name: traefik-gateway
@@ -33,5 +36,4 @@ spec:
             name: oauth2-forward-auth
       backendRefs:
         - name: headlamp
-          namespace: headlamp
           port: 80
