@@ -1,0 +1,85 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: codex-lb
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: codex-lb
+  targetNamespace: codex-lb
+  chartRef:
+    kind: OCIRepository
+    name: codex-lb
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    global:
+      imagePullSecrets:
+        - ghcr
+    image:
+      registry: ghcr.io
+      repository: abyssal-labs/codex-lb
+      tag: latest@sha256:47326445d0324fb5a9a7e8ebbb15ecc16ae5d25295e74a019780de4b5b25c760
+      pullPolicy: IfNotPresent
+    replicaCount: 2
+    serviceAccount:
+      create: false
+      name: codex-lb
+    auth:
+      existingSecret: codex-lb
+      secretKeys:
+        databaseUrl: uri
+        encryptionKey: encryption-key
+    postgresql:
+      enabled: false
+    externalDatabase:
+      existingSecret: codex-lb-database
+    extraEnv:
+      - name: CODEX_LB_DASHBOARD_AUTH_MODE
+        value: trusted_header
+      - name: CODEX_LB_DASHBOARD_AUTH_PROXY_HEADER
+        value: X-Auth-Request-Email
+      - name: CODEX_LB_FIREWALL_TRUST_PROXY_HEADERS
+        value: "true"
+      - name: CODEX_LB_FIREWALL_TRUSTED_PROXY_CIDRS
+        value: 10.244.0.0/16,fd00:10:244::/56
+    ingress:
+      enabled: false
+    gatewayApi:
+      enabled: true
+      parentRefs:
+        - name: traefik-gateway
+          namespace: traefik
+      hostnames:
+        - codex.kakatkarakshay.dev
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /v1
+            - path:
+                type: PathPrefix
+                value: /backend-api/codex
+            - path:
+                type: PathPrefix
+                value: /backend-api/transcribe
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          filters:
+            - type: ExtensionRef
+              extensionRef:
+                group: traefik.io
+                kind: Middleware
+                name: oauth2-forward-auth
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
