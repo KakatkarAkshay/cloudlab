@@ -7,15 +7,11 @@ spec:
     infisical:
       hostAPI: https://eu.infisical.com
       auth:
-        universalAuthCredentials:
-          clientId:
-            name: infisical-universal-auth
+        kubernetesAuthCredentials:
+          identityId:
+            name: infisical-kubernetes-auth
             namespace: external-secrets
-            key: clientId
-          clientSecret:
-            name: infisical-universal-auth
-            namespace: external-secrets
-            key: clientSecret
+            key: identityId
       secretsScope:
         projectSlug: cloudlab
         environmentSlug: prod

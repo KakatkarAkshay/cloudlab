@@ -8,4 +8,5 @@ resources:
   - ../controllers/traefik
   - ../controllers/cloudflare
   - ../controllers/oauth2-proxy
+  - infisical-kubernetes-auth.yaml
   - infisical-store.yaml
