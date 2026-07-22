@@ -1,0 +1,52 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: external-dns
+  targetNamespace: cloudflare
+  dependsOn:
+    - name: traefik
+  chart:
+    spec:
+      chart: external-dns
+      version: 1.21.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    provider:
+      name: cloudflare
+    env:
+      - name: CF_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: cloudflare-credentials
+            key: api-token
+    sources:
+      - ingress
+      - gateway-httproute
+      - traefik-proxy
+    domainFilters:
+      - kakatkarakshay.dev
+    policy: sync
+    registry: txt
+    txtOwnerId: cloudlab
+    extraArgs:
+      - --zone-id-filter=2d354db476e1178a0ec11d9293fbdc5d
+      - --cloudflare-proxied
+      - --cloudflare-dns-records-per-page=5000
+      - --cloudflare-record-comment=Managed by external-dns
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
