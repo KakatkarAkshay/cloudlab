@@ -5,6 +5,7 @@ resources:
   - ../controllers/cert-manager
   - ../controllers/cloudnative-pg
   - ../controllers/metrics-server
+  - ../controllers/reloader
   - ../controllers/traefik
   - ../controllers/cloudflare
   - ../controllers/oauth2-proxy
