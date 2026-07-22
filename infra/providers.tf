@@ -36,7 +36,20 @@ provider "flux" {
     branch = "main"
     ssh = {
       username    = "git"
-      private_key = var.flux_git_ssh_private_key
+      private_key = tls_private_key.flux_git.private_key_openssh
     }
   }
+}
+
+# Reads CLOUDFLARE_API_TOKEN from the environment.
+provider "cloudflare" {}
+
+# Reads Infisical machine identity authentication from the environment.
+provider "infisical" {
+  host = var.infisical_host
+}
+
+# Reads GITHUB_TOKEN from the environment.
+provider "github" {
+  owner = var.github_owner
 }

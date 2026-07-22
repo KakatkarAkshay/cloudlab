@@ -10,13 +10,16 @@ tenancy_2_user_ocid        = "ocid1.user.oc1..replace-me"
 tenancy_2_compartment_ocid = "ocid1.compartment.oc1..replace-me"
 
 requestor_group_name = "Administrators"
-requestor_group_ocid = "ocid1.group.oc1..replace-me"
 
 netbird_token          = "replace-me"
 netbird_management_url = "https://api.netbird.io"
 
-tenancy_1_object_storage_namespace = "replace-me"
-tenancy_2_object_storage_namespace = "replace-me"
+infisical_org_id = "replace-me"
+infisical_host   = "https://eu.infisical.com"
+cloudflare_zone            = "kakatkarakshay.dev"
+postgres_backup_aws_region = "eu-central-2"
+github_owner      = "KakatkarAkshay"
+github_repository = "cloudlab"
 
 tenancy_1_vcn_cidr    = "10.0.0.0/16"
 tenancy_1_subnet_cidr = "10.0.0.0/24"

@@ -50,11 +50,6 @@ variable "requestor_group_name" {
   type        = string
 }
 
-variable "requestor_group_ocid" {
-  description = "OCID of the same tenancy 1 IAM group, used by the tenancy 2 admission policy."
-  type        = string
-}
-
 variable "netbird_token" {
   description = "Personal access token used to manage the NetBird account."
   type        = string
@@ -68,23 +63,35 @@ variable "netbird_management_url" {
   default     = "https://api.netbird.io"
 }
 
-variable "flux_git_ssh_private_key" {
-  description = "OpenSSH private key used by Flux to read the CloudLab Git repository."
+variable "infisical_org_id" {
+  description = "Infisical organization ID that owns the CloudLab project."
   type        = string
-  sensitive   = true
-  ephemeral   = true
 }
 
-variable "tenancy_1_object_storage_namespace" {
-  description = "Object Storage namespace for tenancy 1."
+variable "infisical_host" {
+  description = "Base URL of the Infisical instance."
   type        = string
-  default     = "bms1yohq0tse"
+  default     = "https://app.infisical.com"
 }
 
-variable "tenancy_2_object_storage_namespace" {
-  description = "Object Storage namespace for tenancy 2."
+variable "cloudflare_zone" {
+  description = "Cloudflare DNS zone served by the cluster."
   type        = string
-  default     = "bmj3ksc63hbp"
+}
+
+variable "postgres_backup_aws_region" {
+  description = "AWS-compatible region used for PostgreSQL backups."
+  type        = string
+}
+
+variable "github_owner" {
+  description = "GitHub account that owns the CloudLab repository."
+  type        = string
+}
+
+variable "github_repository" {
+  description = "Name of the CloudLab GitHub repository."
+  type        = string
 }
 
 variable "cluster_name" {

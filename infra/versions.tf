@@ -25,5 +25,25 @@ terraform {
       source  = "netbirdio/netbird"
       version = "~> 0.0.9"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.22"
+    }
+    infisical = {
+      source  = "infisical/infisical"
+      version = "~> 0.19"
+    }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.13"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.3"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.9"
+    }
   }
 }
