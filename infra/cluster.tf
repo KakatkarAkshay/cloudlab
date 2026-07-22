@@ -221,6 +221,26 @@ resource "oci_core_compute_image_capability_schema" "talos_tenancy_2" {
   schema_data                                         = local.talos_image_capabilities
 }
 
+resource "oci_core_shape_management" "talos_tenancy_1" {
+  provider = oci.tenancy_1
+
+  compartment_id = var.tenancy_1_compartment_ocid
+  image_id       = oci_core_image.talos_tenancy_1.id
+  shape_name     = "VM.Standard.A1.Flex"
+
+  depends_on = [oci_core_compute_image_capability_schema.talos_tenancy_1]
+}
+
+resource "oci_core_shape_management" "talos_tenancy_2" {
+  provider = oci.tenancy_2
+
+  compartment_id = var.tenancy_2_compartment_ocid
+  image_id       = oci_core_image.talos_tenancy_2.id
+  shape_name     = "VM.Standard.A1.Flex"
+
+  depends_on = [oci_core_compute_image_capability_schema.talos_tenancy_2]
+}
+
 resource "oci_core_security_list" "nlb" {
   provider = oci.tenancy_1
 
@@ -612,7 +632,7 @@ data "talos_machine_configuration" "worker" {
 resource "oci_core_instance" "control_plane" {
   provider = oci.tenancy_1
 
-  depends_on = [oci_core_compute_image_capability_schema.talos_tenancy_1]
+  depends_on = [oci_core_shape_management.talos_tenancy_1]
 
   availability_domain = data.oci_identity_availability_domains.tenancy_1.availability_domains[0].name
   compartment_id      = var.tenancy_1_compartment_ocid
@@ -665,7 +685,7 @@ resource "oci_core_instance" "control_plane" {
 resource "oci_core_instance" "worker" {
   provider = oci.tenancy_2
 
-  depends_on = [oci_core_compute_image_capability_schema.talos_tenancy_2]
+  depends_on = [oci_core_shape_management.talos_tenancy_2]
 
   availability_domain = data.oci_identity_availability_domains.tenancy_2.availability_domains[0].name
   compartment_id      = var.tenancy_2_compartment_ocid
