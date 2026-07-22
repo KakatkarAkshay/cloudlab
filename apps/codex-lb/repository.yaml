@@ -1,0 +1,15 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: codex-lb
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: oci://ghcr.io/abyssal-labs/charts/codex-lb
+  secretRef:
+    name: ghcr
+  ref:
+    tag: latest
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
