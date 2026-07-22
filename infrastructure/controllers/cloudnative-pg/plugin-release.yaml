@@ -1,0 +1,32 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plugin-barman-cloud
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: cloudnative-pg
+    - name: cert-manager
+  interval: 30m
+  releaseName: plugin-barman-cloud
+  targetNamespace: cnpg-system
+  chart:
+    spec:
+      chart: plugin-barman-cloud
+      version: 0.7.0
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: cloudnative-pg
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
