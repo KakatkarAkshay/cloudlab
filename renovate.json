@@ -1,6 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":maintainLockFilesWeekly"],
+  "extends": [
+    "config:recommended",
+    ":maintainLockFilesWeekly",
+    "helpers:pinGitHubActionDigests"
+  ],
   "automerge": true,
   "hostRules": [
     {
@@ -11,50 +15,72 @@
     }
   ],
   "flux": {
-    "managerFilePatterns": ["/(?:clusters|apps|infrastructure)/.+\\.ya?ml$/"]
+    "managerFilePatterns": [
+      "clusters/**/*.yaml",
+      "clusters/**/*.yml",
+      "apps/**/*.yaml",
+      "apps/**/*.yml",
+      "infrastructure/**/*.yaml",
+      "infrastructure/**/*.yml"
+    ]
   },
   "kubernetes": {
-    "managerFilePatterns": ["/(?:clusters|apps|infrastructure)/.+\\.ya?ml$/"]
+    "managerFilePatterns": [
+      "clusters/**/*.yaml",
+      "clusters/**/*.yml",
+      "apps/**/*.yaml",
+      "apps/**/*.yml",
+      "infrastructure/**/*.yaml",
+      "infrastructure/**/*.yml"
+    ]
   },
   "packageRules": [
     {
-      "matchManagers": ["kubernetes"],
+      "matchManagers": ["flux"],
       "matchFileNames": ["**/gotk-components.yaml"],
       "enabled": false
     },
     {
       "matchDatasources": ["docker"],
       "pinDigests": true
+    },
+    {
+      "matchManagers": ["kubernetes"],
+      "matchFileNames": ["**/gotk-components.yaml"],
+      "matchUpdateTypes": ["major", "minor", "patch", "rollback"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["flux"],
+      "matchDatasources": ["git-refs"],
+      "matchFileNames": [
+        "clusters/cloudlab/gateway-api.yaml",
+        "infrastructure/controllers/local-path-provisioner/repository.yaml"
+      ],
+      "enabled": false
     }
   ],
   "customManagers": [
     {
-      "customType": "regex",
-      "managerFilePatterns": ["/^cluster-versions\\.json$/"],
-      "matchStrings": [
-        "\"talos\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
+      "customType": "jsonata",
+      "fileFormat": "yaml",
+      "managerFilePatterns": [
+        "clusters/cloudlab/gateway-api.yaml",
+        "infrastructure/controllers/local-path-provisioner/repository.yaml"
       ],
-      "depNameTemplate": "siderolabs/talos",
+      "matchStrings": [
+        "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
+      ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
     },
     {
-      "customType": "regex",
-      "managerFilePatterns": ["/^cluster-versions\\.json$/"],
+      "customType": "jsonata",
+      "fileFormat": "json",
+      "managerFilePatterns": ["cluster-versions.json"],
       "matchStrings": [
-        "\"kubernetes\"\\s*:\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\""
+        "[{'depName': 'siderolabs/talos', 'currentValue': talos}, {'depName': 'kubernetes/kubernetes', 'currentValue': kubernetes}]"
       ],
-      "depNameTemplate": "kubernetes/kubernetes",
-      "datasourceTemplate": "github-releases",
-      "versioningTemplate": "semver"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
-      "matchStrings": [
-        "terraform_version:\\s*[\"']?(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)"
-      ],
-      "depNameTemplate": "hashicorp/terraform",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
     }

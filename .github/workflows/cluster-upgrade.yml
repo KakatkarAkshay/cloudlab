@@ -31,7 +31,7 @@ jobs:
       TF_VAR_tenancy_1_user_ocid: ${{ secrets.TENANCY_1_USER_OCID }}
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Read target versions
         id: versions
@@ -41,9 +41,7 @@ jobs:
           echo "talos=$TALOS_VERSION" >> "$GITHUB_OUTPUT"
           echo "kubernetes=$KUBERNETES_VERSION" >> "$GITHUB_OUTPUT"
 
-      - uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_version: "1.15.8"
+      - uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
 
       - name: Configure OCI API key
         run: |

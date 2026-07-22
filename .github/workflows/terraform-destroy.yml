@@ -50,11 +50,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_version: "1.15.8"
+      - uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
 
       - name: Configure OCI API key
         run: |
@@ -62,7 +60,7 @@ jobs:
           printf '%s' "$TF_VAR_oci_private_key" > "$RUNNER_TEMP/oci_api_key.pem"
 
       - name: Fetch OIDC token for Infisical
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const jwt = await core.getIDToken("cloudlab-terraform")

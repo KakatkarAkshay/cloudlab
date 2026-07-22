@@ -24,7 +24,7 @@ spec:
       registry: ghcr.io
       repository: abyssal-labs/codex-lb
       tag: latest
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     replicaCount: 2
     serviceAccount:
       create: false
