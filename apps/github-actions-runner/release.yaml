@@ -25,6 +25,7 @@ spec:
       namespace: arc-system
     scaleSetLabels:
       - self-hosted
+      - dependabot
     containerMode:
       type: dind
     template:
