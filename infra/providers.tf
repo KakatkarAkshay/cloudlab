@@ -32,7 +32,7 @@ provider "flux" {
   }
 
   git = {
-    url    = "ssh://git@github.com/abyssal-labs/cloudlab.git"
+    url    = "ssh://git@github.com/${var.github_owner}/${var.github_repository}.git"
     branch = "main"
     ssh = {
       username    = "git"
