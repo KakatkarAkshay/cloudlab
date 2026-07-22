@@ -119,6 +119,7 @@ resource "oci_objectstorage_object" "talos_tenancy_1" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [source]
   }
 }
 
@@ -134,6 +135,7 @@ resource "oci_objectstorage_object" "talos_tenancy_2" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [source]
   }
 }
 
