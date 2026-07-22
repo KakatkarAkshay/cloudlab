@@ -22,6 +22,7 @@ spec:
     remediation:
       retries: 3
   values:
+    workerThreads: 1
     storageClass:
       create: true
       defaultClass: true
@@ -32,6 +33,9 @@ spec:
       - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
         paths:
           - /var/mnt/local-path-provisioner
+    configmap:
+      helperPod:
+        namespaceOverride: local-path-storage
     resources:
       requests:
         cpu: 10m
