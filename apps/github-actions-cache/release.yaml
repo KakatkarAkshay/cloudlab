@@ -1,0 +1,51 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: github-actions-cache-server
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: github-actions-cache-server
+  targetNamespace: github-actions-cache
+  chartRef:
+    kind: OCIRepository
+    name: github-actions-cache-server
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/falcondev-oss/github-actions-cache-server
+      tag: 9.6.2@sha256:a473eded701722b816fd17899570f3055a4393a181507021961e61cf4e739a60
+    replicaCount: 1
+    config:
+      storage:
+        driver: filesystem
+        filesystem:
+          path: /data/cache
+      db:
+        driver: postgres
+    persistentVolumeClaim:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+      storage: 20Gi
+      storageClassName: local-path
+    service:
+      type: ClusterIP
+      port: 3000
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    extraEnv:
+      - name: DB_POSTGRES_URL
+        valueFrom:
+          secretKeyRef:
+            name: github-actions-cache-postgresql-app
+            key: uri
