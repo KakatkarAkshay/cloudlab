@@ -6,6 +6,7 @@ metadata:
 spec:
   dependsOn:
     - name: kubelet-serving-cert-approver
+    - name: gateway-api
   interval: 10m
   retryInterval: 1m
   path: ./infrastructure/cloudlab
