@@ -15,6 +15,7 @@ netbird_token          = "replace-me"
 netbird_management_url = "https://api.netbird.io"
 
 infisical_org_id = "replace-me"
+infisical_auth_method = "universal"
 cloudflare_zone  = "kakatkarakshay.dev"
 
 tenancy_1_vcn_cidr    = "10.0.0.0/16"

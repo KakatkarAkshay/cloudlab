@@ -68,6 +68,17 @@ variable "infisical_org_id" {
   type        = string
 }
 
+variable "infisical_auth_method" {
+  description = "Infisical machine identity authentication method. CI uses OIDC; local runs may use Universal Auth."
+  type        = string
+  default     = "oidc"
+
+  validation {
+    condition     = contains(["oidc", "universal"], var.infisical_auth_method)
+    error_message = "infisical_auth_method must be either oidc or universal."
+  }
+}
+
 variable "cloudflare_zone" {
   description = "Cloudflare DNS zone served by the cluster."
   type        = string
