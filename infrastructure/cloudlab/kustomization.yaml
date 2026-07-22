@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../controllers/local-path-provisioner
   - ../controllers/cert-manager
+  - ../controllers/external-secrets
   - ../controllers/cloudnative-pg
   - ../controllers/metrics-server
   - ../controllers/traefik
