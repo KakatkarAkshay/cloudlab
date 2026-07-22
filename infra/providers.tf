@@ -44,9 +44,13 @@ provider "flux" {
 # Reads CLOUDFLARE_API_TOKEN from the environment.
 provider "cloudflare" {}
 
-# Reads Infisical machine identity authentication from the environment.
+# Uses OIDC in CI and Universal Auth for local administration.
 provider "infisical" {
   host = var.infisical_host
+  auth = {
+    oidc      = var.infisical_auth_method == "oidc" ? {} : null
+    universal = var.infisical_auth_method == "universal" ? {} : null
+  }
 }
 
 # Reads GITHUB_TOKEN from the environment.
