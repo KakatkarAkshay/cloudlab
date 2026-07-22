@@ -46,7 +46,7 @@ spec:
       - name: CODEX_LB_FIREWALL_TRUST_PROXY_HEADERS
         value: "true"
       - name: CODEX_LB_FIREWALL_TRUSTED_PROXY_CIDRS
-        value: 10.244.0.0/24,10.244.1.0/24,fd00:10:244::/64,fd00:10:244:1::/64
+        value: 10.244.0.0/16,fd00:10:244::/56
     ingress:
       enabled: false
     gatewayApi:
