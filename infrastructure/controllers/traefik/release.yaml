@@ -1,0 +1,130 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: traefik
+  targetNamespace: traefik
+  chart:
+    spec:
+      chart: traefik
+      version: 41.0.2
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    deployment:
+      replicas: 2
+    ingressClass:
+      enabled: true
+      isDefaultClass: true
+    providers:
+      kubernetesCRD:
+        enabled: true
+      kubernetesIngress:
+        enabled: true
+        publishedService:
+          enabled: false
+        ingressEndpoint:
+          hostname: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
+      kubernetesGateway:
+        enabled: true
+        statusAddress:
+          hostname: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
+          service:
+            enabled: false
+    gateway:
+      enabled: true
+      listeners:
+        web:
+          port: 8000
+          protocol: HTTP
+          namespacePolicy:
+            from: All
+    gatewayClass:
+      enabled: true
+    ingressRoute:
+      dashboard:
+        enabled: false
+    service:
+      spec:
+        type: ClusterIP
+    ports:
+      web:
+        forwardedHeaders:
+          trustedIPs:
+            - 10.244.0.0/16
+            - fd00:10:244::/56
+      websecure:
+        expose:
+          default: false
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 25%
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+    extraObjects:
+      - apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        metadata:
+          name: oauth2-forward-auth
+          namespace: oauth2-proxy
+        spec:
+          forwardAuth:
+            address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local/
+            trustForwardHeader: true
+            maxResponseBodySize: 1048576
+            authResponseHeaders:
+              - Authorization
+              - X-Auth-Request-Access-Token
+              - X-Auth-Request-Email
+              - X-Auth-Request-Groups
+              - X-Auth-Request-Preferred-Username
+              - X-Auth-Request-User
+      - apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        metadata:
+          name: dashboard-redirect
+          namespace: oauth2-proxy
+        spec:
+          redirectRegex:
+            regex: ^https?://traefik\.kakatkarakshay\.dev/?$
+            replacement: https://traefik.kakatkarakshay.dev/dashboard/
+            permanent: true
+      - apiVersion: traefik.io/v1alpha1
+        kind: IngressRoute
+        metadata:
+          name: traefik-dashboard
+          namespace: oauth2-proxy
+          annotations:
+            external-dns.alpha.kubernetes.io/target: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
+        spec:
+          entryPoints:
+            - web
+          routes:
+            - kind: Rule
+              match: Host(`traefik.kakatkarakshay.dev`) && Path(`/`)
+              middlewares:
+                - name: dashboard-redirect
+              services:
+                - kind: TraefikService
+                  name: api@internal
+            - kind: Rule
+              match: Host(`traefik.kakatkarakshay.dev`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+              middlewares:
+                - name: oauth2-forward-auth
+              services:
+                - kind: TraefikService
+                  name: api@internal
