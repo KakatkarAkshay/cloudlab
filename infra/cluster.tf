@@ -432,6 +432,12 @@ data "talos_machine_configuration" "control_plane" {
         "NB_MANAGEMENT_URL=${var.netbird_management_url}",
       ]
     }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "UserVolumeConfig"
+      name       = "local-path-provisioner"
+      volumeType = "directory"
+    }),
   ]
 }
 
@@ -478,6 +484,12 @@ data "talos_machine_configuration" "worker" {
         "NB_SETUP_KEY=${netbird_setup_key.node["worker"].key}",
         "NB_MANAGEMENT_URL=${var.netbird_management_url}",
       ]
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "UserVolumeConfig"
+      name       = "local-path-provisioner"
+      volumeType = "directory"
     }),
   ]
 }
