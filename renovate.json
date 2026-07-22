@@ -2,6 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", ":maintainLockFilesWeekly"],
   "automerge": true,
+  "hostRules": [
+    {
+      "hostType": "docker",
+      "matchHost": "ghcr.io",
+      "username": "x-access-token",
+      "password": "{{ secrets.GHCR_READ_PAT }}"
+    }
+  ],
   "flux": {
     "managerFilePatterns": ["/(?:clusters|apps|infrastructure)/.+\\.ya?ml$/"]
   },
@@ -13,6 +21,10 @@
       "matchManagers": ["kubernetes"],
       "matchFileNames": ["**/gotk-components.yaml"],
       "enabled": false
+    },
+    {
+      "matchDatasources": ["docker"],
+      "pinDigests": true
     }
   ],
   "customManagers": [
