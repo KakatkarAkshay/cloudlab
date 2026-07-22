@@ -36,19 +36,13 @@
   },
   "packageRules": [
     {
-      "matchManagers": ["flux"],
+      "matchManagers": ["kubernetes"],
       "matchFileNames": ["**/gotk-components.yaml"],
       "enabled": false
     },
     {
       "matchDatasources": ["docker"],
       "pinDigests": true
-    },
-    {
-      "matchManagers": ["kubernetes"],
-      "matchFileNames": ["**/gotk-components.yaml"],
-      "matchUpdateTypes": ["major", "minor", "patch", "rollback"],
-      "enabled": false
     },
     {
       "matchManagers": ["flux"],
