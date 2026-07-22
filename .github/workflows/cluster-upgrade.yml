@@ -98,11 +98,12 @@ jobs:
           KUBECONFIG: ${{ runner.temp }}/kubeconfig
           TARGET_TALOS: ${{ steps.versions.outputs.talos }}
           TARGET_KUBERNETES: ${{ steps.versions.outputs.kubernetes }}
-          SCHEMATIC_ID: 4a0d65c669d46663f377e7161e50cfd570c401f26fd9e7bda34a0216b6f1922b
           CONTROL_PLANE: 10.0.0.10
           WORKER: 10.1.0.10
         run: |
           set -euo pipefail
+
+          SCHEMATIC_ID="$(terraform -chdir=infra output -raw talos_schematic_id)"
 
           current_talos_version() {
             local output version

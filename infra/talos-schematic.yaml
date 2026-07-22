@@ -1,4 +1,5 @@
 customization:
   systemExtensions:
     officialExtensions:
+      - siderolabs/binfmt-misc
       - siderolabs/netbird
