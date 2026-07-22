@@ -4,5 +4,6 @@ resources:
   - flux-system
   - kubelet-serving-cert-approver.yaml
   - gateway-api.yaml
+  - external-secrets.yaml
   - infrastructure.yaml
   - apps.yaml
