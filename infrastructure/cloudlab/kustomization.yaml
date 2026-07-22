@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
   - ../controllers/local-path-provisioner
   - ../controllers/cert-manager
-  - ../controllers/external-secrets
   - ../controllers/cloudnative-pg
   - ../controllers/metrics-server
   - ../controllers/traefik
   - ../controllers/cloudflare
   - ../controllers/oauth2-proxy
+  - infisical-store.yaml
