@@ -1,0 +1,31 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: metrics-server
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: metrics-server
+  targetNamespace: kube-system
+  chart:
+    spec:
+      chart: metrics-server
+      version: 3.13.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: metrics-server
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: registry.k8s.io/metrics-server/metrics-server
+      tag: v0.9.0@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
