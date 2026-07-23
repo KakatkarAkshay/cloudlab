@@ -6,6 +6,7 @@ resources:
   - ../controllers/cert-manager
   - ../controllers/cloudnative-pg
   - ../controllers/metrics-server
+  - ../controllers/oci-cloud-controller-manager
   - ../controllers/reloader
   - ../controllers/traefik
   - ../controllers/cloudflare

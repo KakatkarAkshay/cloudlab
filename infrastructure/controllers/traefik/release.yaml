@@ -7,6 +7,10 @@ spec:
   interval: 30m
   releaseName: traefik
   targetNamespace: traefik
+  valuesFrom:
+    - kind: Secret
+      name: traefik-oci-placement
+      valuesKey: values.yaml
   chart:
     spec:
       chart: traefik
@@ -57,17 +61,40 @@ spec:
       dashboard:
         enabled: false
     service:
+      nameOverride: traefik-triton
+      annotations:
+        oci.oraclecloud.com/load-balancer-type: nlb
       spec:
-        type: ClusterIP
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        ipFamilyPolicy: RequireDualStack
+        ipFamilies:
+          - IPv4
+          - IPv6
+      additionalServices:
+        scorpion:
+          annotations:
+            oci.oraclecloud.com/load-balancer-type: nlb
+          spec:
+            type: LoadBalancer
+            externalTrafficPolicy: Cluster
+            ipFamilyPolicy: RequireDualStack
+            ipFamilies:
+              - IPv4
+              - IPv6
     ports:
       web:
+        expose:
+          default: true
+          scorpion: true
         forwardedHeaders:
           trustedIPs:
             - 10.244.0.0/16
             - fd00:10:244::/56
       websecure:
         expose:
-          default: false
+          default: true
+          scorpion: true
     podDisruptionBudget:
       enabled: true
       maxUnavailable: 25%
