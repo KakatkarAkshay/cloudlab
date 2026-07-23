@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   destroy:
+    name: Destroy Infrastructure
     if: inputs.confirmation == 'destroy cloudlab'
     runs-on: ubuntu-latest
     defaults:

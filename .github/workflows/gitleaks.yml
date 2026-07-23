@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   gitleaks:
+    name: gitleaks
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
