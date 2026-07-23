@@ -35,6 +35,8 @@ spec:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule
+        matchLabelKeys:
+          - pod-template-hash
         labelSelector:
           matchLabels:
             app.kubernetes.io/name: traefik
@@ -87,6 +89,7 @@ spec:
               - IPv6
     ports:
       web:
+        port: 80
         expose:
           default: true
           scorpion: true
@@ -101,6 +104,7 @@ spec:
             - 10.244.0.0/16
             - fd00:10:244::/56
       websecure:
+        port: 443
         expose:
           default: true
           scorpion: true
