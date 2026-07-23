@@ -54,8 +54,8 @@ spec:
     gatewayApi:
       enabled: true
       gatewayRef:
-        name: traefik-gateway
-        namespace: traefik
+        name: oauth2-proxy
+        namespace: oauth2-proxy
       hostnames:
         - auth.kakatkarakshay.dev
       rules:

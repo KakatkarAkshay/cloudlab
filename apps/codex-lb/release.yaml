@@ -23,7 +23,7 @@ spec:
     image:
       registry: ghcr.io
       repository: abyssal-labs/codex-lb
-      tag: latest@sha256:6131ae4bacd53c587d0cdbc8ddc6cb2b32a002ac225bd131ac066872ff6a8a66
+      tag: latest@sha256:1090a54efb3d589f256990135cbab663fd087ff18a0d72f97c64a0cb18254a29
       pullPolicy: IfNotPresent
     replicaCount: 2
     serviceAccount:
@@ -51,9 +51,20 @@ spec:
       enabled: false
     gatewayApi:
       enabled: true
-      parentRefs:
-        - name: traefik-gateway
-          namespace: traefik
+      gateway:
+        create: true
+        gatewayClassName: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+        listeners:
+          - name: https
+            hostname: codex.kakatkarakshay.dev
+            port: 443
+            protocol: HTTPS
+            tls:
+              mode: Terminate
+              certificateRefs:
+                - name: codex-kakatkarakshay-dev-tls
       hostnames:
         - codex.kakatkarakshay.dev
       rules:

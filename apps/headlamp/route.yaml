@@ -23,8 +23,7 @@ metadata:
   namespace: headlamp
 spec:
   parentRefs:
-    - name: traefik-gateway
-      namespace: traefik
+    - name: headlamp
   hostnames:
     - headlamp.kakatkarakshay.dev
   rules:
