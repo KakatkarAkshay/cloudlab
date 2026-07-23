@@ -7,6 +7,8 @@ spec:
   interval: 30m
   releaseName: traefik
   targetNamespace: traefik
+  dependsOn:
+    - name: cert-manager
   valuesFrom:
     - kind: Secret
       name: traefik-oci-placement
@@ -29,6 +31,13 @@ spec:
   values:
     deployment:
       replicas: 2
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: traefik
     ingressClass:
       enabled: true
       isDefaultClass: true
@@ -40,21 +49,15 @@ spec:
         publishedService:
           enabled: false
         ingressEndpoint:
-          hostname: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
+          hostname: gateway.kakatkarakshay.dev
       kubernetesGateway:
         enabled: true
         statusAddress:
-          hostname: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
+          hostname: gateway.kakatkarakshay.dev
           service:
             enabled: false
     gateway:
-      enabled: true
-      listeners:
-        web:
-          port: 8000
-          protocol: HTTP
-          namespacePolicy:
-            from: All
+      enabled: false
     gatewayClass:
       enabled: true
     ingressRoute:
@@ -87,6 +90,12 @@ spec:
         expose:
           default: true
           scorpion: true
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
         forwardedHeaders:
           trustedIPs:
             - 10.244.0.0/16
@@ -107,7 +116,7 @@ spec:
         kind: Middleware
         metadata:
           name: oauth2-forward-auth
-          namespace: oauth2-proxy
+          namespace: traefik
         spec:
           forwardAuth:
             address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local/
@@ -124,7 +133,7 @@ spec:
         kind: Middleware
         metadata:
           name: dashboard-redirect
-          namespace: oauth2-proxy
+          namespace: traefik
         spec:
           redirectRegex:
             regex: ^https?://traefik\.kakatkarakshay\.dev/?$
@@ -134,12 +143,14 @@ spec:
         kind: IngressRoute
         metadata:
           name: traefik-dashboard
-          namespace: oauth2-proxy
+          namespace: traefik
           annotations:
-            external-dns.alpha.kubernetes.io/target: 2fa335db-b3d3-48ac-81ee-a619a672fbe2.cfargotunnel.com
+            external-dns.alpha.kubernetes.io/target: gateway.kakatkarakshay.dev
         spec:
           entryPoints:
-            - web
+            - websecure
+          tls:
+            secretName: traefik-kakatkarakshay-dev-tls
           routes:
             - kind: Rule
               match: Host(`traefik.kakatkarakshay.dev`) && Path(`/`)
