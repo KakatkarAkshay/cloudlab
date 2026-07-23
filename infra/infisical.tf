@@ -66,6 +66,78 @@ resource "infisical_secret" "cloudflare_tunnel_token" {
   value        = data.cloudflare_zero_trust_tunnel_cloudflared_token.cloudlab.token
 }
 
+resource "infisical_secret_folder" "oci_cloud_controller_manager" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = "prod"
+  folder_path      = "/platform"
+  name             = "oci-cloud-controller-manager"
+  description      = "OCI Cloud Controller Manager configuration."
+}
+
+resource "infisical_secret_folder" "oci_tenancy_1" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = "prod"
+  folder_path      = infisical_secret_folder.oci_cloud_controller_manager.path
+  name             = "tenancy-1"
+  description      = "OCI tenancy 1 placement."
+}
+
+resource "infisical_secret_folder" "oci_tenancy_2" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = "prod"
+  folder_path      = infisical_secret_folder.oci_cloud_controller_manager.path
+  name             = "tenancy-2"
+  description      = "OCI tenancy 2 placement."
+}
+
+resource "infisical_secret" "oci_tenancy_1_compartment_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = "prod"
+  folder_path  = infisical_secret_folder.oci_tenancy_1.path
+  name         = "COMPARTMENT_ID"
+  value        = var.tenancy_1_compartment_ocid
+}
+
+resource "infisical_secret" "oci_tenancy_1_vcn_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = "prod"
+  folder_path  = infisical_secret_folder.oci_tenancy_1.path
+  name         = "VCN_ID"
+  value        = module.tenancy_1_vcn.id
+}
+
+resource "infisical_secret" "oci_tenancy_1_nlb_subnet_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = "prod"
+  folder_path  = infisical_secret_folder.oci_tenancy_1.path
+  name         = "NLB_SUBNET_ID"
+  value        = oci_core_subnet.nlb.id
+}
+
+resource "infisical_secret" "oci_tenancy_2_compartment_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = "prod"
+  folder_path  = infisical_secret_folder.oci_tenancy_2.path
+  name         = "COMPARTMENT_ID"
+  value        = var.tenancy_2_compartment_ocid
+}
+
+resource "infisical_secret" "oci_tenancy_2_vcn_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = "prod"
+  folder_path  = infisical_secret_folder.oci_tenancy_2.path
+  name         = "VCN_ID"
+  value        = module.tenancy_2_vcn.id
+}
+
+resource "infisical_secret" "oci_tenancy_2_nlb_subnet_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = "prod"
+  folder_path  = infisical_secret_folder.oci_tenancy_2.path
+  name         = "NLB_SUBNET_ID"
+  value        = oci_core_subnet.nlb_tenancy_2.id
+}
+
 ephemeral "random_bytes" "oauth2_proxy_cookie_secret" {
   length = 32
 }
