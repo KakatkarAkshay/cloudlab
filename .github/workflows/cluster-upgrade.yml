@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   upgrade:
+    name: Upgrade Cluster
     runs-on: ubuntu-latest
     timeout-minutes: 90
     defaults:
