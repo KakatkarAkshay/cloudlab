@@ -13,3 +13,15 @@ output "peering_status" {
 output "tenancy_1_internet_gateway_id" {
   value = oci_core_internet_gateway.tenancy_1.id
 }
+
+output "tenancy_2_internet_gateway_id" {
+  value = oci_core_internet_gateway.tenancy_2.id
+}
+
+output "tenancy_1_local_peering_gateway_id" {
+  value = oci_core_local_peering_gateway.requestor.id
+}
+
+output "tenancy_2_local_peering_gateway_id" {
+  value = oci_core_local_peering_gateway.acceptor.id
+}

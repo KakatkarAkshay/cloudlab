@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: oci-cloud-controller-manager
+  namespace: kube-system
+  labels:
+    k8s-app: oci-cloud-controller-manager
+spec:
+  selector:
+    matchLabels:
+      component: oci-cloud-controller-manager
+      tier: control-plane
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        component: oci-cloud-controller-manager
+        tier: control-plane
+    spec:
+      serviceAccountName: cloud-controller-manager
+      hostNetwork: true
+      tolerations:
+        - key: node.cloudprovider.kubernetes.io/uninitialized
+          value: "true"
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      volumes:
+        - name: config
+          secret:
+            secretName: oci-cloud-controller-manager
+      containers:
+        - name: oci-cloud-controller-manager
+          image: ghcr.io/oracle/cloud-provider-oci:v1.35.0@sha256:fabd53770fd4cdee05e8fe798b8f8c30d1dfffffb5ca7443f36b08ebc87d1186
+          command:
+            - /usr/local/bin/oci-cloud-controller-manager
+          args:
+            - --cloud-config=/etc/oci/cloud-provider.yaml
+            - --cloud-provider=oci
+            - --leader-elect-resource-lock=leases
+            - --concurrent-service-syncs=3
+            - --v=2
+          env:
+            - name: CONFIG_YAML_FILENAME
+              value: /etc/oci/cloud-provider.yaml
+            - name: ENABLE_FLEX_CIDR_CONTROLLER
+              value: "false"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: config
+              mountPath: /etc/oci
+              readOnly: true

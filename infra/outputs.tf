@@ -18,6 +18,11 @@ output "tenancy_2_subnet_id" {
   value       = module.cross_tenancy_peering.tenancy_2_subnet_id
 }
 
+output "tenancy_2_nlb_subnet_id" {
+  description = "OCID of the acceptor public network load balancer subnet."
+  value       = oci_core_subnet.nlb_tenancy_2.id
+}
+
 output "peering_status" {
   description = "Lifecycle state of the requestor LPG."
   value       = module.cross_tenancy_peering.peering_status

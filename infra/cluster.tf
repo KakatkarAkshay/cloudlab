@@ -281,6 +281,58 @@ resource "oci_core_security_list" "nlb" {
     source      = "0.0.0.0/0"
     source_type = "CIDR_BLOCK"
     stateless   = false
+    description = "HTTP ingress proof"
+
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTP ingress proof over IPv6"
+
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTPS ingress proof"
+
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTPS ingress proof over IPv6"
+
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
     description = "Talos API"
 
     tcp_options {
@@ -317,6 +369,114 @@ resource "oci_core_security_list" "nlb" {
     stateless        = false
     description      = "Control plane IPv6 backends"
   }
+
+  egress_security_rules {
+    protocol         = "all"
+    destination      = var.tenancy_2_subnet_cidr
+    destination_type = "CIDR_BLOCK"
+    stateless        = false
+    description      = "Worker backends"
+  }
+
+  egress_security_rules {
+    protocol         = "all"
+    destination      = module.tenancy_2_vcn.ipv6_cidr_block
+    destination_type = "CIDR_BLOCK"
+    stateless        = false
+    description      = "Worker IPv6 backends"
+  }
+}
+
+resource "oci_core_security_list" "nlb_tenancy_2" {
+  provider = oci.tenancy_2
+
+  compartment_id = var.tenancy_2_compartment_ocid
+  vcn_id         = module.tenancy_2_vcn.id
+  display_name   = "cloudlab-nlb"
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTP ingress"
+
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTP ingress over IPv6"
+
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTPS ingress"
+
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "HTTPS ingress over IPv6"
+
+    tcp_options {
+      min = 443
+      max = 443
+    }
+  }
+
+  egress_security_rules {
+    protocol         = "all"
+    destination      = var.tenancy_2_subnet_cidr
+    destination_type = "CIDR_BLOCK"
+    stateless        = false
+    description      = "Worker backends"
+  }
+
+  egress_security_rules {
+    protocol         = "all"
+    destination      = module.tenancy_2_vcn.ipv6_cidr_block
+    destination_type = "CIDR_BLOCK"
+    stateless        = false
+    description      = "Worker IPv6 backends"
+  }
+
+  egress_security_rules {
+    protocol         = "all"
+    destination      = var.tenancy_1_subnet_cidr
+    destination_type = "CIDR_BLOCK"
+    stateless        = false
+    description      = "Control plane backends"
+  }
+
+  egress_security_rules {
+    protocol         = "all"
+    destination      = module.tenancy_1_vcn.ipv6_cidr_block
+    destination_type = "CIDR_BLOCK"
+    stateless        = false
+    description      = "Control plane IPv6 backends"
+  }
 }
 
 resource "oci_core_subnet" "nlb" {
@@ -331,6 +491,20 @@ resource "oci_core_subnet" "nlb" {
   prohibit_public_ip_on_vnic = false
   route_table_id             = oci_core_route_table.nlb.id
   security_list_ids          = [oci_core_security_list.nlb.id]
+}
+
+resource "oci_core_subnet" "nlb_tenancy_2" {
+  provider = oci.tenancy_2
+
+  compartment_id             = var.tenancy_2_compartment_ocid
+  vcn_id                     = module.tenancy_2_vcn.id
+  cidr_block                 = cidrsubnet(var.tenancy_2_vcn_cidr, 8, 1)
+  ipv6cidr_block             = cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 1)
+  display_name               = "cloudlab-nlb"
+  dns_label                  = "nlb"
+  prohibit_public_ip_on_vnic = false
+  route_table_id             = oci_core_route_table.nlb_tenancy_2.id
+  security_list_ids          = [oci_core_security_list.nlb_tenancy_2.id]
 }
 
 resource "oci_core_route_table" "nlb" {
@@ -350,6 +524,50 @@ resource "oci_core_route_table" "nlb" {
     destination       = "::/0"
     destination_type  = "CIDR_BLOCK"
     network_entity_id = module.cross_tenancy_peering.tenancy_1_internet_gateway_id
+  }
+
+  route_rules {
+    destination       = var.tenancy_2_vcn_cidr
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.cross_tenancy_peering.tenancy_1_local_peering_gateway_id
+  }
+
+  route_rules {
+    destination       = module.tenancy_2_vcn.ipv6_cidr_block
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.cross_tenancy_peering.tenancy_1_local_peering_gateway_id
+  }
+}
+
+resource "oci_core_route_table" "nlb_tenancy_2" {
+  provider = oci.tenancy_2
+
+  compartment_id = var.tenancy_2_compartment_ocid
+  vcn_id         = module.tenancy_2_vcn.id
+  display_name   = "cloudlab-nlb-routes"
+
+  route_rules {
+    destination       = "0.0.0.0/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.cross_tenancy_peering.tenancy_2_internet_gateway_id
+  }
+
+  route_rules {
+    destination       = "::/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.cross_tenancy_peering.tenancy_2_internet_gateway_id
+  }
+
+  route_rules {
+    destination       = var.tenancy_1_vcn_cidr
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.cross_tenancy_peering.tenancy_2_local_peering_gateway_id
+  }
+
+  route_rules {
+    destination       = module.tenancy_1_vcn.ipv6_cidr_block
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.cross_tenancy_peering.tenancy_2_local_peering_gateway_id
   }
 }
 
@@ -552,6 +770,15 @@ data "talos_machine_configuration" "control_plane" {
         }
         etcd = {
           advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block, "100.64.0.0/10"]
+        }
+      }
+    }),
+    yamlencode({
+      machine = {
+        nodeLabels = {
+          "node.kubernetes.io/exclude-from-external-load-balancers" = {
+            "$patch" = "delete"
+          }
         }
       }
     }),
@@ -768,6 +995,17 @@ resource "talos_machine_configuration_apply" "control_plane" {
   endpoint                    = local.cluster_api_ip
   client_configuration        = talos_machine_secrets.cluster.client_configuration
   machine_configuration_input = data.talos_machine_configuration.control_plane.machine_configuration
+  config_patches = [
+    yamlencode({
+      machine = {
+        kubelet = {
+          extraArgs = {
+            provider-id = "oci://${oci_core_instance.control_plane.id}"
+          }
+        }
+      }
+    }),
+  ]
 }
 
 resource "talos_machine_configuration_apply" "worker" {
@@ -777,6 +1015,17 @@ resource "talos_machine_configuration_apply" "worker" {
   endpoint                    = local.cluster_api_ip
   client_configuration        = talos_machine_secrets.cluster.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
+  config_patches = [
+    yamlencode({
+      machine = {
+        kubelet = {
+          extraArgs = {
+            provider-id = "oci://${oci_core_instance.worker.id}"
+          }
+        }
+      }
+    }),
+  ]
 }
 
 resource "talos_cluster_kubeconfig" "cluster" {
