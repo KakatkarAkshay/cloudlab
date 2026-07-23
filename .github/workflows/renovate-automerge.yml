@@ -6,9 +6,8 @@ on:
     types: [completed]
 
 permissions:
-  actions: write
   checks: read
-  contents: write
+  contents: read
   pull-requests: read
 
 concurrency:
@@ -25,6 +24,8 @@ jobs:
     steps:
       - name: Merge passing Renovate pull request
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        env:
+          MERGE_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -80,16 +81,11 @@ jobs:
               pull_number: pullNumber,
               merge_method: "squash",
               sha: pull.head.sha,
+              headers: {
+                authorization: `Bearer ${process.env.MERGE_TOKEN}`,
+              },
             });
 
             if (!merge.merged) {
               throw new Error(merge.message);
             }
-
-            // GITHUB_TOKEN merges do not emit push workflows, so dispatch apply explicitly.
-            await github.rest.actions.createWorkflowDispatch({
-              owner,
-              repo,
-              workflow_id: "terraform.yml",
-              ref: "main",
-            });
