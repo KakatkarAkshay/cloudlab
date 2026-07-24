@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: grafana-postgresql
+  namespace: observability
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
+  bootstrap:
+    initdb:
+      database: grafana
+      owner: grafana
+  storage:
+    size: 5Gi
+    storageClass: local-path
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
