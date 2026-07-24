@@ -21,6 +21,14 @@ spec:
       repository: ghcr.io/falcondev-oss/github-actions-cache-server
       tag: 9.6.2@sha256:a473eded701722b816fd17899570f3055a4393a181507021961e61cf4e739a60
     replicaCount: 1
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
+            weight: 100
     config:
       storage:
         driver: filesystem
@@ -41,7 +49,7 @@ spec:
       limits:
         memory: 1Gi
       requests:
-        cpu: 50m
+        cpu: 25m
         memory: 256Mi
     extraEnv:
       - name: DB_POSTGRES_URL

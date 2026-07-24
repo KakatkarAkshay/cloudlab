@@ -23,6 +23,14 @@ spec:
     remediation:
       retries: 3
   values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
+            weight: 100
     installCRDs: true
     resources:
       requests:
