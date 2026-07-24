@@ -768,8 +768,26 @@ data "talos_machine_configuration" "control_plane" {
         apiServer = {
           certSANs = local.cluster_api_addresses
         }
+        controllerManager = {
+          extraArgs = {
+            bind-address = "0.0.0.0"
+          }
+        }
         etcd = {
           advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block, "100.64.0.0/10"]
+          extraArgs = {
+            listen-metrics-urls = "http://0.0.0.0:2381"
+          }
+        }
+        proxy = {
+          extraArgs = {
+            metrics-bind-address = "0.0.0.0:10249"
+          }
+        }
+        scheduler = {
+          extraArgs = {
+            bind-address = "0.0.0.0"
+          }
         }
       }
     }),
@@ -837,6 +855,11 @@ data "talos_machine_configuration" "worker" {
         network = {
           podSubnets     = var.kubernetes_pod_subnets
           serviceSubnets = var.kubernetes_service_subnets
+        }
+        proxy = {
+          extraArgs = {
+            metrics-bind-address = "0.0.0.0:10249"
+          }
         }
       }
     }),
