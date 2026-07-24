@@ -6,6 +6,25 @@ resources:
 patches:
   - target:
       kind: Deployment
+      name: (helm-controller|image-automation-controller|image-reflector-controller|kustomize-controller|notification-controller|source-controller)
+    patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: controller
+      spec:
+        template:
+          spec:
+            topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: flux-system
+                    app.kubernetes.io/part-of: flux
+                maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: DoNotSchedule
+  - target:
+      kind: Deployment
       name: (helm-controller|image-automation-controller|image-reflector-controller|notification-controller)
     patch: |
       apiVersion: apps/v1
