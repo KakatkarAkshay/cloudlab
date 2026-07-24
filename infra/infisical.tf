@@ -145,10 +145,10 @@ resource "infisical_secret" "oauth2_proxy_cookie_secret" {
   value_wo_version = 1
 }
 
-resource "infisical_secret" "postgres_backup_aws_region" {
+resource "infisical_secret" "idrive_aws_region" {
   workspace_id = infisical_project.cloudlab.id
   env_slug     = "prod"
-  folder_path  = "/platform/postgres-backup"
+  folder_path  = "/platform/idrive-credentials"
   name         = "AWS_REGION"
-  value        = var.postgres_backup_aws_region
+  value        = var.idrive_aws_region
 }

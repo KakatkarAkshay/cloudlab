@@ -90,8 +90,8 @@ variable "cloudflare_zone" {
   type        = string
 }
 
-variable "postgres_backup_aws_region" {
-  description = "AWS-compatible region used for PostgreSQL backups."
+variable "idrive_aws_region" {
+  description = "AWS-compatible region used by the shared iDrive E2 credentials."
   type        = string
 }
 
