@@ -6,4 +6,5 @@ resources:
   - gateway-api.yaml
   - external-secrets.yaml
   - infrastructure.yaml
+  - observability.yaml
   - apps.yaml
