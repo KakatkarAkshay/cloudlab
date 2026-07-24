@@ -22,10 +22,9 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Merge passing Renovate pull request
+      - name: Validate Renovate pull request
+        id: validate
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
-        env:
-          MERGE_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -75,15 +74,23 @@ jobs:
               }
             }
 
+            core.setOutput("pull-number", pullNumber);
+            core.setOutput("head-sha", pull.head.sha);
+
+      - name: Merge passing Renovate pull request
+        if: steps.validate.outputs.pull-number != ''
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        env:
+          PULL_NUMBER: ${{ steps.validate.outputs.pull-number }}
+          HEAD_SHA: ${{ steps.validate.outputs.head-sha }}
+        with:
+          github-token: ${{ secrets.TF_GITHUB_TOKEN }}
+          script: |
             const { data: merge } = await github.rest.pulls.merge({
-              owner,
-              repo,
-              pull_number: pullNumber,
+              ...context.repo,
+              pull_number: Number(process.env.PULL_NUMBER),
               merge_method: "squash",
-              sha: pull.head.sha,
-              headers: {
-                authorization: `Bearer ${process.env.MERGE_TOKEN}`,
-              },
+              sha: process.env.HEAD_SHA,
             });
 
             if (!merge.merged) {
