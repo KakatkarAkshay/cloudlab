@@ -104,3 +104,6 @@ spec:
             memory: 64Mi
           limits:
             memory: 128Mi
+    kubeEtcd:
+      endpoints:
+        - 10.0.0.10
