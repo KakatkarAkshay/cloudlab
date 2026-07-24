@@ -1,0 +1,68 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: thanos
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: thanos
+  targetNamespace: observability
+  dependsOn:
+    - name: kube-prometheus-stack
+  chart:
+    spec:
+      chart: thanos
+      version: 1.23.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: stevehipwell
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    objstoreConfig:
+      create: false
+      name: thanos-objstore
+      key: config
+    serviceMonitor:
+      enabled: true
+    additionalEndpoints:
+      - dnssrv+_grpc._tcp.kube-prometheus-stack-thanos-discovery.observability.svc.cluster.local
+    query:
+      enabled: true
+      replicaLabels:
+        - prometheus_replica
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+    storeGateway:
+      enabled: true
+      persistence:
+        size: 10Gi
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+    compact:
+      enabled: true
+      persistence:
+        size: 10Gi
+      extraArgs:
+        - --retention.resolution-raw=90d
+        - --retention.resolution-5m=180d
+        - --retention.resolution-1h=730d
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          memory: 1Gi

@@ -1,0 +1,90 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: flux-system
+spec:
+  interval: 30m
+  timeout: 10m
+  releaseName: kube-prometheus-stack
+  targetNamespace: observability
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: 87.19.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    grafana:
+      # admin password is chart-generated; read it from the kube-prometheus-stack-grafana secret
+      grafana.ini:
+        server:
+          root_url: https://grafana.kakatkarakshay.dev
+      persistence:
+        enabled: true
+        size: 5Gi
+      sidecar:
+        datasources:
+          # Thanos Query fronts the sidecar + e2 bucket, so all dashboards get long-range history
+          url: http://thanos-query.observability.svc:10902
+      additionalDataSources:
+        - name: Loki
+          type: loki
+          uid: loki
+          access: proxy
+          url: http://loki.observability.svc:3100
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+    prometheus:
+      thanosService:
+        enabled: true
+      prometheusSpec:
+        # local retention is short on purpose; Thanos owns history in e2
+        retention: 2d
+        externalLabels:
+          cluster: cloudlab
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
+        scrapeConfigSelectorNilUsesHelmValues: false
+        thanos:
+          objectStorageConfig:
+            existingSecret:
+              name: thanos-objstore
+              key: config
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 20Gi
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
+    alertmanager:
+      alertmanagerSpec:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi

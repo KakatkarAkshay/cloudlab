@@ -1,0 +1,44 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: k8s-monitoring
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: k8s-monitoring
+  targetNamespace: observability
+  dependsOn:
+    - name: loki
+  chart:
+    spec:
+      chart: k8s-monitoring
+      version: 4.3.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    cluster:
+      name: cloudlab
+    destinations:
+      loki:
+        type: loki
+        url: http://loki.observability.svc:3100/loki/api/v1/push
+    # logs and events only; metrics are scraped by kube-prometheus-stack
+    podLogsViaLoki:
+      enabled: true
+      collector: alloy-logs
+    clusterEvents:
+      enabled: true
+      collector: alloy-singleton
+    collectors:
+      alloy-logs:
+        presets: [filesystem-log-reader, daemonset]
+      alloy-singleton:
+        presets: [singleton]
