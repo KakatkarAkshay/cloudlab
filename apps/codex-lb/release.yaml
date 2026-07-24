@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
+  timeout: 10m
   releaseName: codex-lb
   targetNamespace: codex-lb
   chartRef:
