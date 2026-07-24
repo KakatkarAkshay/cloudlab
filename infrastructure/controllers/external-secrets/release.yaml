@@ -42,6 +42,14 @@ spec:
           cpu: 10m
           memory: 64Mi
     certController:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+              weight: 100
       resources:
         requests:
           cpu: 10m
