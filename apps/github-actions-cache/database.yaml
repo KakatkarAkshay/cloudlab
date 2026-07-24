@@ -14,5 +14,5 @@ spec:
     storageClass: local-path
   resources:
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 50m
+      memory: 128Mi

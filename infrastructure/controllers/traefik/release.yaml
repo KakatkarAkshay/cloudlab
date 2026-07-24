@@ -115,7 +115,7 @@ spec:
       maxUnavailable: 25%
     resources:
       requests:
-        cpu: 50m
+        cpu: 25m
         memory: 64Mi
     extraObjects:
       - apiVersion: traefik.io/v1alpha1

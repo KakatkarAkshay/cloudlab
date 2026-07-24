@@ -81,8 +81,8 @@ spec:
     topologyKey: kubernetes.io/hostname
   resources:
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 50m
+      memory: 384Mi
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
