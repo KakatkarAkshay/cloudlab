@@ -10,7 +10,7 @@ spec:
     name: ghcr
   ref:
     tag: latest
-    digest: sha256:0f11d678c8f5339b123cf6471015f9662e6014cd2fc0d77b2a7dc59bb8011bb5
+    digest: sha256:e4796dde98d7fbf23ba37f26943515baeaaee060e79c0ed6bf3da15141ee9be7
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
