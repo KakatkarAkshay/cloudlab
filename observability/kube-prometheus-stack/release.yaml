@@ -50,6 +50,11 @@ spec:
         enabled: true
         size: 5Gi
       sidecar:
+        dashboards:
+          folderAnnotation: grafana_folder
+          skipReload: true
+          provider:
+            foldersFromFilesStructure: true
         datasources:
           # Thanos Query fronts the sidecar + e2 bucket, so all dashboards get long-range history
           url: http://thanos-query.observability.svc:10902
@@ -59,6 +64,10 @@ spec:
           uid: loki
           access: proxy
           url: http://loki.observability.svc:3100
+          jsonData:
+            httpHeaderName1: X-Scope-OrgID
+          secureJsonData:
+            httpHeaderValue1: fake
       resources:
         requests:
           cpu: 50m
