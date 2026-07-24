@@ -95,3 +95,12 @@ spec:
         memory: 384Mi
       limits:
         memory: 1Gi
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: true
+      grafanaDashboard:
+        enabled: true
+        folder: codex-lb
