@@ -81,12 +81,6 @@ jobs:
       - name: Validate
         run: terraform validate
 
-      - name: Import shared iDrive region secret
-        if: github.event_name != 'pull_request'
-        run: |
-          terraform state show infisical_secret.idrive_aws_region >/dev/null 2>&1 || \
-            terraform import -input=false infisical_secret.idrive_aws_region 66fd9a45-d1f7-4229-8b13-85e1d9418d01
-
       - name: Plan
         run: terraform plan -input=false -no-color -out=tfplan
 
