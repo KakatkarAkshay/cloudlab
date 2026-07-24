@@ -18,7 +18,7 @@ infisical_org_id = "replace-me"
 infisical_host   = "https://eu.infisical.com"
 infisical_auth_method = "universal"
 cloudflare_zone            = "kakatkarakshay.dev"
-postgres_backup_aws_region = "eu-central-2"
+idrive_aws_region = "eu-central-2"
 github_owner      = "KakatkarAkshay"
 github_repository = "cloudlab"
 
