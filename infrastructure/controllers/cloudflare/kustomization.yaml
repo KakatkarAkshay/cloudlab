@@ -4,5 +4,4 @@ resources:
   - namespace.yaml
   - repository.yaml
   - release.yaml
-  - cloudflared.yaml
   - external-secret.yaml

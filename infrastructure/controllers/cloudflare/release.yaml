@@ -33,6 +33,7 @@ spec:
             name: cloudflare-credentials
             key: api-token
     sources:
+      - service
       - ingress
       - gateway-httproute
       - traefik-proxy
@@ -43,6 +44,12 @@ spec:
     txtOwnerId: cloudlab
     extraArgs:
       - --zone-id-filter=2d354db476e1178a0ec11d9293fbdc5d
+      - --service-type-filter=LoadBalancer
+      - --exclude-target-net=10.0.0.0/8
+      - --exclude-target-net=172.16.0.0/12
+      - --exclude-target-net=192.168.0.0/16
+      - --exclude-target-net=fc00::/7
+      - --exclude-target-net=fe80::/10
       - --cloudflare-proxied
       - --cloudflare-dns-records-per-page=5000
       - --cloudflare-record-comment=Managed by external-dns
