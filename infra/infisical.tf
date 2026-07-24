@@ -58,14 +58,6 @@ resource "infisical_secret" "cloudflare_api_token" {
   value        = cloudflare_account_token.external_dns.value
 }
 
-resource "infisical_secret" "cloudflare_tunnel_token" {
-  workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
-  folder_path  = "/platform/cloudflare"
-  name         = "TUNNEL_TOKEN"
-  value        = data.cloudflare_zero_trust_tunnel_cloudflared_token.cloudlab.token
-}
-
 resource "infisical_secret_folder" "oci_cloud_controller_manager" {
   project_id       = infisical_project.cloudlab.id
   environment_slug = "prod"
