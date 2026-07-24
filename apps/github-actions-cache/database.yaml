@@ -5,6 +5,14 @@ metadata:
   namespace: github-actions-cache
 spec:
   instances: 1
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - preference:
+            matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+          weight: 100
   bootstrap:
     initdb:
       database: cache
@@ -14,5 +22,5 @@ spec:
     storageClass: local-path
   resources:
     requests:
-      cpu: 50m
+      cpu: 25m
       memory: 128Mi

@@ -39,6 +39,14 @@ spec:
           cpu: 20m
           memory: 64Mi
     cainjector:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
+              weight: 100
       resources:
         requests:
           cpu: 20m

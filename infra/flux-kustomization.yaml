@@ -25,7 +25,7 @@ patches:
                 whenUnsatisfiable: DoNotSchedule
   - target:
       kind: Deployment
-      name: (helm-controller|image-automation-controller|image-reflector-controller|notification-controller)
+      name: (helm-controller|image-automation-controller|image-reflector-controller|notification-controller|source-controller)
     patch: |
       apiVersion: apps/v1
       kind: Deployment
@@ -38,7 +38,7 @@ patches:
               - name: manager
                 resources:
                   requests:
-                    cpu: 50m
+                    cpu: 25m
   - target:
       kind: Deployment
       name: kustomize-controller
@@ -50,6 +50,14 @@ patches:
       spec:
         template:
           spec:
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
+                    weight: 100
             containers:
               - name: manager
                 resources:
