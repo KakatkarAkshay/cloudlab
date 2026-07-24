@@ -31,15 +31,6 @@ spec:
       auth_enabled: false
       commonConfig:
         replication_factor: 1
-      storage:
-        type: s3
-        bucketNames:
-          chunks: cloudlab-loki
-          ruler: cloudlab-loki
-          admin: cloudlab-loki
-        s3:
-          endpoint: https://s3.eu-central-2.idrivee2.com
-          s3ForcePathStyle: true
       schemaConfig:
         configs:
           - from: "2026-01-01"
