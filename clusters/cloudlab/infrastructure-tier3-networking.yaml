@@ -1,14 +1,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps
+  name: infrastructure-tier3-networking
   namespace: flux-system
 spec:
   dependsOn:
-    - name: observability-tier2-logs-traces
+    - name: infrastructure-tier2-certs-db
   interval: 10m
   retryInterval: 1m
-  path: ./apps/cloudlab
+  path: ./infrastructure/tier3-networking
   prune: true
   wait: true
   timeout: 5m

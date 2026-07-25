@@ -1,17 +1,17 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps
+  name: observability-tier2-logs-traces
   namespace: flux-system
 spec:
   dependsOn:
-    - name: observability-tier2-logs-traces
+    - name: observability-tier1-metrics
   interval: 10m
   retryInterval: 1m
-  path: ./apps/cloudlab
+  path: ./observability/tier2-logs-traces
   prune: true
   wait: true
-  timeout: 5m
+  timeout: 15m
   sourceRef:
     kind: GitRepository
     name: flux-system

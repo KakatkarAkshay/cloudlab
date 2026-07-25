@@ -1,14 +1,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps
+  name: infrastructure-tier1-core
   namespace: flux-system
 spec:
   dependsOn:
-    - name: observability-tier2-logs-traces
+    - name: kubelet-serving-cert-approver
+    - name: gateway-api
+    - name: external-secrets
   interval: 10m
   retryInterval: 1m
-  path: ./apps/cloudlab
+  path: ./infrastructure/tier1-core
   prune: true
   wait: true
   timeout: 5m

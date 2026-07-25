@@ -1,16 +1,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infrastructure
+  name: infrastructure-tier2-certs-db
   namespace: flux-system
 spec:
   dependsOn:
-    - name: kubelet-serving-cert-approver
-    - name: gateway-api
-    - name: external-secrets
+    - name: infrastructure-tier1-core
   interval: 10m
   retryInterval: 1m
-  path: ./infrastructure/cloudlab
+  path: ./infrastructure/tier2-certs-db
   prune: true
   wait: true
   timeout: 5m

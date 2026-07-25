@@ -5,6 +5,10 @@ resources:
   - kubelet-serving-cert-approver.yaml
   - gateway-api.yaml
   - external-secrets.yaml
-  - infrastructure.yaml
-  - observability.yaml
+  - infrastructure-tier1-core.yaml
+  - infrastructure-tier2-certs-db.yaml
+  - infrastructure-tier3-networking.yaml
+  - infrastructure-tier4-ci.yaml
+  - observability-tier1-metrics.yaml
+  - observability-tier2-logs-traces.yaml
   - apps.yaml
