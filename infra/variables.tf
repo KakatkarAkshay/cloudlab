@@ -50,6 +50,13 @@ variable "requestor_group_name" {
   type        = string
 }
 
+variable "netbird_token" {
+  description = "Temporary token used to destroy legacy NetBird resources."
+  type        = string
+  sensitive   = true
+  ephemeral   = true
+}
+
 variable "infisical_org_id" {
   description = "Infisical organization ID that owns the CloudLab project."
   type        = string
