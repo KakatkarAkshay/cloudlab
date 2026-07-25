@@ -81,7 +81,7 @@ jobs:
         run: terraform validate
 
       - name: Plan
-        run: terraform plan -input=false -no-color -replace=flux_bootstrap_git.cluster -out=tfplan
+        run: terraform plan -input=false -no-color -replace=flux_bootstrap_git.cluster -replace=oci_network_load_balancer_network_load_balancer.control_plane -out=tfplan
 
       - name: Apply
         if: github.event_name != 'pull_request'
