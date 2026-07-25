@@ -571,6 +571,14 @@ resource "oci_core_route_table" "nlb_tenancy_2" {
   }
 }
 
+resource "oci_core_public_ip" "control_plane" {
+  provider = oci.tenancy_1
+
+  compartment_id = var.tenancy_1_compartment_ocid
+  display_name   = "cloudlab-control-plane"
+  lifetime       = "RESERVED"
+}
+
 resource "oci_network_load_balancer_network_load_balancer" "control_plane" {
   provider = oci.tenancy_1
 
@@ -580,6 +588,10 @@ resource "oci_network_load_balancer_network_load_balancer" "control_plane" {
   is_private                     = false
   is_preserve_source_destination = false
   nlb_ip_version                 = "IPV4_AND_IPV6"
+
+  reserved_ips {
+    id = oci_core_public_ip.control_plane.id
+  }
 }
 
 resource "oci_network_load_balancer_backend_set" "kubernetes" {
