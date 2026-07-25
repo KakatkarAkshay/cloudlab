@@ -81,13 +81,7 @@ jobs:
         run: terraform validate
 
       - name: Plan
-        run: >-
-          terraform plan -input=false -no-color
-          -target=talos_cluster_kubeconfig.cluster
-          -target=talos_machine_bootstrap.cluster
-          -target=talos_machine_configuration_apply.control_plane
-          -target=talos_machine_configuration_apply.worker
-          -out=tfplan
+        run: terraform plan -input=false -no-color -out=tfplan
 
       - name: Apply
         if: github.event_name != 'pull_request'
