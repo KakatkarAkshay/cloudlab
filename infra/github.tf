@@ -27,12 +27,6 @@ resource "github_actions_variable" "oci_requestor_group_name" {
   value         = var.requestor_group_name
 }
 
-resource "github_actions_variable" "netbird_management_url" {
-  repository    = var.github_repository
-  variable_name = "NETBIRD_MANAGEMENT_URL"
-  value         = var.netbird_management_url
-}
-
 resource "github_actions_variable" "infisical_org_id" {
   repository    = var.github_repository
   variable_name = "INFISICAL_ORG_ID"
@@ -44,4 +38,3 @@ resource "github_actions_variable" "infisical_machine_identity_id" {
   variable_name = "INFISICAL_MACHINE_IDENTITY_ID"
   value         = infisical_identity.terraform.id
 }
-

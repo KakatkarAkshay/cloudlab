@@ -38,8 +38,6 @@ jobs:
       TF_VAR_tenancy_2_user_ocid: ${{ secrets.TENANCY_2_USER_OCID }}
       TF_VAR_tenancy_2_compartment_ocid: ${{ secrets.TENANCY_2_COMPARTMENT_OCID }}
       TF_VAR_requestor_group_name: ${{ vars.OCI_REQUESTOR_GROUP_NAME }}
-      TF_VAR_netbird_token: ${{ secrets.NETBIRD_TOKEN }}
-      TF_VAR_netbird_management_url: ${{ vars.NETBIRD_MANAGEMENT_URL }}
       TF_VAR_infisical_org_id: ${{ vars.INFISICAL_ORG_ID }}
       TF_VAR_infisical_host: ${{ vars.INFISICAL_HOST || 'https://app.infisical.com' }}
       TF_VAR_cloudflare_zone: ${{ vars.CLOUDFLARE_ZONE }}

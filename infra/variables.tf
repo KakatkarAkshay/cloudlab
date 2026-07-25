@@ -50,19 +50,6 @@ variable "requestor_group_name" {
   type        = string
 }
 
-variable "netbird_token" {
-  description = "Personal access token used to manage the NetBird account."
-  type        = string
-  sensitive   = true
-  ephemeral   = true
-}
-
-variable "netbird_management_url" {
-  description = "NetBird management API URL."
-  type        = string
-  default     = "https://api.netbird.io"
-}
-
 variable "infisical_org_id" {
   description = "Infisical organization ID that owns the CloudLab project."
   type        = string

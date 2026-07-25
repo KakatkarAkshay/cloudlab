@@ -139,9 +139,6 @@ jobs:
                   | jq -e '.spec.stage == "running" and .spec.status.ready == true' > /dev/null; then
                   healthy=false
                 fi
-                if ! talosctl service ext-netbird status --nodes "$node" | grep -q 'Running'; then
-                  healthy=false
-                fi
               done
 
               if ! talosctl etcd status --nodes "$CONTROL_PLANE" > /dev/null; then

@@ -11,9 +11,6 @@ tenancy_2_compartment_ocid = "ocid1.compartment.oc1..replace-me"
 
 requestor_group_name = "Administrators"
 
-netbird_token          = "replace-me"
-netbird_management_url = "https://api.netbird.io"
-
 infisical_org_id = "replace-me"
 infisical_host   = "https://eu.infisical.com"
 infisical_auth_method = "universal"

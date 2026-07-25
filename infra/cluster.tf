@@ -774,7 +774,7 @@ data "talos_machine_configuration" "control_plane" {
           }
         }
         etcd = {
-          advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block, "100.64.0.0/10"]
+          advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
           extraArgs = {
             listen-metrics-urls = "http://0.0.0.0:2381"
           }
@@ -799,15 +799,6 @@ data "talos_machine_configuration" "control_plane" {
           }
         }
       }
-    }),
-    yamlencode({
-      apiVersion = "v1alpha1"
-      kind       = "ExtensionServiceConfig"
-      name       = "netbird"
-      environment = [
-        "NB_SETUP_KEY=${netbird_setup_key.node["control-plane"].key}",
-        "NB_MANAGEMENT_URL=${var.netbird_management_url}",
-      ]
     }),
     yamlencode({
       apiVersion = "v1alpha1"
@@ -862,15 +853,6 @@ data "talos_machine_configuration" "worker" {
           }
         }
       }
-    }),
-    yamlencode({
-      apiVersion = "v1alpha1"
-      kind       = "ExtensionServiceConfig"
-      name       = "netbird"
-      environment = [
-        "NB_SETUP_KEY=${netbird_setup_key.node["worker"].key}",
-        "NB_MANAGEMENT_URL=${var.netbird_management_url}",
-      ]
     }),
     yamlencode({
       apiVersion = "v1alpha1"
