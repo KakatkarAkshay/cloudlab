@@ -8,4 +8,11 @@ resource "flux_bootstrap_git" "cluster" {
     "image-automation-controller",
     "image-reflector-controller",
   ]
+
+  lifecycle {
+    replace_triggered_by = [
+      oci_core_image.talos_tenancy_1,
+      oci_core_image.talos_tenancy_2,
+    ]
+  }
 }
