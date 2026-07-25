@@ -1001,6 +1001,8 @@ resource "talos_machine_bootstrap" "cluster" {
     replace_triggered_by = [
       oci_core_image.talos_tenancy_1,
       oci_core_image.talos_tenancy_2,
+      oci_core_instance.control_plane,
+      oci_core_instance.worker,
     ]
   }
 }
