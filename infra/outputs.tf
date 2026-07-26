@@ -80,8 +80,52 @@ output "talosconfig" {
   sensitive = true
 }
 
-output "kubeconfig" {
-  description = "Administrative kubeconfig for the Talos cluster."
-  value       = talos_cluster_kubeconfig.cluster.kubeconfig_raw
+# --- Consumed by the cluster stage via terraform_remote_state ---
+
+output "cluster_api_ip" {
+  description = "Public IPv4 the Kubernetes/Talos API is reached on (reserved NLB IP)."
+  value       = local.cluster_api_ip
+}
+
+output "control_plane_instance_id" {
+  description = "OCID of the control-plane instance (for the kubelet provider-id)."
+  value       = oci_core_instance.control_plane.id
+}
+
+output "worker_instance_id" {
+  description = "OCID of the worker instance (for the kubelet provider-id)."
+  value       = oci_core_instance.worker.id
+}
+
+output "talos_client_configuration" {
+  description = "Talos client configuration used to apply config, bootstrap and fetch kubeconfig."
+  value       = talos_machine_secrets.cluster.client_configuration
   sensitive   = true
+}
+
+output "machine_configuration_control_plane" {
+  description = "Rendered control-plane machine configuration."
+  value       = data.talos_machine_configuration.control_plane.machine_configuration
+  sensitive   = true
+}
+
+output "machine_configuration_worker" {
+  description = "Rendered worker machine configuration."
+  value       = data.talos_machine_configuration.worker.machine_configuration
+  sensitive   = true
+}
+
+output "talos_image_tenancy_1_id" {
+  description = "OCID of the control-plane Talos image (drives cluster re-bootstrap)."
+  value       = oci_core_image.talos_tenancy_1.id
+}
+
+output "talos_image_tenancy_2_id" {
+  description = "OCID of the worker Talos image (drives cluster re-bootstrap)."
+  value       = oci_core_image.talos_tenancy_2.id
+}
+
+output "infisical_external_secrets_identity_id" {
+  description = "Infisical identity ID for external-secrets; the cluster stage attaches k8s auth to it once the API server is reachable."
+  value       = infisical_identity.external_secrets.id
 }

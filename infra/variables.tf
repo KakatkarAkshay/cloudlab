@@ -62,6 +62,12 @@ variable "infisical_org_id" {
   type        = string
 }
 
+variable "infisical_environment_slug" {
+  description = "Infisical environment secrets and folders are written to."
+  type        = string
+  default     = "prod"
+}
+
 variable "infisical_host" {
   description = "Base URL of the Infisical instance."
   type        = string
