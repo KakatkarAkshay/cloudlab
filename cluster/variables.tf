@@ -8,7 +8,6 @@ variable "github_repository" {
   type        = string
 }
 
-# OCI credentials, used only to read the infra stage's remote state.
 variable "oci_region" {
   description = "OCI region hosting the Terraform state bucket."
   type        = string
@@ -50,4 +49,22 @@ variable "infisical_auth_method" {
     condition     = contains(["oidc", "universal"], var.infisical_auth_method)
     error_message = "infisical_auth_method must be either oidc or universal."
   }
+}
+
+variable "oauth2_client_id" {
+  description = "Google OAuth client ID for oauth2-proxy."
+  type        = string
+  sensitive   = true
+}
+
+variable "oauth2_client_secret" {
+  description = "Google OAuth client secret for oauth2-proxy."
+  type        = string
+  sensitive   = true
+}
+
+variable "oauth2_authorized_emails" {
+  description = "Newline/comma-separated emails allowed through oauth2-proxy."
+  type        = string
+  sensitive   = true
 }

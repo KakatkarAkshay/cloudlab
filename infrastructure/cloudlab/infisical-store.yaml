@@ -10,7 +10,7 @@ spec:
         kubernetesAuthCredentials:
           identityId:
             name: infisical-kubernetes-auth
-            namespace: external-secrets
+            namespace: flux-system
             key: identityId
       secretsScope:
         projectSlug: cloudlab

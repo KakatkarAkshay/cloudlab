@@ -44,14 +44,6 @@ resource "infisical_secret_folder" "cloudflare" {
   description      = "Cloudflare credentials for external-dns."
 }
 
-resource "infisical_secret_folder" "oauth2_proxy" {
-  project_id       = infisical_project.cloudlab.id
-  environment_slug = var.infisical_environment_slug
-  folder_path      = "/platform"
-  name             = "oauth2-proxy"
-  description      = "oauth2-proxy configuration."
-}
-
 resource "infisical_secret_folder" "idrive_credentials" {
   project_id       = infisical_project.cloudlab.id
   environment_slug = var.infisical_environment_slug
@@ -140,20 +132,6 @@ resource "infisical_secret" "oci_tenancy_2_nlb_subnet_id" {
   value        = oci_core_subnet.nlb_tenancy_2.id
 }
 
-ephemeral "random_bytes" "oauth2_proxy_cookie_secret" {
-  length = 32
-}
-
-resource "infisical_secret" "oauth2_proxy_cookie_secret" {
-  workspace_id = infisical_project.cloudlab.id
-  env_slug     = var.infisical_environment_slug
-  folder_path  = infisical_secret_folder.oauth2_proxy.path
-  name         = "COOKIE_SECRET"
-
-  # Write-only: never stored in Terraform state. Bump the version to rotate.
-  value_wo         = ephemeral.random_bytes.oauth2_proxy_cookie_secret.base64
-  value_wo_version = 1
-}
 
 resource "infisical_secret" "idrive_aws_region" {
   workspace_id = infisical_project.cloudlab.id

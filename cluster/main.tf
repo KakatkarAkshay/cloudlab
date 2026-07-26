@@ -9,7 +9,6 @@ resource "github_repository_deploy_key" "flux" {
   read_only  = false
 }
 
-# Re-bootstraps the cluster when the Talos image changes.
 resource "terraform_data" "talos_images" {
   input = [
     local.infra.talos_image_tenancy_1_id,
