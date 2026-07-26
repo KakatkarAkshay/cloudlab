@@ -763,6 +763,12 @@ data "talos_machine_configuration" "control_plane" {
           "net.ipv4.ip_forward"          = "1"
           "net.ipv6.conf.all.forwarding" = "1"
         }
+        sysfs = {
+          "devices.system.cpu.cpu0.cpuidle.state1.disable" = "1"
+          "devices.system.cpu.cpu0.cpuidle.state2.disable" = "1"
+          "devices.system.cpu.cpu1.cpuidle.state1.disable" = "1"
+          "devices.system.cpu.cpu1.cpuidle.state2.disable" = "1"
+        }
         time = {
           servers = ["169.254.169.254"]
         }
@@ -849,6 +855,12 @@ data "talos_machine_configuration" "worker" {
         sysctls = {
           "net.ipv4.ip_forward"          = "1"
           "net.ipv6.conf.all.forwarding" = "1"
+        }
+        sysfs = {
+          "devices.system.cpu.cpu0.cpuidle.state1.disable" = "1"
+          "devices.system.cpu.cpu0.cpuidle.state2.disable" = "1"
+          "devices.system.cpu.cpu1.cpuidle.state1.disable" = "1"
+          "devices.system.cpu.cpu1.cpuidle.state2.disable" = "1"
         }
         time = {
           servers = ["169.254.169.254"]
