@@ -30,7 +30,7 @@ spec:
       spec:
         initContainers:
           - name: init-dind-externals
-            image: ghcr.io/falcondev-oss/actions-runner:latest@sha256:396bad82ba63cbf574293dccc3f936aae60ef55450721d58a11978abaebb7a89
+            image: ghcr.io/falcondev-oss/actions-runner:latest@sha256:b0cbd599b4124962a91930f85b0061adc5a5aaf874221d29741411fc661a259b
             imagePullPolicy: IfNotPresent
             command:
               - cp
@@ -71,7 +71,7 @@ spec:
                 mountPath: /home/runner/externals
         containers:
           - name: runner
-            image: ghcr.io/falcondev-oss/actions-runner:latest@sha256:396bad82ba63cbf574293dccc3f936aae60ef55450721d58a11978abaebb7a89
+            image: ghcr.io/falcondev-oss/actions-runner:latest@sha256:b0cbd599b4124962a91930f85b0061adc5a5aaf874221d29741411fc661a259b
             imagePullPolicy: IfNotPresent
             command:
               - /home/runner/run.sh
