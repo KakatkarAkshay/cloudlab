@@ -18,3 +18,6 @@ crash.log
 crash.*.log
 .terraformrc
 terraform.rc
+
+# Local codex-lb encryption key (managed in Infisical/GitHub secret)
+encryption.key
