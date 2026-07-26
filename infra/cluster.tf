@@ -1,4 +1,31 @@
 locals {
+  # Keeps both vCPUs out of the deep idle state that silently wedges the
+  # OCI Ampere Altra vCPU a few minutes after boot. Low-priority busy loops
+  # keep a runnable task on each core (so the kernel never enters cpuidle),
+  # while yielding to real workloads. Replaces the role NetBird's constant
+  # tunnel traffic previously played in keeping the nodes alive.
+  cpu_keepalive_pod = {
+    apiVersion = "v1"
+    kind       = "Pod"
+    metadata = {
+      name      = "cpu-keepalive"
+      namespace = "kube-system"
+    }
+    spec = {
+      priorityClassName = "system-node-critical"
+      hostNetwork       = true
+      containers = [{
+        name    = "keepalive"
+        image   = "docker.io/library/busybox:1.36"
+        command = ["/bin/sh", "-c", "nice -n 19 sh -c 'while true; do :; done' & nice -n 19 sh -c 'while true; do :; done' & wait"]
+        resources = {
+          requests = { cpu = "10m", memory = "8Mi" }
+          limits   = { memory = "32Mi" }
+        }
+      }]
+    }
+  }
+
   cluster_versions   = jsondecode(file("${path.module}/../cluster-versions.json"))
   talos_image_object = "talos-${local.cluster_versions.talos}-${talos_image_factory_schematic.cluster.id}-oracle-arm64.qcow2"
   talos_image_path   = "${path.module}/build/${local.talos_image_object}"
@@ -750,10 +777,6 @@ data "talos_machine_configuration" "control_plane" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
-        install = {
-          grubUseUKICmdline = false
-          extraKernelArgs   = ["cpuidle.off=1"]
-        }
         kernel = {
           modules = [
             { name = "binfmt_misc" },
@@ -763,12 +786,7 @@ data "talos_machine_configuration" "control_plane" {
           "net.ipv4.ip_forward"          = "1"
           "net.ipv6.conf.all.forwarding" = "1"
         }
-        sysfs = {
-          "devices.system.cpu.cpu0.cpuidle.state1.disable" = "1"
-          "devices.system.cpu.cpu0.cpuidle.state2.disable" = "1"
-          "devices.system.cpu.cpu1.cpuidle.state1.disable" = "1"
-          "devices.system.cpu.cpu1.cpuidle.state2.disable" = "1"
-        }
+        pods = [local.cpu_keepalive_pod]
         time = {
           servers = ["169.254.169.254"]
         }
@@ -843,10 +861,6 @@ data "talos_machine_configuration" "worker" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
-        install = {
-          grubUseUKICmdline = false
-          extraKernelArgs   = ["cpuidle.off=1"]
-        }
         kernel = {
           modules = [
             { name = "binfmt_misc" },
@@ -856,12 +870,7 @@ data "talos_machine_configuration" "worker" {
           "net.ipv4.ip_forward"          = "1"
           "net.ipv6.conf.all.forwarding" = "1"
         }
-        sysfs = {
-          "devices.system.cpu.cpu0.cpuidle.state1.disable" = "1"
-          "devices.system.cpu.cpu0.cpuidle.state2.disable" = "1"
-          "devices.system.cpu.cpu1.cpuidle.state1.disable" = "1"
-          "devices.system.cpu.cpu1.cpuidle.state2.disable" = "1"
-        }
+        pods = [local.cpu_keepalive_pod]
         time = {
           servers = ["169.254.169.254"]
         }
