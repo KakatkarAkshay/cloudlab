@@ -1,4 +1,7 @@
 customization:
+  extraKernelArgs:
+    - console=ttyAMA0,9600
+    - console=tty0
   systemExtensions:
     officialExtensions:
       - siderolabs/binfmt-misc
