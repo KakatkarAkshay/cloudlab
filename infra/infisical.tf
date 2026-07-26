@@ -23,21 +23,7 @@ resource "infisical_identity" "external_secrets" {
   name                  = "cloudlab-eso"
   org_id                = var.infisical_org_id
   role                  = "no-access"
-  has_delete_protection = true
-}
-
-resource "infisical_identity_kubernetes_auth" "external_secrets" {
-  identity_id         = infisical_identity.external_secrets.id
-  token_reviewer_mode = "api"
-
-  kubernetes_host           = talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.host
-  kubernetes_ca_certificate = trimspace(base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.ca_certificate))
-
-  allowed_namespaces            = ["external-secrets"]
-  allowed_service_account_names = ["external-secrets"]
-
-  access_token_ttl     = 3600
-  access_token_max_ttl = 3600
+  has_delete_protection = false
 }
 
 resource "infisical_project_identity" "external_secrets" {
@@ -50,17 +36,41 @@ resource "infisical_project_identity" "external_secrets" {
   ]
 }
 
+resource "infisical_secret_folder" "cloudflare" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "cloudflare"
+  description      = "Cloudflare credentials for external-dns."
+}
+
+resource "infisical_secret_folder" "oauth2_proxy" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "oauth2-proxy"
+  description      = "oauth2-proxy configuration."
+}
+
+resource "infisical_secret_folder" "idrive_credentials" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "idrive-credentials"
+  description      = "iDrive E2 S3-compatible credentials."
+}
+
 resource "infisical_secret" "cloudflare_api_token" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
-  folder_path  = "/platform/cloudflare"
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.cloudflare.path
   name         = "API_TOKEN"
   value        = cloudflare_account_token.external_dns.value
 }
 
 resource "infisical_secret_folder" "oci_cloud_controller_manager" {
   project_id       = infisical_project.cloudlab.id
-  environment_slug = "prod"
+  environment_slug = var.infisical_environment_slug
   folder_path      = "/platform"
   name             = "oci-cloud-controller-manager"
   description      = "OCI Cloud Controller Manager configuration."
@@ -68,7 +78,7 @@ resource "infisical_secret_folder" "oci_cloud_controller_manager" {
 
 resource "infisical_secret_folder" "oci_tenancy_1" {
   project_id       = infisical_project.cloudlab.id
-  environment_slug = "prod"
+  environment_slug = var.infisical_environment_slug
   folder_path      = infisical_secret_folder.oci_cloud_controller_manager.path
   name             = "tenancy-1"
   description      = "OCI tenancy 1 placement."
@@ -76,7 +86,7 @@ resource "infisical_secret_folder" "oci_tenancy_1" {
 
 resource "infisical_secret_folder" "oci_tenancy_2" {
   project_id       = infisical_project.cloudlab.id
-  environment_slug = "prod"
+  environment_slug = var.infisical_environment_slug
   folder_path      = infisical_secret_folder.oci_cloud_controller_manager.path
   name             = "tenancy-2"
   description      = "OCI tenancy 2 placement."
@@ -84,7 +94,7 @@ resource "infisical_secret_folder" "oci_tenancy_2" {
 
 resource "infisical_secret" "oci_tenancy_1_compartment_id" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
+  env_slug     = var.infisical_environment_slug
   folder_path  = infisical_secret_folder.oci_tenancy_1.path
   name         = "COMPARTMENT_ID"
   value        = var.tenancy_1_compartment_ocid
@@ -92,7 +102,7 @@ resource "infisical_secret" "oci_tenancy_1_compartment_id" {
 
 resource "infisical_secret" "oci_tenancy_1_vcn_id" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
+  env_slug     = var.infisical_environment_slug
   folder_path  = infisical_secret_folder.oci_tenancy_1.path
   name         = "VCN_ID"
   value        = module.tenancy_1_vcn.id
@@ -100,7 +110,7 @@ resource "infisical_secret" "oci_tenancy_1_vcn_id" {
 
 resource "infisical_secret" "oci_tenancy_1_nlb_subnet_id" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
+  env_slug     = var.infisical_environment_slug
   folder_path  = infisical_secret_folder.oci_tenancy_1.path
   name         = "NLB_SUBNET_ID"
   value        = oci_core_subnet.nlb.id
@@ -108,7 +118,7 @@ resource "infisical_secret" "oci_tenancy_1_nlb_subnet_id" {
 
 resource "infisical_secret" "oci_tenancy_2_compartment_id" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
+  env_slug     = var.infisical_environment_slug
   folder_path  = infisical_secret_folder.oci_tenancy_2.path
   name         = "COMPARTMENT_ID"
   value        = var.tenancy_2_compartment_ocid
@@ -116,7 +126,7 @@ resource "infisical_secret" "oci_tenancy_2_compartment_id" {
 
 resource "infisical_secret" "oci_tenancy_2_vcn_id" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
+  env_slug     = var.infisical_environment_slug
   folder_path  = infisical_secret_folder.oci_tenancy_2.path
   name         = "VCN_ID"
   value        = module.tenancy_2_vcn.id
@@ -124,7 +134,7 @@ resource "infisical_secret" "oci_tenancy_2_vcn_id" {
 
 resource "infisical_secret" "oci_tenancy_2_nlb_subnet_id" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
+  env_slug     = var.infisical_environment_slug
   folder_path  = infisical_secret_folder.oci_tenancy_2.path
   name         = "NLB_SUBNET_ID"
   value        = oci_core_subnet.nlb_tenancy_2.id
@@ -136,8 +146,8 @@ ephemeral "random_bytes" "oauth2_proxy_cookie_secret" {
 
 resource "infisical_secret" "oauth2_proxy_cookie_secret" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
-  folder_path  = "/platform/oauth2-proxy"
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.oauth2_proxy.path
   name         = "COOKIE_SECRET"
 
   # Write-only: never stored in Terraform state. Bump the version to rotate.
@@ -147,8 +157,8 @@ resource "infisical_secret" "oauth2_proxy_cookie_secret" {
 
 resource "infisical_secret" "idrive_aws_region" {
   workspace_id = infisical_project.cloudlab.id
-  env_slug     = "prod"
-  folder_path  = "/platform/idrive-credentials"
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.idrive_credentials.path
   name         = "AWS_REGION"
   value        = var.idrive_aws_region
 }

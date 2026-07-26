@@ -21,10 +21,6 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.9"
     }
-    flux = {
-      source  = "fluxcd/flux"
-      version = "~> 1.9"
-    }
     netbird = {
       source  = "netbirdio/netbird"
       version = "~> 0.0.9"
@@ -36,14 +32,6 @@ terraform {
     infisical = {
       source  = "infisical/infisical"
       version = "~> 0.19"
-    }
-    github = {
-      source  = "integrations/github"
-      version = "~> 6.13"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.3"
     }
     random = {
       source  = "hashicorp/random"
