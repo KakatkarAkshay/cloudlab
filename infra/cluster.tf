@@ -571,6 +571,20 @@ resource "oci_core_route_table" "nlb_tenancy_2" {
   }
 }
 
+resource "oci_core_public_ip" "control_plane" {
+  provider = oci.tenancy_1
+
+  compartment_id = var.tenancy_1_compartment_ocid
+  display_name   = "cloudlab-control-plane"
+  lifetime       = "RESERVED"
+
+  # The NLB's reserved_ips block binds this IP to the NLB's floating private IP.
+  # OCI sets private_ip_id out-of-band, so ignore it to avoid unbinding on apply.
+  lifecycle {
+    ignore_changes = [private_ip_id]
+  }
+}
+
 resource "oci_network_load_balancer_network_load_balancer" "control_plane" {
   provider = oci.tenancy_1
 
@@ -580,6 +594,10 @@ resource "oci_network_load_balancer_network_load_balancer" "control_plane" {
   is_private                     = false
   is_preserve_source_destination = false
   nlb_ip_version                 = "IPV4_AND_IPV6"
+
+  reserved_ips {
+    id = oci_core_public_ip.control_plane.id
+  }
 }
 
 resource "oci_network_load_balancer_backend_set" "kubernetes" {

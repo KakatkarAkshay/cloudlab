@@ -25,6 +25,10 @@ terraform {
       source  = "fluxcd/flux"
       version = "~> 1.9"
     }
+    netbird = {
+      source  = "netbirdio/netbird"
+      version = "~> 0.0.9"
+    }
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 5.22"
