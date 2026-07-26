@@ -25,29 +25,6 @@ jobs:
     env:
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
-      TF_VAR_oci_private_key: ${{ secrets.OCI_PRIVATE_KEY }}
-      TF_VAR_oci_region: ${{ vars.OCI_REGION }}
-      TF_VAR_oci_fingerprint: ${{ vars.OCI_FINGERPRINT }}
-      TF_VAR_tenancy_1_ocid: ${{ secrets.TENANCY_1_OCID }}
-      TF_VAR_tenancy_1_user_ocid: ${{ secrets.TENANCY_1_USER_OCID }}
-      TF_VAR_tenancy_1_compartment_ocid: ${{ secrets.TENANCY_1_COMPARTMENT_OCID }}
-      TF_VAR_tenancy_2_ocid: ${{ secrets.TENANCY_2_OCID }}
-      TF_VAR_tenancy_2_user_ocid: ${{ secrets.TENANCY_2_USER_OCID }}
-      TF_VAR_tenancy_2_compartment_ocid: ${{ secrets.TENANCY_2_COMPARTMENT_OCID }}
-      TF_VAR_requestor_group_name: ${{ vars.OCI_REQUESTOR_GROUP_NAME }}
-      TF_VAR_infisical_org_id: ${{ vars.INFISICAL_ORG_ID }}
-      TF_VAR_infisical_host: ${{ vars.INFISICAL_HOST || 'https://app.infisical.com' }}
-      TF_VAR_cloudflare_zone: ${{ vars.CLOUDFLARE_ZONE }}
-      TF_VAR_idrive_aws_region: ${{ vars.IDRIVE_AWS_REGION }}
-      TF_VAR_idrive_access_key_id: ${{ secrets.IDRIVE_ACCESS_KEY_ID }}
-      TF_VAR_idrive_secret_access_key: ${{ secrets.IDRIVE_SECRET_ACCESS_KEY }}
-      TF_VAR_idrive_e2_endpoint: ${{ vars.IDRIVE_E2_ENDPOINT }}
-      TF_VAR_loki_bucket: ${{ vars.LOKI_BUCKET }}
-      TF_VAR_thanos_bucket: ${{ vars.THANOS_BUCKET }}
-      TF_VAR_github_packages_token: ${{ secrets.GHCR_READ_PAT }}
-      TF_VAR_github_runner_app_id: ${{ secrets.RUNNER_APP_ID }}
-      TF_VAR_github_runner_app_installation_id: ${{ secrets.RUNNER_APP_INSTALLATION_ID }}
-      TF_VAR_github_runner_app_private_key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
       TF_VAR_github_owner: ${{ github.repository_owner }}
       TF_VAR_github_repository: ${{ github.event.repository.name }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -60,6 +37,14 @@ jobs:
 
       - name: Set up tools
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+
+      - name: Export TF_VAR_* from secrets and variables
+        env:
+          SECRETS: ${{ toJSON(secrets) }}
+          VARS: ${{ toJSON(vars) }}
+        run: |
+          emit() { jq -r 'to_entries[] | select(.key | startswith("TF_VAR_")) | "TF_VAR_\(.key[7:] | ascii_downcase)<<__TFEOF__\n\(.value)\n__TFEOF__"'; }
+          { printf '%s' "$SECRETS" | emit; printf '%s' "$VARS" | emit; } >> "$GITHUB_ENV"
 
       - name: Configure OCI API key
         run: |
@@ -106,19 +91,11 @@ jobs:
     env:
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
-      TF_VAR_oci_private_key: ${{ secrets.OCI_PRIVATE_KEY }}
-      TF_VAR_oci_region: ${{ vars.OCI_REGION }}
-      TF_VAR_oci_fingerprint: ${{ vars.OCI_FINGERPRINT }}
-      TF_VAR_tenancy_1_ocid: ${{ secrets.TENANCY_1_OCID }}
-      TF_VAR_tenancy_1_user_ocid: ${{ secrets.TENANCY_1_USER_OCID }}
       TF_VAR_github_owner: ${{ github.repository_owner }}
       TF_VAR_github_repository: ${{ github.event.repository.name }}
-      TF_VAR_infisical_host: ${{ vars.INFISICAL_HOST || 'https://app.infisical.com' }}
-      TF_VAR_oauth2_client_id: ${{ secrets.OAUTH2_PROXY_CLIENT_ID }}
-      TF_VAR_oauth2_client_secret: ${{ secrets.OAUTH2_PROXY_CLIENT_SECRET }}
-      TF_VAR_oauth2_authorized_emails: ${{ secrets.OAUTH2_PROXY_AUTHORIZED_EMAILS }}
-      GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       INFISICAL_MACHINE_IDENTITY_ID: ${{ vars.INFISICAL_MACHINE_IDENTITY_ID }}
+      GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -126,6 +103,14 @@ jobs:
 
       - name: Set up tools
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+
+      - name: Export TF_VAR_* from secrets and variables
+        env:
+          SECRETS: ${{ toJSON(secrets) }}
+          VARS: ${{ toJSON(vars) }}
+        run: |
+          emit() { jq -r 'to_entries[] | select(.key | startswith("TF_VAR_")) | "TF_VAR_\(.key[7:] | ascii_downcase)<<__TFEOF__\n\(.value)\n__TFEOF__"'; }
+          { printf '%s' "$SECRETS" | emit; printf '%s' "$VARS" | emit; } >> "$GITHUB_ENV"
 
       - name: Configure OCI API key
         run: |
