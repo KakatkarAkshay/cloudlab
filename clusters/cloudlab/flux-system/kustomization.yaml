@@ -63,23 +63,3 @@ patches:
                 resources:
                   requests:
                     memory: 128Mi
-  - target:
-      kind: Deployment
-      name: (helm-controller|kustomize-controller)
-    patch: |
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: controller
-      spec:
-        template:
-          spec:
-            containers:
-              - name: manager
-                args:
-                  - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
-                  - --watch-all-namespaces=true
-                  - --log-level=info
-                  - --log-encoding=json
-                  - --enable-leader-election
-                  - --concurrent=1
