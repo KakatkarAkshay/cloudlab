@@ -9,8 +9,7 @@ resource "github_repository_deploy_key" "flux" {
   read_only  = false
 }
 
-# Tracks the Talos image identities from the infra stage. When the image
-# (and therefore the nodes) is rebuilt, the cluster is re-bootstrapped.
+# Re-bootstraps the cluster when the Talos image changes.
 resource "terraform_data" "talos_images" {
   input = [
     local.infra.talos_image_tenancy_1_id,
