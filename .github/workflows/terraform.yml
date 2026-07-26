@@ -81,7 +81,7 @@ jobs:
         run: terraform validate
 
       - name: Plan
-        run: terraform plan -input=false -no-color -replace=oci_core_instance.control_plane -replace=oci_core_instance.worker -out=tfplan
+        run: terraform plan -input=false -no-color -out=tfplan
 
       - name: Apply
         if: github.event_name != 'pull_request'

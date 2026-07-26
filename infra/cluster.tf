@@ -17,7 +17,7 @@ locals {
       containers = [{
         name    = "keepalive"
         image   = "docker.io/library/busybox:1.36"
-        command = ["/bin/sh", "-c", "nice -n 19 sh -c 'while true; do :; done' & nice -n 19 sh -c 'while true; do :; done' & wait"]
+        command = ["/bin/sh", "-c", "i=0; while [ $i -lt $(nproc) ]; do taskset -c $i nice -n 19 sh -c 'while true; do :; done' & i=$((i+1)); done; wait"]
         resources = {
           requests = { cpu = "10m", memory = "8Mi" }
           limits   = { memory = "32Mi" }
