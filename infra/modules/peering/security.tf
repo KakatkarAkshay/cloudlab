@@ -37,6 +37,18 @@ resource "oci_core_security_list" "tenancy_1" {
     description = "Allow IPv6 traffic from the acceptor VCN"
   }
 
+  dynamic "ingress_security_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      protocol    = "all"
+      source      = ingress_security_rules.value
+      source_type = "CIDR_BLOCK"
+      stateless   = false
+      description = "Allow traffic from the local network"
+    }
+  }
+
   egress_security_rules {
     protocol         = "all"
     destination      = var.tenancy_1_vcn_cidr
@@ -107,6 +119,18 @@ resource "oci_core_security_list" "tenancy_2" {
     source_type = "CIDR_BLOCK"
     stateless   = false
     description = "Allow IPv6 traffic from the requestor VCN"
+  }
+
+  dynamic "ingress_security_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      protocol    = "all"
+      source      = ingress_security_rules.value
+      source_type = "CIDR_BLOCK"
+      stateless   = false
+      description = "Allow traffic from the local network"
+    }
   }
 
   egress_security_rules {

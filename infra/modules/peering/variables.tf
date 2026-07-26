@@ -22,6 +22,10 @@ variable "tenancy_1_subnet_cidr" {
   type = string
 }
 
+variable "tenancy_1_drg_id" {
+  type = string
+}
+
 variable "tenancy_2_ocid" {
   type = string
 }
@@ -44,6 +48,14 @@ variable "tenancy_2_vcn_ipv6_cidr" {
 
 variable "tenancy_2_subnet_cidr" {
   type = string
+}
+
+variable "tenancy_2_drg_id" {
+  type = string
+}
+
+variable "local_network_cidrs" {
+  type = list(string)
 }
 
 variable "requestor_group_name" {

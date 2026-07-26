@@ -45,6 +45,26 @@ variable "tenancy_2_compartment_ocid" {
   type        = string
 }
 
+variable "openwrt_public_ip" {
+  description = "Public IPv4 address of the OpenWrt router used as the OCI CPE."
+  type        = string
+
+  validation {
+    condition     = can(cidrhost("${var.openwrt_public_ip}/32", 0))
+    error_message = "openwrt_public_ip must be a valid IPv4 address."
+  }
+}
+
+variable "local_network_cidrs" {
+  description = "Local IPv4 CIDRs reachable behind the OpenWrt router."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.local_network_cidrs) > 0 && alltrue([for cidr in var.local_network_cidrs : can(cidrnetmask(cidr))])
+    error_message = "local_network_cidrs must contain at least one valid IPv4 CIDR."
+  }
+}
+
 variable "requestor_group_name" {
   description = "Name of the tenancy 1 IAM group authorized to connect the LPGs, for example Administrators."
   type        = string
