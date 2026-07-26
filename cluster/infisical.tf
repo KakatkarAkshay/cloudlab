@@ -1,7 +1,11 @@
 # Attaches Kubernetes auth to the external-secrets Infisical identity. Infisical
 # reaches the API server to validate token reviews, so this must run in the
-# cluster stage, once the control plane is up and reachable.
+# cluster stage, once the control plane is up and reachable. Ordered after the
+# flux bootstrap so the API server has been serving for a while before
+# Infisical's servers connect (avoids a race right behind the kubeconfig).
 resource "infisical_identity_kubernetes_auth" "external_secrets" {
+  depends_on = [flux_bootstrap_git.cluster]
+
   identity_id         = local.infra.infisical_external_secrets_identity_id
   token_reviewer_mode = "api"
 
