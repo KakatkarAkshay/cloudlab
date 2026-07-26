@@ -145,6 +145,12 @@ variable "github_runner_app_private_key" {
   sensitive   = true
 }
 
+variable "codex_lb_encryption_key" {
+  description = "Fernet key used by codex-lb to encrypt application data."
+  type        = string
+  sensitive   = true
+}
+
 variable "github_owner" {
   description = "GitHub account that owns the CloudLab repository."
   type        = string

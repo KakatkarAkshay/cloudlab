@@ -26,6 +26,13 @@ resource "infisical_secret_folder" "github_actions_runner" {
   name             = "github-actions-runner"
 }
 
+resource "infisical_secret_folder" "codex_lb" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = infisical_secret_folder.apps.path
+  name             = "codex-lb"
+}
+
 resource "infisical_secret" "idrive_access_key_id" {
   workspace_id = infisical_project.cloudlab.id
   env_slug     = var.infisical_environment_slug
@@ -104,4 +111,12 @@ resource "infisical_secret" "github_runner_app_private_key" {
   folder_path  = infisical_secret_folder.github_actions_runner.path
   name         = "GITHUB_APP_PRIVATE_KEY"
   value        = var.github_runner_app_private_key
+}
+
+resource "infisical_secret" "codex_lb_encryption_key" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.codex_lb.path
+  name         = "ENCRYPTION_KEY"
+  value        = var.codex_lb_encryption_key
 }
