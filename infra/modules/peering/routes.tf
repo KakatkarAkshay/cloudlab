@@ -28,6 +28,16 @@ resource "oci_core_route_table" "tenancy_1" {
     destination_type  = "CIDR_BLOCK"
     network_entity_id = oci_core_internet_gateway.tenancy_1.id
   }
+
+  dynamic "route_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      destination       = route_rules.value
+      destination_type  = "CIDR_BLOCK"
+      network_entity_id = var.tenancy_1_drg_id
+    }
+  }
 }
 
 resource "oci_core_route_table" "tenancy_2" {
@@ -59,6 +69,16 @@ resource "oci_core_route_table" "tenancy_2" {
     destination       = "::/0"
     destination_type  = "CIDR_BLOCK"
     network_entity_id = oci_core_internet_gateway.tenancy_2.id
+  }
+
+  dynamic "route_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      destination       = route_rules.value
+      destination_type  = "CIDR_BLOCK"
+      network_entity_id = var.tenancy_2_drg_id
+    }
   }
 }
 

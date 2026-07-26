@@ -9,6 +9,9 @@ tenancy_2_ocid             = "ocid1.tenancy.oc1..replace-me"
 tenancy_2_user_ocid        = "ocid1.user.oc1..replace-me"
 tenancy_2_compartment_ocid = "ocid1.compartment.oc1..replace-me"
 
+openwrt_public_ip  = "203.0.113.10"
+local_network_cidrs = ["192.168.10.0/24"]
+
 requestor_group_name = "Administrators"
 
 infisical_org_id = "replace-me"

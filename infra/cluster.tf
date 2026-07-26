@@ -537,6 +537,16 @@ resource "oci_core_route_table" "nlb" {
     destination_type  = "CIDR_BLOCK"
     network_entity_id = module.cross_tenancy_peering.tenancy_1_local_peering_gateway_id
   }
+
+  dynamic "route_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      destination       = route_rules.value
+      destination_type  = "CIDR_BLOCK"
+      network_entity_id = module.tenancy_1_site_to_site_vpn.drg_id
+    }
+  }
 }
 
 resource "oci_core_route_table" "nlb_tenancy_2" {
@@ -568,6 +578,16 @@ resource "oci_core_route_table" "nlb_tenancy_2" {
     destination       = module.tenancy_1_vcn.ipv6_cidr_block
     destination_type  = "CIDR_BLOCK"
     network_entity_id = module.cross_tenancy_peering.tenancy_2_local_peering_gateway_id
+  }
+
+  dynamic "route_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      destination       = route_rules.value
+      destination_type  = "CIDR_BLOCK"
+      network_entity_id = module.tenancy_2_site_to_site_vpn.drg_id
+    }
   }
 }
 
@@ -985,4 +1005,3 @@ resource "oci_core_instance" "worker" {
     ignore_changes = [metadata["user_data"]]
   }
 }
-
