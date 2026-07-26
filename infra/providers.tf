@@ -18,10 +18,6 @@ provider "oci" {
   region       = var.oci_region
 }
 
-provider "netbird" {
-  token = var.netbird_token
-}
-
 # Reads CLOUDFLARE_API_TOKEN from the environment.
 provider "cloudflare" {}
 

@@ -21,10 +21,6 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.9"
     }
-    netbird = {
-      source  = "netbirdio/netbird"
-      version = "~> 0.0.9"
-    }
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 5.22"
