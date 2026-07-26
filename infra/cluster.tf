@@ -578,8 +578,7 @@ resource "oci_core_public_ip" "control_plane" {
   display_name   = "cloudlab-control-plane"
   lifetime       = "RESERVED"
 
-  # The NLB's reserved_ips block binds this IP to the NLB's floating private IP.
-  # OCI sets private_ip_id out-of-band, so ignore it to avoid unbinding on apply.
+  # reserved_ips binds this to the NLB out-of-band; ignore the resulting private_ip_id.
   lifecycle {
     ignore_changes = [private_ip_id]
   }
