@@ -1,4 +1,16 @@
-# Infisical validates token reviews against the live API server; after flux so it is settled.
+resource "kubernetes_secret_v1" "infisical_external_secrets_identity" {
+  depends_on = [flux_bootstrap_git.cluster]
+
+  metadata {
+    name      = "infisical-kubernetes-auth"
+    namespace = "flux-system"
+  }
+
+  data = {
+    identityId = infisical_identity_kubernetes_auth.external_secrets.identity_id
+  }
+}
+
 resource "infisical_identity_kubernetes_auth" "external_secrets" {
   depends_on = [flux_bootstrap_git.cluster]
 

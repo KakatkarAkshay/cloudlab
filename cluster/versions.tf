@@ -29,5 +29,13 @@ terraform {
       source  = "infisical/infisical"
       version = "~> 0.19"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.38"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.9"
+    }
   }
 }
