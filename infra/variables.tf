@@ -95,6 +95,63 @@ variable "idrive_aws_region" {
   type        = string
 }
 
+variable "idrive_access_key_id" {
+  description = "iDrive E2 S3 access key ID."
+  type        = string
+  sensitive   = true
+}
+
+variable "idrive_secret_access_key" {
+  description = "iDrive E2 S3 secret access key."
+  type        = string
+  sensitive   = true
+}
+
+variable "idrive_e2_endpoint" {
+  description = "iDrive E2 S3 endpoint URL."
+  type        = string
+}
+
+variable "loki_bucket" {
+  description = "iDrive E2 bucket for Loki storage."
+  type        = string
+}
+
+variable "thanos_bucket" {
+  description = "iDrive E2 bucket for Thanos object storage."
+  type        = string
+}
+
+variable "github_packages_username" {
+  description = "Username for GHCR image pulls (any value with a valid PAT)."
+  type        = string
+  default     = "cloudlab"
+}
+
+variable "github_packages_token" {
+  description = "GHCR read PAT for image pulls."
+  type        = string
+  sensitive   = true
+}
+
+variable "github_runner_app_id" {
+  description = "GitHub App ID for the Actions Runner Controller."
+  type        = string
+  sensitive   = true
+}
+
+variable "github_runner_app_installation_id" {
+  description = "GitHub App installation ID for the Actions Runner Controller."
+  type        = string
+  sensitive   = true
+}
+
+variable "github_runner_app_private_key" {
+  description = "GitHub App private key (PEM) for the Actions Runner Controller."
+  type        = string
+  sensitive   = true
+}
+
 variable "github_owner" {
   description = "GitHub account that owns the CloudLab repository."
   type        = string

@@ -40,6 +40,15 @@ jobs:
       TF_VAR_infisical_host: ${{ vars.INFISICAL_HOST || 'https://app.infisical.com' }}
       TF_VAR_cloudflare_zone: ${{ vars.CLOUDFLARE_ZONE }}
       TF_VAR_idrive_aws_region: ${{ vars.IDRIVE_AWS_REGION }}
+      TF_VAR_idrive_access_key_id: ${{ secrets.IDRIVE_ACCESS_KEY_ID }}
+      TF_VAR_idrive_secret_access_key: ${{ secrets.IDRIVE_SECRET_ACCESS_KEY }}
+      TF_VAR_idrive_e2_endpoint: ${{ vars.IDRIVE_E2_ENDPOINT }}
+      TF_VAR_loki_bucket: ${{ vars.LOKI_BUCKET }}
+      TF_VAR_thanos_bucket: ${{ vars.THANOS_BUCKET }}
+      TF_VAR_github_packages_token: ${{ secrets.GHCR_READ_PAT }}
+      TF_VAR_github_runner_app_id: ${{ secrets.RUNNER_APP_ID }}
+      TF_VAR_github_runner_app_installation_id: ${{ secrets.RUNNER_APP_INSTALLATION_ID }}
+      TF_VAR_github_runner_app_private_key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
       TF_VAR_github_owner: ${{ github.repository_owner }}
       TF_VAR_github_repository: ${{ github.event.repository.name }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
