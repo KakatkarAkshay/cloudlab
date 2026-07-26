@@ -750,9 +750,6 @@ data "talos_machine_configuration" "control_plane" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
-        install = {
-          extraKernelArgs = ["cpuidle.off=1"]
-        }
         kernel = {
           modules = [
             { name = "binfmt_misc" },
@@ -836,9 +833,6 @@ data "talos_machine_configuration" "worker" {
     yamlencode({
       machine = {
         certSANs = local.cluster_api_addresses
-        install = {
-          extraKernelArgs = ["cpuidle.off=1"]
-        }
         kernel = {
           modules = [
             { name = "binfmt_misc" },
