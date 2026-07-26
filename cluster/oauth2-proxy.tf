@@ -1,5 +1,5 @@
 resource "random_bytes" "oauth2_proxy_cookie_secret" {
-  length = 32
+  length = 24
 }
 
 resource "kubernetes_namespace_v1" "oauth2_proxy" {
