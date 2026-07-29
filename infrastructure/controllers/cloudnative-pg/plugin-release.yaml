@@ -13,7 +13,7 @@ spec:
   chart:
     spec:
       chart: plugin-barman-cloud
-      version: 0.7.0
+      version: 0.7.1
       interval: 24h
       sourceRef:
         kind: HelmRepository
