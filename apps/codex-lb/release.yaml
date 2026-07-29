@@ -105,4 +105,7 @@ spec:
         enabled: true
       grafanaDashboard:
         enabled: true
-        folder: codex-lb
+        folder: Applications/Codex LB
+        titles:
+          codex-lb.json: Overview
+          ttft-breakdown.json: TTFT Breakdown
