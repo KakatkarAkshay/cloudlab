@@ -5,6 +5,13 @@ resource "infisical_secret_folder" "observability" {
   name             = "observability"
 }
 
+resource "infisical_secret_folder" "oauth2_proxy" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "oauth2-proxy"
+}
+
 resource "infisical_secret_folder" "github_packages" {
   project_id       = infisical_project.cloudlab.id
   environment_slug = var.infisical_environment_slug
@@ -71,6 +78,22 @@ resource "infisical_secret" "thanos_bucket" {
   folder_path  = infisical_secret_folder.observability.path
   name         = "THANOS_BUCKET"
   value        = var.thanos_bucket
+}
+
+resource "infisical_secret" "oauth2_client_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.oauth2_proxy.path
+  name         = "CLIENT_ID"
+  value        = var.oauth2_client_id
+}
+
+resource "infisical_secret" "oauth2_client_secret" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.oauth2_proxy.path
+  name         = "CLIENT_SECRET"
+  value        = var.oauth2_client_secret
 }
 
 resource "infisical_secret" "github_packages_username" {

@@ -98,6 +98,18 @@ variable "infisical_auth_method" {
   }
 }
 
+variable "oauth2_client_id" {
+  description = "Google OAuth client ID shared by oauth2-proxy and Grafana."
+  type        = string
+  sensitive   = true
+}
+
+variable "oauth2_client_secret" {
+  description = "Google OAuth client secret shared by oauth2-proxy and Grafana."
+  type        = string
+  sensitive   = true
+}
+
 variable "cloudflare_zone" {
   description = "Cloudflare DNS zone served by the cluster."
   type        = string
