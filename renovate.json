@@ -41,6 +41,7 @@
       "enabled": false
     },
     {
+      "matchManagers": ["flux", "kubernetes"],
       "matchDatasources": ["docker"],
       "pinDigests": true
     },
