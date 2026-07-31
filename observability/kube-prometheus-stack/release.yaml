@@ -24,6 +24,82 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 3
+  postRenderers:
+    # unlabelled configmaps are ignored by the dashboard sidecar
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-kubelet
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-scheduler
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-grafana-overview
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-k8s-coredns
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-proxy
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          # swap columns; Talos runs without swap
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-k8s-resources-pod
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-k8s-resources-namespace
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-k8s-resources-node
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          # no macOS or AIX nodes
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-nodes-darwin
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-nodes-aix
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
   values:
     grafana:
       # admin password is chart-generated; read it from the kube-prometheus-stack-grafana secret
