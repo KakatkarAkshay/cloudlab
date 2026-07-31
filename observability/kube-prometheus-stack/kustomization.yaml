@@ -8,3 +8,69 @@ resources:
   - release.yaml
   - gateway.yaml
   - route.yaml
+configMapGenerator:
+  # replaces the chart copies, which query metrics removed from Kubernetes
+  - name: grafana-dashboard-kubelet
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - kubelet-patched.json=dashboards/kubelet.json
+  - name: grafana-dashboard-scheduler
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - scheduler-patched.json=dashboards/scheduler.json
+  - name: grafana-dashboard-grafana-overview
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - grafana-overview-patched.json=dashboards/grafana-overview.json
+  - name: grafana-dashboard-coredns
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - coredns-patched.json=dashboards/coredns.json
+  - name: grafana-dashboard-proxy
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - proxy-patched.json=dashboards/proxy.json
+  - name: grafana-dashboard-k8s-resources-pod
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - k8s-resources-pod-patched.json=dashboards/k8s-resources-pod.json
+  - name: grafana-dashboard-k8s-resources-namespace
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - k8s-resources-namespace-patched.json=dashboards/k8s-resources-namespace.json
+  - name: grafana-dashboard-k8s-resources-node
+    namespace: observability
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - k8s-resources-node-patched.json=dashboards/k8s-resources-node.json
