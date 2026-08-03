@@ -54,6 +54,8 @@ module "tenancy_1_site_to_site_vpn" {
   vcn_id              = module.tenancy_1_vcn.id
   cpe_public_ip       = var.openwrt_public_ip
   local_network_cidrs = var.local_network_cidrs
+  customer_bgp_asn    = var.openwrt_bgp_asn
+  tunnel_bgp_sessions = var.tenancy_1_vpn_tunnel_bgp_sessions
   display_name        = "cloudlab-tenancy-1-vpn"
 
   providers = {
@@ -68,6 +70,8 @@ module "tenancy_2_site_to_site_vpn" {
   vcn_id              = module.tenancy_2_vcn.id
   cpe_public_ip       = var.openwrt_public_ip
   local_network_cidrs = var.local_network_cidrs
+  customer_bgp_asn    = var.openwrt_bgp_asn
+  tunnel_bgp_sessions = var.tenancy_2_vpn_tunnel_bgp_sessions
   display_name        = "cloudlab-tenancy-2-vpn"
 
   providers = {

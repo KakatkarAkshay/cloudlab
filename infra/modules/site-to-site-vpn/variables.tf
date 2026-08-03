@@ -19,12 +19,43 @@ variable "cpe_public_ip" {
 }
 
 variable "local_network_cidrs" {
-  description = "Local IPv4 CIDRs routed through the OpenWrt router."
+  description = "Fallback static IPv4 CIDRs retained on the IPSec connection while its tunnels use BGP."
   type        = list(string)
 
   validation {
     condition     = length(var.local_network_cidrs) > 0 && alltrue([for cidr in var.local_network_cidrs : can(cidrhost(cidr, 0))])
     error_message = "local_network_cidrs must contain at least one valid IPv4 CIDR."
+  }
+}
+
+variable "customer_bgp_asn" {
+  description = "BGP ASN used by the OpenWrt router."
+  type        = number
+
+  validation {
+    condition     = var.customer_bgp_asn >= 1 && var.customer_bgp_asn <= 4294967295 && var.customer_bgp_asn != 23456
+    error_message = "customer_bgp_asn must be a valid 2-byte or 4-byte ASN other than AS_TRANS (23456)."
+  }
+}
+
+variable "tunnel_bgp_sessions" {
+  description = "CPE and Oracle inside IPv4 interface addresses for the two BGP tunnels."
+  type = list(object({
+    customer_interface_ip = string
+    oracle_interface_ip   = string
+  }))
+
+  validation {
+    condition = length(var.tunnel_bgp_sessions) == 2 && alltrue([
+      for session in var.tunnel_bgp_sessions :
+      can(cidrnetmask(session.customer_interface_ip)) &&
+      can(cidrnetmask(session.oracle_interface_ip)) &&
+      contains(["30", "31"], split("/", session.customer_interface_ip)[1]) &&
+      split("/", session.customer_interface_ip)[1] == split("/", session.oracle_interface_ip)[1] &&
+      cidrhost(session.customer_interface_ip, 0) == cidrhost(session.oracle_interface_ip, 0) &&
+      session.customer_interface_ip != session.oracle_interface_ip
+    ])
+    error_message = "tunnel_bgp_sessions must contain two distinct CPE/Oracle IPv4 address pairs from matching /30 or /31 subnets."
   }
 }
 
