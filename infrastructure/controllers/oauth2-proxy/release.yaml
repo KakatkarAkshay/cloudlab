@@ -43,7 +43,7 @@ spec:
       cookie-secure: "true"
       cookie-samesite: lax
       cookie-refresh: 1h
-      cookie-expire: 12h
+      cookie-expire: 168h
       whitelist-domain: .kakatkarakshay.dev
       reverse-proxy: "true"
       set-xauthrequest: "true"
