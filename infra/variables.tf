@@ -65,6 +65,41 @@ variable "local_network_cidrs" {
   }
 }
 
+variable "openwrt_bgp_asn" {
+  description = "BGP ASN used by OpenWrt for the OCI VPN sessions."
+  type        = number
+  default     = 64512
+
+  validation {
+    condition     = var.openwrt_bgp_asn >= 1 && var.openwrt_bgp_asn <= 4294967295 && var.openwrt_bgp_asn != 23456
+    error_message = "openwrt_bgp_asn must be a valid 2-byte or 4-byte ASN other than AS_TRANS (23456)."
+  }
+}
+
+variable "tenancy_1_vpn_tunnel_bgp_sessions" {
+  description = "OpenWrt and Oracle inside IPv4 interface addresses for the tenancy 1 VPN tunnels."
+  type = list(object({
+    customer_interface_ip = string
+    oracle_interface_ip   = string
+  }))
+  default = [
+    { customer_interface_ip = "10.255.0.1/30", oracle_interface_ip = "10.255.0.2/30" },
+    { customer_interface_ip = "10.255.0.5/30", oracle_interface_ip = "10.255.0.6/30" },
+  ]
+}
+
+variable "tenancy_2_vpn_tunnel_bgp_sessions" {
+  description = "OpenWrt and Oracle inside IPv4 interface addresses for the tenancy 2 VPN tunnels."
+  type = list(object({
+    customer_interface_ip = string
+    oracle_interface_ip   = string
+  }))
+  default = [
+    { customer_interface_ip = "10.255.0.9/30", oracle_interface_ip = "10.255.0.10/30" },
+    { customer_interface_ip = "10.255.0.13/30", oracle_interface_ip = "10.255.0.14/30" },
+  ]
+}
+
 variable "requestor_group_name" {
   description = "Name of the tenancy 1 IAM group authorized to connect the LPGs, for example Administrators."
   type        = string

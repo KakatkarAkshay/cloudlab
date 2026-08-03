@@ -17,6 +17,7 @@ output "tunnels" {
       shared_secret = oci_core_ipsec_connection_tunnel_management.tunnel_1.shared_secret
       ike_version   = oci_core_ipsec_connection_tunnel_management.tunnel_1.ike_version
       routing       = oci_core_ipsec_connection_tunnel_management.tunnel_1.routing
+      bgp_session   = oci_core_ipsec_connection_tunnel_management.tunnel_1.bgp_session_info[0]
     },
     {
       display_name  = oci_core_ipsec_connection_tunnel_management.tunnel_2.display_name
@@ -24,6 +25,7 @@ output "tunnels" {
       shared_secret = oci_core_ipsec_connection_tunnel_management.tunnel_2.shared_secret
       ike_version   = oci_core_ipsec_connection_tunnel_management.tunnel_2.ike_version
       routing       = oci_core_ipsec_connection_tunnel_management.tunnel_2.routing
+      bgp_session   = oci_core_ipsec_connection_tunnel_management.tunnel_2.bgp_session_info[0]
     },
   ]
   sensitive = true

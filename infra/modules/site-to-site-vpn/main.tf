@@ -37,7 +37,13 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel_1" {
   tunnel_id    = data.oci_core_ipsec_connection_tunnels.openwrt.ip_sec_connection_tunnels[0].id
   display_name = "${var.display_name}-tunnel-1"
   ike_version  = "V2"
-  routing      = "STATIC"
+  routing      = "BGP"
+
+  bgp_session_info {
+    customer_bgp_asn      = tostring(var.customer_bgp_asn)
+    customer_interface_ip = var.tunnel_bgp_sessions[0].customer_interface_ip
+    oracle_interface_ip   = var.tunnel_bgp_sessions[0].oracle_interface_ip
+  }
 }
 
 resource "oci_core_ipsec_connection_tunnel_management" "tunnel_2" {
@@ -45,5 +51,11 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel_2" {
   tunnel_id    = data.oci_core_ipsec_connection_tunnels.openwrt.ip_sec_connection_tunnels[1].id
   display_name = "${var.display_name}-tunnel-2"
   ike_version  = "V2"
-  routing      = "STATIC"
+  routing      = "BGP"
+
+  bgp_session_info {
+    customer_bgp_asn      = tostring(var.customer_bgp_asn)
+    customer_interface_ip = var.tunnel_bgp_sessions[1].customer_interface_ip
+    oracle_interface_ip   = var.tunnel_bgp_sessions[1].oracle_interface_ip
+  }
 }

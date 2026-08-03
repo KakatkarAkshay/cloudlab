@@ -11,6 +11,17 @@ tenancy_2_compartment_ocid = "ocid1.compartment.oc1..replace-me"
 
 openwrt_public_ip  = "203.0.113.10"
 local_network_cidrs = ["192.168.10.0/24"]
+openwrt_bgp_asn     = 64512
+
+tenancy_1_vpn_tunnel_bgp_sessions = [
+  { customer_interface_ip = "10.255.0.1/30", oracle_interface_ip = "10.255.0.2/30" },
+  { customer_interface_ip = "10.255.0.5/30", oracle_interface_ip = "10.255.0.6/30" },
+]
+
+tenancy_2_vpn_tunnel_bgp_sessions = [
+  { customer_interface_ip = "10.255.0.9/30", oracle_interface_ip = "10.255.0.10/30" },
+  { customer_interface_ip = "10.255.0.13/30", oracle_interface_ip = "10.255.0.14/30" },
+]
 
 requestor_group_name = "Administrators"
 
