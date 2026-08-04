@@ -56,7 +56,7 @@ resource "talos_machine_configuration_apply" "worker" {
   node                        = local.infra.worker_private_ip
   endpoint                    = local.infra.cluster_api_ip
   client_configuration        = local.infra.talos_client_configuration
-  machine_configuration_input = local.infra.machine_configuration_worker
+  machine_configuration_input = local.infra.machine_configuration_control_plane
   config_patches = [
     yamlencode({
       machine = {

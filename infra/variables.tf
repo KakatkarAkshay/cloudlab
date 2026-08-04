@@ -76,6 +76,28 @@ variable "local_ipv6_cidrs" {
   }
 }
 
+variable "chimera_control_plane_ip" {
+  description = "IPv4 address of the Chimera control-plane node reachable over the site-to-site VPN."
+  type        = string
+  default     = "192.168.20.3"
+
+  validation {
+    condition     = can(cidrhost("${var.chimera_control_plane_ip}/32", 0))
+    error_message = "chimera_control_plane_ip must be a valid IPv4 address."
+  }
+}
+
+variable "chimera_control_plane_ipv6" {
+  description = "IPv6 address of the Chimera control-plane node reachable over the site-to-site VPN."
+  type        = string
+  default     = "fd51:86b9:78d0:20::3"
+
+  validation {
+    condition     = can(cidrhost("${var.chimera_control_plane_ipv6}/128", 0))
+    error_message = "chimera_control_plane_ipv6 must be a valid IPv6 address."
+  }
+}
+
 variable "openwrt_bgp_asn" {
   description = "BGP ASN used by OpenWrt for the OCI VPN sessions."
   type        = number

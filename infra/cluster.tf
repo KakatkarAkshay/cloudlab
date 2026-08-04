@@ -385,6 +385,30 @@ resource "oci_core_security_list" "nlb" {
     stateless        = false
     description      = "Worker IPv6 backends"
   }
+
+  dynamic "egress_security_rules" {
+    for_each = var.local_network_cidrs
+
+    content {
+      protocol         = "all"
+      destination      = egress_security_rules.value
+      destination_type = "CIDR_BLOCK"
+      stateless        = false
+      description      = "Local control-plane backends"
+    }
+  }
+
+  dynamic "egress_security_rules" {
+    for_each = var.local_ipv6_cidrs
+
+    content {
+      protocol         = "all"
+      destination      = egress_security_rules.value
+      destination_type = "CIDR_BLOCK"
+      stateless        = false
+      description      = "Local IPv6 control-plane backends"
+    }
+  }
 }
 
 resource "oci_core_security_list" "nlb_tenancy_2" {
@@ -735,6 +759,46 @@ resource "oci_network_load_balancer_backend" "kubernetes_ipv6" {
   name                     = "triton-kubernetes-ipv6"
 }
 
+resource "oci_network_load_balancer_backend" "kubernetes_scorpion" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.kubernetes.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = local.worker_ip
+  port                     = 6443
+  name                     = "scorpion"
+}
+
+resource "oci_network_load_balancer_backend" "kubernetes_scorpion_ipv6" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.kubernetes_ipv6.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = local.worker_ipv6
+  port                     = 6443
+  name                     = "scorpion-kubernetes-ipv6"
+}
+
+resource "oci_network_load_balancer_backend" "kubernetes_chimera" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.kubernetes.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = var.chimera_control_plane_ip
+  port                     = 6443
+  name                     = "chimera"
+}
+
+resource "oci_network_load_balancer_backend" "kubernetes_chimera_ipv6" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.kubernetes_ipv6.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = var.chimera_control_plane_ipv6
+  port                     = 6443
+  name                     = "chimera-kubernetes-ipv6"
+}
+
 resource "oci_network_load_balancer_backend" "talos" {
   provider = oci.tenancy_1
 
@@ -753,6 +817,46 @@ resource "oci_network_load_balancer_backend" "talos_ipv6" {
   ip_address               = local.control_plane_ipv6
   port                     = 50000
   name                     = "triton-talos-ipv6"
+}
+
+resource "oci_network_load_balancer_backend" "talos_scorpion" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.talos.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = local.worker_ip
+  port                     = 50000
+  name                     = "scorpion-talos"
+}
+
+resource "oci_network_load_balancer_backend" "talos_scorpion_ipv6" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.talos_ipv6.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = local.worker_ipv6
+  port                     = 50000
+  name                     = "scorpion-talos-ipv6"
+}
+
+resource "oci_network_load_balancer_backend" "talos_chimera" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.talos.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = var.chimera_control_plane_ip
+  port                     = 50000
+  name                     = "chimera-talos"
+}
+
+resource "oci_network_load_balancer_backend" "talos_chimera_ipv6" {
+  provider = oci.tenancy_1
+
+  backend_set_name         = oci_network_load_balancer_backend_set.talos_ipv6.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
+  ip_address               = var.chimera_control_plane_ipv6
+  port                     = 50000
+  name                     = "chimera-talos-ipv6"
 }
 
 resource "oci_network_load_balancer_listener" "kubernetes" {
@@ -812,7 +916,12 @@ data "talos_machine_configuration" "control_plane" {
             rotate-server-certificates = "true"
           }
           nodeIP = {
-            validSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
+            validSubnets = [
+              var.tenancy_1_vcn_cidr,
+              module.tenancy_1_vcn.ipv6_cidr_block,
+              var.tenancy_2_vcn_cidr,
+              module.tenancy_2_vcn.ipv6_cidr_block,
+            ]
           }
         }
       }
@@ -831,7 +940,12 @@ data "talos_machine_configuration" "control_plane" {
           }
         }
         etcd = {
-          advertisedSubnets = [var.tenancy_1_vcn_cidr, module.tenancy_1_vcn.ipv6_cidr_block]
+          advertisedSubnets = [
+            var.tenancy_1_vcn_cidr,
+            module.tenancy_1_vcn.ipv6_cidr_block,
+            var.tenancy_2_vcn_cidr,
+            module.tenancy_2_vcn.ipv6_cidr_block,
+          ]
           extraArgs = {
             listen-metrics-urls = "http://0.0.0.0:2381"
           }
@@ -983,7 +1097,7 @@ resource "oci_core_instance" "worker" {
   display_name        = "cloudlab-scorpion"
   shape               = "VM.Standard.A1.Flex"
   metadata = {
-    user_data = base64encode(data.talos_machine_configuration.worker.machine_configuration)
+    user_data = base64encode(data.talos_machine_configuration.control_plane.machine_configuration)
   }
 
   shape_config {
