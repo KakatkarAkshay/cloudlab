@@ -58,6 +58,10 @@ variable "local_network_cidrs" {
   type = list(string)
 }
 
+variable "local_ipv6_cidrs" {
+  type = list(string)
+}
+
 variable "requestor_group_name" {
   type = string
 }

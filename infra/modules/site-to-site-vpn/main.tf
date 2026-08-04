@@ -40,9 +40,11 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel_1" {
   routing      = "BGP"
 
   bgp_session_info {
-    customer_bgp_asn      = tostring(var.customer_bgp_asn)
-    customer_interface_ip = var.tunnel_bgp_sessions[0].customer_interface_ip
-    oracle_interface_ip   = var.tunnel_bgp_sessions[0].oracle_interface_ip
+    customer_bgp_asn        = tostring(var.customer_bgp_asn)
+    customer_interface_ip   = var.tunnel_bgp_sessions[0].customer_interface_ip
+    oracle_interface_ip     = var.tunnel_bgp_sessions[0].oracle_interface_ip
+    customer_interface_ipv6 = var.tunnel_bgp_sessions[0].customer_interface_ipv6
+    oracle_interface_ipv6   = var.tunnel_bgp_sessions[0].oracle_interface_ipv6
   }
 }
 
@@ -54,8 +56,10 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel_2" {
   routing      = "BGP"
 
   bgp_session_info {
-    customer_bgp_asn      = tostring(var.customer_bgp_asn)
-    customer_interface_ip = var.tunnel_bgp_sessions[1].customer_interface_ip
-    oracle_interface_ip   = var.tunnel_bgp_sessions[1].oracle_interface_ip
+    customer_bgp_asn        = tostring(var.customer_bgp_asn)
+    customer_interface_ip   = var.tunnel_bgp_sessions[1].customer_interface_ip
+    oracle_interface_ip     = var.tunnel_bgp_sessions[1].oracle_interface_ip
+    customer_interface_ipv6 = var.tunnel_bgp_sessions[1].customer_interface_ipv6
+    oracle_interface_ipv6   = var.tunnel_bgp_sessions[1].oracle_interface_ipv6
   }
 }

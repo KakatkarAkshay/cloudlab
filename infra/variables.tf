@@ -65,6 +65,17 @@ variable "local_network_cidrs" {
   }
 }
 
+variable "local_ipv6_cidrs" {
+  description = "Local IPv6 CIDRs reachable behind the OpenWrt router."
+  type        = list(string)
+  default     = ["fd51:86b9:78d0:20::/64"]
+
+  validation {
+    condition     = length(var.local_ipv6_cidrs) > 0 && alltrue([for cidr in var.local_ipv6_cidrs : can(cidrhost(cidr, 0)) && strcontains(cidr, ":")])
+    error_message = "local_ipv6_cidrs must contain at least one valid IPv6 CIDR."
+  }
+}
+
 variable "openwrt_bgp_asn" {
   description = "BGP ASN used by OpenWrt for the OCI VPN sessions."
   type        = number
@@ -77,26 +88,50 @@ variable "openwrt_bgp_asn" {
 }
 
 variable "tenancy_1_vpn_tunnel_bgp_sessions" {
-  description = "OpenWrt and Oracle inside IPv4 interface addresses for the tenancy 1 VPN tunnels."
+  description = "OpenWrt and Oracle inside interface addresses for the tenancy 1 VPN tunnels."
   type = list(object({
-    customer_interface_ip = string
-    oracle_interface_ip   = string
+    customer_interface_ip   = string
+    oracle_interface_ip     = string
+    customer_interface_ipv6 = string
+    oracle_interface_ipv6   = string
   }))
   default = [
-    { customer_interface_ip = "10.255.0.1/30", oracle_interface_ip = "10.255.0.2/30" },
-    { customer_interface_ip = "10.255.0.5/30", oracle_interface_ip = "10.255.0.6/30" },
+    {
+      customer_interface_ip   = "10.255.0.1/30"
+      oracle_interface_ip     = "10.255.0.2/30"
+      customer_interface_ipv6 = "fd51:86b9:78d0:ff01::1/127"
+      oracle_interface_ipv6   = "fd51:86b9:78d0:ff01::/127"
+    },
+    {
+      customer_interface_ip   = "10.255.0.5/30"
+      oracle_interface_ip     = "10.255.0.6/30"
+      customer_interface_ipv6 = "fd51:86b9:78d0:ff02::1/127"
+      oracle_interface_ipv6   = "fd51:86b9:78d0:ff02::/127"
+    },
   ]
 }
 
 variable "tenancy_2_vpn_tunnel_bgp_sessions" {
-  description = "OpenWrt and Oracle inside IPv4 interface addresses for the tenancy 2 VPN tunnels."
+  description = "OpenWrt and Oracle inside interface addresses for the tenancy 2 VPN tunnels."
   type = list(object({
-    customer_interface_ip = string
-    oracle_interface_ip   = string
+    customer_interface_ip   = string
+    oracle_interface_ip     = string
+    customer_interface_ipv6 = string
+    oracle_interface_ipv6   = string
   }))
   default = [
-    { customer_interface_ip = "10.255.0.9/30", oracle_interface_ip = "10.255.0.10/30" },
-    { customer_interface_ip = "10.255.0.13/30", oracle_interface_ip = "10.255.0.14/30" },
+    {
+      customer_interface_ip   = "10.255.0.9/30"
+      oracle_interface_ip     = "10.255.0.10/30"
+      customer_interface_ipv6 = "fd51:86b9:78d0:ff03::1/127"
+      oracle_interface_ipv6   = "fd51:86b9:78d0:ff03::/127"
+    },
+    {
+      customer_interface_ip   = "10.255.0.13/30"
+      oracle_interface_ip     = "10.255.0.14/30"
+      customer_interface_ipv6 = "fd51:86b9:78d0:ff04::1/127"
+      oracle_interface_ipv6   = "fd51:86b9:78d0:ff04::/127"
+    },
   ]
 }
 

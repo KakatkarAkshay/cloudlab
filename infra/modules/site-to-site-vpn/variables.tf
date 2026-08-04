@@ -39,10 +39,12 @@ variable "customer_bgp_asn" {
 }
 
 variable "tunnel_bgp_sessions" {
-  description = "CPE and Oracle inside IPv4 interface addresses for the two BGP tunnels."
+  description = "CPE and Oracle inside IPv4 and IPv6 interface addresses for the two BGP tunnels."
   type = list(object({
-    customer_interface_ip = string
-    oracle_interface_ip   = string
+    customer_interface_ip   = string
+    oracle_interface_ip     = string
+    customer_interface_ipv6 = string
+    oracle_interface_ipv6   = string
   }))
 
   validation {
@@ -53,9 +55,16 @@ variable "tunnel_bgp_sessions" {
       contains(["30", "31"], split("/", session.customer_interface_ip)[1]) &&
       split("/", session.customer_interface_ip)[1] == split("/", session.oracle_interface_ip)[1] &&
       cidrhost(session.customer_interface_ip, 0) == cidrhost(session.oracle_interface_ip, 0) &&
-      session.customer_interface_ip != session.oracle_interface_ip
+      session.customer_interface_ip != session.oracle_interface_ip &&
+      can(cidrhost(session.customer_interface_ipv6, 0)) &&
+      can(cidrhost(session.oracle_interface_ipv6, 0)) &&
+      tonumber(split("/", session.customer_interface_ipv6)[1]) >= 64 &&
+      tonumber(split("/", session.customer_interface_ipv6)[1]) <= 127 &&
+      split("/", session.customer_interface_ipv6)[1] == split("/", session.oracle_interface_ipv6)[1] &&
+      cidrhost(session.customer_interface_ipv6, 0) == cidrhost(session.oracle_interface_ipv6, 0) &&
+      session.customer_interface_ipv6 != session.oracle_interface_ipv6
     ])
-    error_message = "tunnel_bgp_sessions must contain two distinct CPE/Oracle IPv4 address pairs from matching /30 or /31 subnets."
+    error_message = "tunnel_bgp_sessions must contain two distinct CPE/Oracle IPv4 and IPv6 address pairs from matching subnets."
   }
 }
 

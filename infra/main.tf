@@ -99,6 +99,7 @@ module "cross_tenancy_peering" {
   tenancy_2_drg_id           = module.tenancy_2_site_to_site_vpn.drg_id
 
   local_network_cidrs = var.local_network_cidrs
+  local_ipv6_cidrs    = var.local_ipv6_cidrs
 
   requestor_group_name = var.requestor_group_name
   requestor_group_ocid = data.oci_identity_groups.requestor.groups[0].id
