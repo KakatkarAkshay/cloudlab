@@ -2,10 +2,10 @@ locals {
   cluster_versions   = jsondecode(file("${path.module}/../cluster-versions.json"))
   talos_image_object = "talos-${local.cluster_versions.talos}-${talos_image_factory_schematic.cluster.id}-oracle-arm64.qcow2"
   talos_image_path   = "${path.module}/build/${local.talos_image_object}"
-  control_plane_ip   = cidrhost(var.tenancy_1_subnet_cidr, 10)
-  worker_ip          = cidrhost(var.tenancy_2_subnet_cidr, 10)
-  control_plane_ipv6 = cidrhost(cidrsubnet(module.tenancy_1_vcn.ipv6_cidr_block, 8, 0), 10)
-  worker_ipv6        = cidrhost(cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 0), 10)
+  triton_ip          = cidrhost(var.tenancy_1_subnet_cidr, 10)
+  scorpion_ip        = cidrhost(var.tenancy_2_subnet_cidr, 10)
+  triton_ipv6        = cidrhost(cidrsubnet(module.tenancy_1_vcn.ipv6_cidr_block, 8, 0), 10)
+  scorpion_ipv6      = cidrhost(cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 0), 10)
   cluster_api_ip = one([
     for address in oci_network_load_balancer_network_load_balancer.control_plane.ip_addresses : address.ip_address
     if address.ip_version == "IPV4" && address.is_public
@@ -746,7 +746,7 @@ resource "oci_network_load_balancer_backend" "kubernetes" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.kubernetes.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.control_plane_ip
+  ip_address               = local.triton_ip
   port                     = 6443
   name                     = "triton"
 }
@@ -756,7 +756,7 @@ resource "oci_network_load_balancer_backend" "kubernetes_ipv6" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.kubernetes_ipv6.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.control_plane_ipv6
+  ip_address               = local.triton_ipv6
   port                     = 6443
   name                     = "triton-kubernetes-ipv6"
 }
@@ -766,7 +766,7 @@ resource "oci_network_load_balancer_backend" "kubernetes_scorpion" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.kubernetes.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.worker_ip
+  ip_address               = local.scorpion_ip
   port                     = 6443
   name                     = "scorpion"
 }
@@ -776,7 +776,7 @@ resource "oci_network_load_balancer_backend" "kubernetes_scorpion_ipv6" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.kubernetes_ipv6.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.worker_ipv6
+  ip_address               = local.scorpion_ipv6
   port                     = 6443
   name                     = "scorpion-kubernetes-ipv6"
 }
@@ -806,7 +806,7 @@ resource "oci_network_load_balancer_backend" "talos" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.talos.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.control_plane_ip
+  ip_address               = local.triton_ip
   port                     = 50000
   name                     = "triton-talos"
 }
@@ -816,7 +816,7 @@ resource "oci_network_load_balancer_backend" "talos_ipv6" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.talos_ipv6.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.control_plane_ipv6
+  ip_address               = local.triton_ipv6
   port                     = 50000
   name                     = "triton-talos-ipv6"
 }
@@ -826,7 +826,7 @@ resource "oci_network_load_balancer_backend" "talos_scorpion" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.talos.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.worker_ip
+  ip_address               = local.scorpion_ip
   port                     = 50000
   name                     = "scorpion-talos"
 }
@@ -836,7 +836,7 @@ resource "oci_network_load_balancer_backend" "talos_scorpion_ipv6" {
 
   backend_set_name         = oci_network_load_balancer_backend_set.talos_ipv6.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.control_plane.id
-  ip_address               = local.worker_ipv6
+  ip_address               = local.scorpion_ipv6
   port                     = 50000
   name                     = "scorpion-talos-ipv6"
 }
@@ -892,7 +892,7 @@ resource "talos_machine_secrets" "cluster" {
 data "talos_machine_configuration" "control_plane" {
   cluster_name       = var.cluster_name
   machine_type       = "controlplane"
-  cluster_endpoint   = "https://${local.control_plane_ip}:6443"
+  cluster_endpoint   = "https://${local.triton_ip}:6443"
   machine_secrets    = talos_machine_secrets.cluster.machine_secrets
   talos_version      = local.cluster_versions.talos
   kubernetes_version = local.cluster_versions.kubernetes
@@ -985,7 +985,7 @@ data "talos_machine_configuration" "control_plane" {
 data "talos_machine_configuration" "worker" {
   cluster_name       = var.cluster_name
   machine_type       = "worker"
-  cluster_endpoint   = "https://${local.control_plane_ip}:6443"
+  cluster_endpoint   = "https://${local.triton_ip}:6443"
   machine_secrets    = talos_machine_secrets.cluster.machine_secrets
   talos_version      = local.cluster_versions.talos
   kubernetes_version = local.cluster_versions.kubernetes
@@ -1036,7 +1036,7 @@ data "talos_machine_configuration" "worker" {
   ]
 }
 
-resource "oci_core_instance" "control_plane" {
+resource "oci_core_instance" "triton" {
   provider = oci.tenancy_1
 
   depends_on = [oci_core_shape_management.talos_tenancy_1]
@@ -1058,11 +1058,11 @@ resource "oci_core_instance" "control_plane" {
     assign_ipv6ip    = true
     assign_public_ip = "false"
     hostname_label   = "triton"
-    private_ip       = local.control_plane_ip
+    private_ip       = local.triton_ip
     subnet_id        = module.cross_tenancy_peering.tenancy_1_subnet_id
 
     ipv6address_ipv6subnet_cidr_pair_details {
-      ipv6address     = local.control_plane_ipv6
+      ipv6address     = local.triton_ipv6
       ipv6subnet_cidr = cidrsubnet(module.tenancy_1_vcn.ipv6_cidr_block, 8, 0)
     }
   }
@@ -1089,7 +1089,7 @@ resource "oci_core_instance" "control_plane" {
   }
 }
 
-resource "oci_core_instance" "worker" {
+resource "oci_core_instance" "scorpion" {
   provider = oci.tenancy_2
 
   depends_on = [oci_core_shape_management.talos_tenancy_2]
@@ -1111,11 +1111,11 @@ resource "oci_core_instance" "worker" {
     assign_ipv6ip    = true
     assign_public_ip = "false"
     hostname_label   = "scorpion"
-    private_ip       = local.worker_ip
+    private_ip       = local.scorpion_ip
     subnet_id        = module.cross_tenancy_peering.tenancy_2_subnet_id
 
     ipv6address_ipv6subnet_cidr_pair_details {
-      ipv6address     = local.worker_ipv6
+      ipv6address     = local.scorpion_ipv6
       ipv6subnet_cidr = cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 0)
     }
   }

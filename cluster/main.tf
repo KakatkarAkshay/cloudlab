@@ -10,7 +10,7 @@ resource "github_repository_deploy_key" "flux" {
 }
 
 resource "talos_machine_bootstrap" "cluster" {
-  node                 = local.infra.control_plane_private_ip
+  node                 = local.infra.triton_private_ip
   endpoint             = local.infra.cluster_api_ip
   client_configuration = local.infra.talos_client_configuration
 
@@ -19,10 +19,10 @@ resource "talos_machine_bootstrap" "cluster" {
   }
 }
 
-resource "talos_machine_configuration_apply" "control_plane" {
+resource "talos_machine_configuration_apply" "triton" {
   depends_on = [talos_machine_bootstrap.cluster]
 
-  node                        = local.infra.control_plane_private_ip
+  node                        = local.infra.triton_private_ip
   endpoint                    = local.infra.cluster_api_ip
   client_configuration        = local.infra.talos_client_configuration
   machine_configuration_input = local.infra.machine_configuration_control_plane
@@ -31,7 +31,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
       machine = {
         kubelet = {
           extraArgs = {
-            provider-id = "oci://${local.infra.control_plane_instance_id}"
+            provider-id = "oci://${local.infra.triton_instance_id}"
           }
         }
       }
@@ -39,10 +39,10 @@ resource "talos_machine_configuration_apply" "control_plane" {
   ]
 }
 
-resource "talos_machine_configuration_apply" "worker" {
+resource "talos_machine_configuration_apply" "scorpion" {
   depends_on = [talos_machine_bootstrap.cluster]
 
-  node                        = local.infra.worker_private_ip
+  node                        = local.infra.scorpion_private_ip
   endpoint                    = local.infra.cluster_api_ip
   client_configuration        = local.infra.talos_client_configuration
   machine_configuration_input = local.infra.machine_configuration_control_plane
@@ -51,7 +51,7 @@ resource "talos_machine_configuration_apply" "worker" {
       machine = {
         kubelet = {
           extraArgs = {
-            provider-id = "oci://${local.infra.worker_instance_id}"
+            provider-id = "oci://${local.infra.scorpion_instance_id}"
           }
         }
       }
@@ -61,11 +61,11 @@ resource "talos_machine_configuration_apply" "worker" {
 
 resource "talos_cluster_kubeconfig" "cluster" {
   depends_on = [
-    talos_machine_configuration_apply.control_plane,
-    talos_machine_configuration_apply.worker,
+    talos_machine_configuration_apply.triton,
+    talos_machine_configuration_apply.scorpion,
   ]
 
-  node                 = local.infra.control_plane_private_ip
+  node                 = local.infra.triton_private_ip
   endpoint             = local.infra.cluster_api_ip
   client_configuration = local.infra.talos_client_configuration
 

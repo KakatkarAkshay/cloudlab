@@ -4,7 +4,7 @@ resource "oci_identity_dynamic_group" "ccm_tenancy_1" {
   compartment_id = var.tenancy_1_ocid
   name           = "CloudLabCCM"
   description    = "Allow the CloudLab Triton instance to run OCI CCM."
-  matching_rule  = "ALL {instance.id = '${oci_core_instance.control_plane.id}'}"
+  matching_rule  = "ALL {instance.id = '${oci_core_instance.triton.id}'}"
 }
 
 resource "oci_identity_policy" "ccm_tenancy_1" {
@@ -55,7 +55,7 @@ resource "oci_identity_dynamic_group" "ccm_tenancy_2" {
   compartment_id = var.tenancy_2_ocid
   name           = "CloudLabCCM"
   description    = "Allow the CloudLab Scorpion instance to run OCI CCM."
-  matching_rule  = "ALL {instance.id = '${oci_core_instance.worker.id}'}"
+  matching_rule  = "ALL {instance.id = '${oci_core_instance.scorpion.id}'}"
 }
 
 resource "oci_identity_policy" "ccm_tenancy_2" {

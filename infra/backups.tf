@@ -1,4 +1,4 @@
-resource "oci_core_volume_backup_policy" "control_plane" {
+resource "oci_core_volume_backup_policy" "triton" {
   provider = oci.tenancy_1
 
   compartment_id = var.tenancy_1_compartment_ocid
@@ -14,7 +14,7 @@ resource "oci_core_volume_backup_policy" "control_plane" {
   }
 }
 
-resource "oci_core_volume_backup_policy" "worker" {
+resource "oci_core_volume_backup_policy" "scorpion" {
   provider = oci.tenancy_2
 
   compartment_id = var.tenancy_2_compartment_ocid
@@ -30,16 +30,16 @@ resource "oci_core_volume_backup_policy" "worker" {
   }
 }
 
-resource "oci_core_volume_backup_policy_assignment" "control_plane" {
+resource "oci_core_volume_backup_policy_assignment" "triton" {
   provider = oci.tenancy_1
 
-  asset_id  = oci_core_instance.control_plane.boot_volume_id
-  policy_id = oci_core_volume_backup_policy.control_plane.id
+  asset_id  = oci_core_instance.triton.boot_volume_id
+  policy_id = oci_core_volume_backup_policy.triton.id
 }
 
-resource "oci_core_volume_backup_policy_assignment" "worker" {
+resource "oci_core_volume_backup_policy_assignment" "scorpion" {
   provider = oci.tenancy_2
 
-  asset_id  = oci_core_instance.worker.boot_volume_id
-  policy_id = oci_core_volume_backup_policy.worker.id
+  asset_id  = oci_core_instance.scorpion.boot_volume_id
+  policy_id = oci_core_volume_backup_policy.scorpion.id
 }

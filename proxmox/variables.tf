@@ -63,31 +63,31 @@ variable "proxmox_management_vlan" {
   }
 }
 
-variable "talos_worker_address" {
-  description = "Static IPv4 CIDR assigned to the Proxmox Talos worker."
+variable "chimera_address" {
+  description = "Static IPv4 CIDR assigned to the Chimera node."
   type        = string
   default     = "192.168.20.3/24"
 
   validation {
-    condition     = can(cidrnetmask(var.talos_worker_address))
-    error_message = "talos_worker_address must be an IPv4 CIDR."
+    condition     = can(cidrnetmask(var.chimera_address))
+    error_message = "chimera_address must be an IPv4 CIDR."
   }
 }
 
-variable "talos_worker_ipv6_address" {
-  description = "Static IPv6 CIDR assigned to the Proxmox Talos worker."
+variable "chimera_ipv6_address" {
+  description = "Static IPv6 CIDR assigned to the Chimera node."
   type        = string
   default     = "fd51:86b9:78d0:20::3/64"
 }
 
-variable "talos_worker_ipv6_gateway" {
-  description = "IPv6 gateway for the Proxmox Talos worker."
+variable "chimera_ipv6_gateway" {
+  description = "IPv6 gateway for the Chimera node."
   type        = string
   default     = "fd51:86b9:78d0:20::1"
 }
 
-variable "talos_worker_disk_size" {
-  description = "Thin-provisioned Talos worker disk size in GiB."
+variable "chimera_disk_size" {
+  description = "Thin-provisioned Chimera disk size in GiB."
   type        = number
   default     = 200
 }

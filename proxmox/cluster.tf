@@ -1,9 +1,9 @@
 locals {
-  cluster_versions         = jsondecode(file("${path.module}/../cluster-versions.json"))
-  infra                    = data.terraform_remote_state.infra.outputs
-  talos_worker_memory      = 12 * 1024
-  talos_worker_subnet      = cidrsubnet(var.talos_worker_address, 0, 0)
-  talos_worker_ipv6_subnet = cidrsubnet(var.talos_worker_ipv6_address, 0, 0)
+  cluster_versions    = jsondecode(file("${path.module}/../cluster-versions.json"))
+  infra               = data.terraform_remote_state.infra.outputs
+  chimera_memory      = 12 * 1024
+  chimera_subnet      = cidrsubnet(var.chimera_address, 0, 0)
+  chimera_ipv6_subnet = cidrsubnet(var.chimera_ipv6_address, 0, 0)
 }
 
 data "terraform_remote_state" "infra" {
@@ -65,7 +65,7 @@ resource "proxmox_hardware_mapping_pci" "intel_igpu" {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "talos_worker" {
+resource "proxmox_virtual_environment_vm" "chimera" {
   name        = "chimera"
   description = "Talos control-plane node managed by Terraform"
   tags        = ["kubernetes", "talos", "terraform"]
@@ -89,7 +89,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   }
 
   memory {
-    dedicated = local.talos_worker_memory
+    dedicated = local.chimera_memory
   }
 
   efi_disk {
@@ -108,7 +108,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
     cache        = "none"
     discard      = "on"
     file_format  = "raw"
-    size         = var.talos_worker_disk_size
+    size         = var.chimera_disk_size
   }
 
   initialization {
@@ -117,12 +117,12 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
 
     ip_config {
       ipv4 {
-        address = var.talos_worker_address
+        address = var.chimera_address
         gateway = var.proxmox_bridge_gateway
       }
       ipv6 {
-        address = var.talos_worker_ipv6_address
-        gateway = var.talos_worker_ipv6_gateway
+        address = var.chimera_ipv6_address
+        gateway = var.chimera_ipv6_gateway
       }
     }
   }
@@ -156,24 +156,24 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   stop_on_destroy = true
 }
 
-resource "talos_machine_configuration_apply" "proxmox_worker" {
-  depends_on = [proxmox_virtual_environment_vm.talos_worker]
+resource "talos_machine_configuration_apply" "chimera" {
+  depends_on = [proxmox_virtual_environment_vm.chimera]
 
-  node                        = split("/", var.talos_worker_address)[0]
-  endpoint                    = split("/", var.talos_worker_address)[0]
+  node                        = split("/", var.chimera_address)[0]
+  endpoint                    = split("/", var.chimera_address)[0]
   client_configuration        = local.infra.talos_client_configuration
   machine_configuration_input = local.infra.machine_configuration_control_plane
   config_patches = [
     yamlencode({
       cluster = {
         controlPlane = {
-          endpoint = "https://${local.infra.control_plane_private_ip}:6443"
+          endpoint = "https://${local.infra.triton_private_ip}:6443"
         }
         externalCloudProvider = {
           enabled = false
         }
         etcd = {
-          advertisedSubnets = [local.talos_worker_subnet, local.talos_worker_ipv6_subnet]
+          advertisedSubnets = [local.chimera_subnet, local.chimera_ipv6_subnet]
         }
       }
       machine = {
@@ -188,7 +188,7 @@ resource "talos_machine_configuration_apply" "proxmox_worker" {
         }
         kubelet = {
           nodeIP = {
-            validSubnets = [local.talos_worker_subnet, local.talos_worker_ipv6_subnet]
+            validSubnets = [local.chimera_subnet, local.chimera_ipv6_subnet]
           }
         }
         nodeLabels = {

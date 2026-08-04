@@ -50,24 +50,24 @@ output "control_plane_endpoints" {
   value       = local.cluster_api_addresses
 }
 
-output "control_plane_private_ip" {
+output "triton_private_ip" {
   description = "Private IP of the Talos control-plane node."
-  value       = local.control_plane_ip
+  value       = local.triton_ip
 }
 
-output "control_plane_ipv6" {
+output "triton_ipv6" {
   description = "IPv6 address of the Talos control-plane node."
-  value       = local.control_plane_ipv6
+  value       = local.triton_ipv6
 }
 
-output "worker_private_ip" {
+output "scorpion_private_ip" {
   description = "Private IP of the Talos worker node."
-  value       = local.worker_ip
+  value       = local.scorpion_ip
 }
 
-output "worker_ipv6" {
+output "scorpion_ipv6" {
   description = "IPv6 address of the Talos worker node."
-  value       = local.worker_ipv6
+  value       = local.scorpion_ipv6
 }
 
 output "talos_schematic_id" {
@@ -82,7 +82,7 @@ output "talosconfig" {
     contexts = {
       (var.cluster_name) = {
         endpoints = [local.cluster_api_ip]
-        nodes     = [local.control_plane_ip, local.worker_ip]
+        nodes     = [local.triton_ip, local.scorpion_ip]
         ca        = talos_machine_secrets.cluster.client_configuration.ca_certificate
         crt       = talos_machine_secrets.cluster.client_configuration.client_certificate
         key       = talos_machine_secrets.cluster.client_configuration.client_key
@@ -99,14 +99,14 @@ output "cluster_api_ip" {
   value       = local.cluster_api_ip
 }
 
-output "control_plane_instance_id" {
+output "triton_instance_id" {
   description = "OCID of the control-plane instance (for the kubelet provider-id)."
-  value       = oci_core_instance.control_plane.id
+  value       = oci_core_instance.triton.id
 }
 
-output "worker_instance_id" {
+output "scorpion_instance_id" {
   description = "OCID of the worker instance (for the kubelet provider-id)."
-  value       = oci_core_instance.worker.id
+  value       = oci_core_instance.scorpion.id
 }
 
 output "talos_client_configuration" {
