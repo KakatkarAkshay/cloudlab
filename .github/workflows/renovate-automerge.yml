@@ -50,28 +50,24 @@ jobs:
               return;
             }
 
-            const { data: checks } = await github.rest.checks.listForRef({
-              owner,
-              repo,
-              ref: pull.head.sha,
-              per_page: 100,
-            });
+            const checks = await github.paginate(
+              github.rest.checks.listForRef,
+              { owner, repo, ref: pull.head.sha, per_page: 100 },
+              (response) => response.data.check_runs,
+            );
+            const passingConclusions = new Set(["success", "neutral", "skipped"]);
+            const blockingChecks = checks.filter(
+              (check) =>
+                check.status !== "completed" ||
+                !passingConclusions.has(check.conclusion),
+            );
 
-            for (const requiredCheck of ["gitleaks", "Plan"]) {
-              const matchingChecks = checks.check_runs.filter(
-                (check) => check.name === requiredCheck,
-              );
-              const successful =
-                matchingChecks.length > 0 &&
-                matchingChecks.every(
-                  (check) =>
-                    check.status === "completed" && check.conclusion === "success",
-                );
-
-              if (!successful) {
-                core.info(`Required check '${requiredCheck}' has not completed successfully.`);
-                return;
-              }
+            if (checks.length === 0 || blockingChecks.length > 0) {
+              const details = blockingChecks
+                .map((check) => `${check.name}: ${check.status}/${check.conclusion}`)
+                .join(", ");
+              core.info(`Not all checks have passed${details ? ` (${details})` : "."}`);
+              return;
             }
 
             core.setOutput("pull-number", pullNumber);
