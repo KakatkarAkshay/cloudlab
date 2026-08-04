@@ -4,6 +4,32 @@ variable "proxmox_api_token" {
   sensitive   = true
 }
 
+variable "oci_region" {
+  description = "OCI region hosting the Terraform state bucket."
+  type        = string
+}
+
+variable "oci_fingerprint" {
+  description = "Fingerprint of the OCI API signing key."
+  type        = string
+}
+
+variable "oci_private_key" {
+  description = "PEM-encoded OCI API private key."
+  type        = string
+  sensitive   = true
+}
+
+variable "tenancy_1_ocid" {
+  description = "OCID of the tenancy that owns the Terraform state bucket."
+  type        = string
+}
+
+variable "tenancy_1_user_ocid" {
+  description = "OCID of the OCI user used to read Terraform state."
+  type        = string
+}
+
 variable "proxmox_bridge_address" {
   description = "IPv4 CIDR address assigned to the management VLAN interface."
   type        = string
