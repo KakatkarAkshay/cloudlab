@@ -26,10 +26,10 @@ jobs:
     env:
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
-      TF_VAR_oci_private_key: ${{ secrets.OCI_PRIVATE_KEY }}
-      TF_VAR_oci_fingerprint: ${{ vars.OCI_FINGERPRINT }}
-      TF_VAR_tenancy_1_ocid: ${{ secrets.TENANCY_1_OCID }}
-      TF_VAR_tenancy_1_user_ocid: ${{ secrets.TENANCY_1_USER_OCID }}
+      TF_VAR_oci_private_key: ${{ secrets.TF_VAR_OCI_PRIVATE_KEY }}
+      TF_VAR_oci_fingerprint: ${{ vars.TF_VAR_OCI_FINGERPRINT }}
+      TF_VAR_tenancy_1_ocid: ${{ secrets.TF_VAR_TENANCY_1_OCID }}
+      TF_VAR_tenancy_1_user_ocid: ${{ secrets.TF_VAR_TENANCY_1_USER_OCID }}
 
     steps:
       - name: Checkout repository
@@ -100,10 +100,11 @@ jobs:
           TARGET_TALOS: ${{ steps.versions.outputs.talos }}
           TARGET_KUBERNETES: ${{ steps.versions.outputs.kubernetes }}
           CONTROL_PLANE: 10.0.0.10
-          WORKER: 10.1.0.10
+          NODES: 10.0.0.10 10.1.0.10 192.168.20.3
         run: |
           set -euo pipefail
 
+          read -ra nodes <<< "$NODES"
           SCHEMATIC_ID="$(terraform -chdir=infra output -raw talos_schematic_id)"
 
           current_talos_version() {
@@ -134,7 +135,7 @@ jobs:
             local attempt node healthy
             for attempt in {1..60}; do
               healthy=true
-              for node in "$CONTROL_PLANE" "$WORKER"; do
+              for node in "${nodes[@]}"; do
                 if ! talosctl get machinestatus --nodes "$node" --output json \
                   | jq -e '.spec.stage == "running" and .spec.status.ready == true' > /dev/null; then
                   healthy=false
@@ -163,7 +164,7 @@ jobs:
 
           check_health
 
-          for node in "$CONTROL_PLANE" "$WORKER"; do
+          for node in "${nodes[@]}"; do
             current_talos="$(current_talos_version "$node")"
             check_upgrade_path Talos "$current_talos" "$TARGET_TALOS"
             if [[ "$current_talos" != "$TARGET_TALOS" ]]; then
