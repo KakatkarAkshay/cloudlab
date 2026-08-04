@@ -87,6 +87,7 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: codex-lb-idrive-e2
+        serverName: codex-lb-postgresql-v2
   externalClusters:
     - name: codex-lb-postgresql-backup
       plugin:

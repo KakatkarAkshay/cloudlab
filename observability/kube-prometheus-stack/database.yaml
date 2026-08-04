@@ -83,6 +83,7 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: grafana-idrive-e2
+        serverName: grafana-postgresql-v2
   externalClusters:
     - name: grafana-postgresql-backup
       plugin:
