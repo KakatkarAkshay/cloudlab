@@ -105,7 +105,16 @@ jobs:
           set -euo pipefail
 
           read -ra nodes <<< "$NODES"
-          SCHEMATIC_ID="$(terraform -chdir=infra output -raw talos_schematic_id)"
+
+          installer_image() {
+            local node="$1" platform schematic
+            platform="$(talosctl get platformmetadata --nodes "$node" --output jsonpath='{.spec.platform}')"
+            schematic="$(talosctl get extensions --nodes "$node" --output json \
+              | jq -rs '[.[] | select(.spec.metadata.name == "schematic")][0].spec.metadata.version')"
+            test -n "$platform"
+            test -n "$schematic" && test "$schematic" != null
+            printf 'factory.talos.dev/%s-installer/%s:%s' "$platform" "$schematic" "$TARGET_TALOS"
+          }
 
           current_talos_version() {
             local output version
@@ -170,7 +179,8 @@ jobs:
             if [[ "$current_talos" != "$TARGET_TALOS" ]]; then
               talosctl upgrade \
                 --nodes "$node" \
-                --image "factory.talos.dev/installer/$SCHEMATIC_ID:$TARGET_TALOS" \
+                --image "$(installer_image "$node")" \
+                --drain=false \
                 --wait \
                 --timeout 30m
               test "$(current_talos_version "$node")" = "$TARGET_TALOS"
