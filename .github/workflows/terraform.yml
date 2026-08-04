@@ -184,7 +184,6 @@ jobs:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
           audience: ${{ vars.TAILSCALE_AUDIENCE }}
           tags: tag:ci
-          args: --accept-routes
           use-cache: "true"
 
       - name: Verify Proxmox network access
