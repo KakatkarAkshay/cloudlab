@@ -179,10 +179,10 @@ jobs:
           printf '%s' "$TF_VAR_oci_private_key" > "$RUNNER_TEMP/oci_api_key.pem"
 
       - name: Connect to Tailscale and accept subnet routes
-        uses: tailscale/github-action@6cae46e2d796f265265cfcf628b72a32b4d7cade # v3
+        uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
         with:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          audience: ${{ vars.TAILSCALE_AUDIENCE }}
           tags: tag:ci
           args: --accept-routes
           use-cache: "true"
