@@ -5,4 +5,5 @@ resources:
   - ../github-actions-cache
   - ../github-actions-runner
   - ../headlamp
+  - ../intel-gpu
   - ../postgresql

@@ -188,7 +188,8 @@ resource "talos_machine_configuration_apply" "proxmox_worker" {
           }
         }
         nodeLabels = {
-          "intel.feature.node.kubernetes.io/gpu" = "true"
+          "intel.feature.node.kubernetes.io/gpu"                    = "true"
+          "node.kubernetes.io/exclude-from-external-load-balancers" = "true"
         }
         time = {
           servers = ["time.cloudflare.com"]
