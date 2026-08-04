@@ -85,13 +85,14 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: grafana-idrive-e2
+        serverName: grafana-postgresql-v2
   externalClusters:
     - name: grafana-postgresql-backup
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: grafana-idrive-e2
-          serverName: grafana-postgresql-v2
+          serverName: grafana-postgresql
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
