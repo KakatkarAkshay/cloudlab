@@ -188,7 +188,7 @@ jobs:
 
       - name: Verify Proxmox network access
         run: |
-          curl --fail --insecure --silent --show-error --connect-timeout 10 https://192.168.20.2:8006/api2/json/version >/dev/null
+          curl --insecure --silent --show-error --output /dev/null --connect-timeout 10 https://192.168.20.2:8006/api2/json/version
           timeout 10 bash -c '</dev/tcp/192.168.20.3/50000'
 
       - name: Check formatting
