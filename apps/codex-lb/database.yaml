@@ -71,6 +71,8 @@ spec:
   bootstrap:
     recovery:
       source: codex-lb-postgresql-backup
+      database: codex_lb
+      owner: codex_lb
   storage:
     size: 10Gi
     storageClass: local-path
@@ -87,14 +89,13 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: codex-lb-idrive-e2
-        serverName: codex-lb-postgresql-v2
   externalClusters:
     - name: codex-lb-postgresql-backup
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: codex-lb-idrive-e2
-          serverName: codex-lb-postgresql
+          serverName: codex-lb-postgresql-v2
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
