@@ -9,13 +9,6 @@ resource "github_repository_deploy_key" "flux" {
   read_only  = false
 }
 
-resource "terraform_data" "talos_images" {
-  input = [
-    local.infra.talos_image_tenancy_1_id,
-    local.infra.talos_image_tenancy_2_id,
-  ]
-}
-
 resource "talos_machine_bootstrap" "cluster" {
   node                 = local.infra.control_plane_private_ip
   endpoint             = local.infra.cluster_api_ip
@@ -23,10 +16,6 @@ resource "talos_machine_bootstrap" "cluster" {
 
   timeouts = {
     create = "15m"
-  }
-
-  lifecycle {
-    replace_triggered_by = [terraform_data.talos_images]
   }
 }
 
@@ -95,8 +84,4 @@ resource "flux_bootstrap_git" "cluster" {
     "image-automation-controller",
     "image-reflector-controller",
   ]
-
-  lifecycle {
-    replace_triggered_by = [terraform_data.talos_images]
-  }
 }
