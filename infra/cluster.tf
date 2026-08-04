@@ -158,6 +158,7 @@ resource "oci_core_image" "talos_tenancy_1" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [display_name, image_source_details]
   }
 }
 
@@ -180,6 +181,7 @@ resource "oci_core_image" "talos_tenancy_2" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [display_name, image_source_details]
   }
 }
 
@@ -1083,7 +1085,7 @@ resource "oci_core_instance" "control_plane" {
   }
 
   lifecycle {
-    ignore_changes = [metadata["user_data"]]
+    ignore_changes = [metadata["user_data"], source_details]
   }
 }
 
@@ -1136,6 +1138,6 @@ resource "oci_core_instance" "worker" {
   }
 
   lifecycle {
-    ignore_changes = [metadata["user_data"]]
+    ignore_changes = [metadata["user_data"], source_details]
   }
 }
