@@ -6,6 +6,6 @@ metadata:
 spec:
   interval: 24h
   ref:
-    tag: v0.0.36
-    commit: 5d4bfc84b32cd9c5f56ed3aba921b1a3924ea2f0
+    tag: v0.0.37
+    commit: 49b2be8e26d6d34c9afaa21fa33108d2e82f8955
   url: https://github.com/rancher/local-path-provisioner.git
