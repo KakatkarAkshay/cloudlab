@@ -33,7 +33,7 @@ spec:
     workerThreads: 1
     storageClass:
       create: true
-      defaultClass: true
+      defaultClass: false
       name: local-path
       reclaimPolicy: Retain
       volumeBindingMode: WaitForFirstConsumer
