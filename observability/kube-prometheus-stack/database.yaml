@@ -77,7 +77,7 @@ spec:
       owner: grafana
   storage:
     size: 5Gi
-    storageClass: local-path
+    storageClass: longhorn
   resources:
     requests:
       cpu: 25m

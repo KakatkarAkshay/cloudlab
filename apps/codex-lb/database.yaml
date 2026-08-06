@@ -77,7 +77,7 @@ spec:
       owner: codex_lb
   storage:
     size: 10Gi
-    storageClass: local-path
+    storageClass: longhorn
   affinity:
     enablePodAntiAffinity: true
     podAntiAffinityType: required
