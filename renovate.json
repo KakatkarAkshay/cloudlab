@@ -21,7 +21,9 @@
       "apps/**/*.yaml",
       "apps/**/*.yml",
       "infrastructure/**/*.yaml",
-      "infrastructure/**/*.yml"
+      "infrastructure/**/*.yml",
+      "observability/**/*.yaml",
+      "observability/**/*.yml"
     ]
   },
   "kubernetes": {
@@ -31,7 +33,9 @@
       "apps/**/*.yaml",
       "apps/**/*.yml",
       "infrastructure/**/*.yaml",
-      "infrastructure/**/*.yml"
+      "infrastructure/**/*.yml",
+      "observability/**/*.yaml",
+      "observability/**/*.yml"
     ]
   },
   "packageRules": [
@@ -48,10 +52,7 @@
     {
       "matchManagers": ["flux"],
       "matchDatasources": ["git-refs"],
-      "matchFileNames": [
-        "clusters/cloudlab/gateway-api.yaml",
-        "infrastructure/controllers/local-path-provisioner/repository.yaml"
-      ],
+      "matchFileNames": ["clusters/cloudlab/gateway-api.yaml"],
       "enabled": false
     }
   ],
@@ -59,10 +60,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "yaml",
-      "managerFilePatterns": [
-        "clusters/cloudlab/gateway-api.yaml",
-        "infrastructure/controllers/local-path-provisioner/repository.yaml"
-      ],
+      "managerFilePatterns": ["clusters/cloudlab/gateway-api.yaml"],
       "matchStrings": [
         "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
       ],
