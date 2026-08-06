@@ -65,6 +65,8 @@ kind: Cluster
 metadata:
   name: codex-lb-postgresql
   namespace: codex-lb
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
@@ -89,13 +91,14 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: codex-lb-idrive-e2
+        serverName: codex-lb-postgresql
   externalClusters:
     - name: codex-lb-postgresql-backup
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: codex-lb-idrive-e2
-          serverName: codex-lb-postgresql-v2
+          serverName: codex-lb-postgresql
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup

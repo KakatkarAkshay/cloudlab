@@ -65,6 +65,8 @@ kind: Cluster
 metadata:
   name: grafana-postgresql
   namespace: observability
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
@@ -85,7 +87,7 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: grafana-idrive-e2
-        serverName: grafana-postgresql-v2
+        serverName: grafana-postgresql
   externalClusters:
     - name: grafana-postgresql-backup
       plugin:

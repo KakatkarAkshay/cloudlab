@@ -1,8 +1,72 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: idrive-e2-credentials
+  namespace: github-actions-cache
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical
+  target:
+    name: idrive-e2-credentials
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: ACCESS_KEY_ID
+      remoteRef:
+        key: /platform/idrive-credentials/ACCESS_KEY_ID
+    - secretKey: ACCESS_SECRET_KEY
+      remoteRef:
+        key: /platform/idrive-credentials/ACCESS_SECRET_KEY
+    - secretKey: AWS_REGION
+      remoteRef:
+        key: /platform/idrive-credentials/AWS_REGION
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: github-actions-cache-idrive-e2
+  namespace: github-actions-cache
+spec:
+  configuration:
+    destinationPath: s3://cloudnativepg-backup/github-actions-cache/
+    endpointURL: https://s3.eu-central-2.idrivee2.com
+    s3Credentials:
+      accessKeyId:
+        name: idrive-e2-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: idrive-e2-credentials
+        key: ACCESS_SECRET_KEY
+      region:
+        name: idrive-e2-credentials
+        key: AWS_REGION
+    data:
+      compression: gzip
+    wal:
+      compression: gzip
+      maxParallel: 2
+  retentionPolicy: 30d
+  instanceSidecarConfiguration:
+    retentionPolicyIntervalSeconds: 3600
+    env:
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: when_required
+      - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+        value: when_required
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: github-actions-cache-postgresql
   namespace: github-actions-cache
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
   instances: 1
   affinity:
@@ -14,7 +78,8 @@ spec:
                 operator: DoesNotExist
           weight: 100
   bootstrap:
-    initdb:
+    recovery:
+      source: github-actions-cache-postgresql-backup
       database: cache
       owner: cache
   storage:
@@ -24,3 +89,33 @@ spec:
     requests:
       cpu: 25m
       memory: 128Mi
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: github-actions-cache-idrive-e2
+        serverName: github-actions-cache-postgresql
+  externalClusters:
+    - name: github-actions-cache-postgresql-backup
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: github-actions-cache-idrive-e2
+          serverName: github-actions-cache-postgresql
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: github-actions-cache-postgresql
+  namespace: github-actions-cache
+spec:
+  schedule: "0 0 4 * * *"
+  immediate: true
+  backupOwnerReference: self
+  cluster:
+    name: github-actions-cache-postgresql
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+    parameters:
+      barmanObjectName: github-actions-cache-idrive-e2
