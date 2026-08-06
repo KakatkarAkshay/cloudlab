@@ -1,0 +1,84 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: volsync-grafana
+  namespace: observability
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical
+  target:
+    name: volsync-grafana
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      data:
+        RESTIC_REPOSITORY: "s3:https://{{ .endpoint }}/volsync/observability/grafana"
+        RESTIC_PASSWORD: "{{ .resticPassword }}"
+        AWS_ACCESS_KEY_ID: "{{ .accessKeyID }}"
+        AWS_SECRET_ACCESS_KEY: "{{ .secretAccessKey }}"
+  data:
+    - secretKey: accessKeyID
+      remoteRef:
+        key: /platform/idrive-credentials/ACCESS_KEY_ID
+    - secretKey: secretAccessKey
+      remoteRef:
+        key: /platform/idrive-credentials/ACCESS_SECRET_KEY
+    - secretKey: endpoint
+      remoteRef:
+        key: /platform/idrive-credentials/E2_ENDPOINT
+    - secretKey: resticPassword
+      remoteRef:
+        key: /platform/volsync/RESTIC_PASSWORD
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: grafana
+  namespace: observability
+spec:
+  sourcePVC: kube-prometheus-stack-grafana
+  trigger:
+    schedule: "0 */6 * * *"
+  restic:
+    repository: volsync-grafana
+    copyMethod: Snapshot
+    moverSecurityContext:
+      runAsUser: 472
+      runAsGroup: 472
+      fsGroup: 472
+      fsGroupChangePolicy: OnRootMismatch
+    volumeSnapshotClassName: longhorn-snap
+    storageClassName: longhorn
+    cacheCapacity: 1Gi
+    cacheStorageClassName: longhorn
+    pruneIntervalDays: 14
+    retain:
+      daily: 7
+      weekly: 4
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: grafana-restore
+  namespace: observability
+spec:
+  trigger:
+    manual: restore-1
+  restic:
+    repository: volsync-grafana
+    copyMethod: Snapshot
+    moverSecurityContext:
+      runAsUser: 472
+      runAsGroup: 472
+      fsGroup: 472
+      fsGroupChangePolicy: OnRootMismatch
+    volumeSnapshotClassName: longhorn-snap
+    storageClassName: longhorn
+    cacheCapacity: 1Gi
+    cacheStorageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
+    capacity: 5Gi

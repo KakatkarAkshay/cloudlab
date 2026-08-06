@@ -8,6 +8,8 @@ resources:
   - release.yaml
   - gateway.yaml
   - route.yaml
+  - grafana-pvc.yaml
+  - volsync.yaml
 configMapGenerator:
   # replaces the chart copies, which query metrics removed from Kubernetes
   - name: grafana-dashboard-kubelet

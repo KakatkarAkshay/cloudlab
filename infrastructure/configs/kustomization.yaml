@@ -5,4 +5,5 @@ resources:
   - longhorn-gateway.yaml
   - longhorn-recurring-job.yaml
   - longhorn-route.yaml
+  - volume-snapshot-class.yaml
   - traefik-certificates.yaml

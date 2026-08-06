@@ -275,6 +275,12 @@ variable "codex_lb_encryption_key" {
   sensitive   = true
 }
 
+variable "volsync_restic_password" {
+  description = "Encryption key for the VolSync restic repositories; losing it makes every backup unrecoverable."
+  type        = string
+  sensitive   = true
+}
+
 variable "github_owner" {
   description = "GitHub account that owns the CloudLab repository."
   type        = string

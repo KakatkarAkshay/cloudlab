@@ -15,6 +15,5 @@ parameters:
   disableRevisionCounter: "true"
   fsType: ext4
   numberOfReplicas: "1"
-  recurringJobSelector: '[{"name":"hourly-backup","isGroup":false}]'
   staleReplicaTimeout: "30"
   strictTopology: "true"

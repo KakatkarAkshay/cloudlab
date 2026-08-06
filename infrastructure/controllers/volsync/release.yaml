@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: volsync
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: volsync
+  targetNamespace: volsync-system
+  chart:
+    spec:
+      chart: volsync
+      version: 0.16.0
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: volsync
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    manageCRDs: true
+    metrics:
+      disableAuth: false

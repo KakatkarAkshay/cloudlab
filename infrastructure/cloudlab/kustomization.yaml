@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../controllers/actions-runner-controller
   - ../controllers/longhorn
+  - ../controllers/volsync
   - ../controllers/cert-manager
   - ../controllers/cloudnative-pg
   - ../controllers/metrics-server

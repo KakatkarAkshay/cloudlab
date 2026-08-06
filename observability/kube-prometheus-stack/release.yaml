@@ -138,6 +138,7 @@ spec:
       persistence:
         enabled: true
         size: 5Gi
+        existingClaim: kube-prometheus-stack-grafana
       sidecar:
         dashboards:
           folderAnnotation: grafana_folder
