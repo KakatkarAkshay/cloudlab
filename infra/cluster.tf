@@ -900,6 +900,10 @@ data "talos_machine_configuration" "control_plane" {
   config_patches = [
     yamlencode({
       machine = {
+        nodeLabels = {
+          "node.longhorn.io/create-default-disk" = "true"
+          "topology.cloudlab.io/location"        = "oci"
+        }
         certSANs = local.cluster_api_addresses
         kernel = {
           modules = [
@@ -917,6 +921,14 @@ data "talos_machine_configuration" "control_plane" {
           extraArgs = {
             rotate-server-certificates = "true"
           }
+          extraMounts = [
+            {
+              destination = "/var/lib/longhorn"
+              source      = "/var/mnt/longhorn"
+              type        = "bind"
+              options     = ["bind", "rshared", "rw"]
+            },
+          ]
           nodeIP = {
             validSubnets = [
               var.tenancy_1_vcn_cidr,
@@ -979,6 +991,12 @@ data "talos_machine_configuration" "control_plane" {
       name       = "local-path-provisioner"
       volumeType = "directory"
     }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "UserVolumeConfig"
+      name       = "longhorn"
+      volumeType = "directory"
+    }),
   ]
 }
 
@@ -993,6 +1011,10 @@ data "talos_machine_configuration" "worker" {
   config_patches = [
     yamlencode({
       machine = {
+        nodeLabels = {
+          "node.longhorn.io/create-default-disk" = "true"
+          "topology.cloudlab.io/location"        = "oci"
+        }
         certSANs = local.cluster_api_addresses
         kernel = {
           modules = [
@@ -1010,6 +1032,14 @@ data "talos_machine_configuration" "worker" {
           extraArgs = {
             rotate-server-certificates = "true"
           }
+          extraMounts = [
+            {
+              destination = "/var/lib/longhorn"
+              source      = "/var/mnt/longhorn"
+              type        = "bind"
+              options     = ["bind", "rshared", "rw"]
+            },
+          ]
           nodeIP = {
             validSubnets = [var.tenancy_2_vcn_cidr, module.tenancy_2_vcn.ipv6_cidr_block]
           }
@@ -1031,6 +1061,12 @@ data "talos_machine_configuration" "worker" {
       apiVersion = "v1alpha1"
       kind       = "UserVolumeConfig"
       name       = "local-path-provisioner"
+      volumeType = "directory"
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "UserVolumeConfig"
+      name       = "longhorn"
       volumeType = "directory"
     }),
   ]

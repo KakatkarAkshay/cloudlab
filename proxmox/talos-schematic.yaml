@@ -3,4 +3,7 @@ customization:
     officialExtensions:
       - siderolabs/binfmt-misc
       - siderolabs/i915
+      - siderolabs/iscsi-tools
+      - siderolabs/nfs-utils
       - siderolabs/qemu-guest-agent
+      - siderolabs/util-linux-tools

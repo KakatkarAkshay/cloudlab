@@ -2,3 +2,6 @@ customization:
   systemExtensions:
     officialExtensions:
       - siderolabs/binfmt-misc
+      - siderolabs/iscsi-tools
+      - siderolabs/nfs-utils
+      - siderolabs/util-linux-tools

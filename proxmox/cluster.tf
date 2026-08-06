@@ -193,7 +193,9 @@ resource "talos_machine_configuration_apply" "chimera" {
         }
         nodeLabels = {
           "intel.feature.node.kubernetes.io/gpu"                    = "true"
+          "node.longhorn.io/create-default-disk"                    = "true"
           "node.kubernetes.io/exclude-from-external-load-balancers" = "true"
+          "topology.cloudlab.io/location"                           = "local"
         }
         time = {
           servers = ["time.cloudflare.com"]
