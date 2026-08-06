@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: node-red
+  namespace: flux-system
+spec:
+  interval: 30m
+  timeout: 10m
+  releaseName: node-red
+  targetNamespace: home-assistant
+  chart:
+    spec:
+      chart: node-red
+      version: 0.40.2
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: node-red
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    deploymentStrategy: Recreate
+    image:
+      registry: docker.io
+      repository: nodered/node-red
+      pullPolicy: IfNotPresent
+      tag: 4.1.2@sha256:216e7403aab9888f7e68de9e468fed31bb9d7b2d38117c08e645095a63658a2f
+    rbac:
+      enabled: false
+    serviceAccount:
+      create: false
+      name: node-red
+    persistence:
+      enabled: true
+      existingClaim: node-red-data
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
