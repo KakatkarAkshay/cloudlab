@@ -43,7 +43,7 @@ spec:
             secretName: oci-cloud-controller-manager
       containers:
         - name: oci-cloud-controller-manager
-          image: ghcr.io/oracle/cloud-provider-oci:v1.35.0@sha256:fabd53770fd4cdee05e8fe798b8f8c30d1dfffffb5ca7443f36b08ebc87d1186
+          image: ghcr.io/oracle/cloud-provider-oci:v1.35.0@sha256:f228e27f5c5c1c26a3f6eb8e8e32ba4229eec50c3baac1b86c8eb75f5882e6de
           command:
             - /usr/local/bin/oci-cloud-controller-manager
           args:
