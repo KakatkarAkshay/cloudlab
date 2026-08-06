@@ -8,5 +8,5 @@ spec:
   cron: 0 * * * *
   groups:
     - default
-  retain: 168
+  retain: 72
   task: backup
