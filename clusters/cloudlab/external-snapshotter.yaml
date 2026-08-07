@@ -7,7 +7,7 @@ spec:
   interval: 24h
   ref:
     tag: v8.6.0
-    commit: 78e32cd84e0abec2621924a30e38c755f93e180a
+    commit: c3a43e4028ec899b86eb982b5397c80b3677bb35
   url: https://github.com/kubernetes-csi/external-snapshotter.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
