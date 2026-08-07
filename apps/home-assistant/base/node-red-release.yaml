@@ -28,7 +28,7 @@ spec:
       registry: docker.io
       repository: nodered/node-red
       pullPolicy: IfNotPresent
-      tag: 4.1.2@sha256:216e7403aab9888f7e68de9e468fed31bb9d7b2d38117c08e645095a63658a2f
+      tag: 4.1.12@sha256:c81912d66cb3639170484395ada550c94dfe0a56289cfaec3c8e6dec31f0d164
     rbac:
       enabled: false
     serviceAccount:
