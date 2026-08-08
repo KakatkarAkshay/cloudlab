@@ -32,7 +32,7 @@ spec:
         # Talos ships only the plugins flannel needs, so macvlan and its IPAM
         # helpers have to be placed on the node before Multus can delegate to them.
         - name: install-cni-plugins
-          image: rancher/hardened-cni-plugins:v1.9.1-build20260807
+          image: rancher/hardened-cni-plugins:v1.9.1-build20260807@sha256:50246381627c2a9935f95815ab9c39db2c033dd47ed1ac620c76f2c0fcd222f5
           command:
             - sh
             - -c
@@ -49,7 +49,7 @@ spec:
               mountPath: /host/opt/cni/bin
               mountPropagation: Bidirectional
         - name: install-multus-binary
-          image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.3.0
+          image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.3.0@sha256:ec4e5dfe12b675e4dcbf4e9cd14892f7b4c8ac27aa0dc93cf2e9be0bdd7d764a
           command:
             - /install_multus
           args:
@@ -63,7 +63,7 @@ spec:
               mountPropagation: Bidirectional
       containers:
         - name: kube-multus
-          image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.3.0
+          image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.3.0@sha256:ec4e5dfe12b675e4dcbf4e9cd14892f7b4c8ac27aa0dc93cf2e9be0bdd7d764a
           command:
             - /thin_entrypoint
           args:
