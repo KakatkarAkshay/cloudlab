@@ -5,6 +5,7 @@ resources:
   - storage.yaml
   - database.yaml
   - repositories.yaml
+  - iot-network.yaml
   - home-assistant-release.yaml
   - node-red-release.yaml
   - matter-server.yaml

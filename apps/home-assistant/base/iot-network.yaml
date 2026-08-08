@@ -1,0 +1,29 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: iot
+  namespace: home-assistant
+spec:
+  # macvlan on the node's IoT VLAN interface, so attached pods receive the
+  # link-local broadcasts that IoT devices emit and that never cross a router.
+  # master must match the kernel name of the interface holding
+  # chimera_iot_mac_address; Talos assigns predictable names and cannot rename.
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "type": "macvlan",
+      "master": "eth1",
+      "mode": "bridge",
+      "ipam": {
+        "type": "host-local",
+        "ranges": [
+          [
+            {
+              "subnet": "192.168.10.0/24",
+              "rangeStart": "192.168.10.32",
+              "rangeEnd": "192.168.10.47"
+            }
+          ]
+        ]
+      }
+    }
