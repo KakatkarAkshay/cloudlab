@@ -63,6 +63,17 @@ variable "proxmox_management_vlan" {
   }
 }
 
+variable "proxmox_iot_vlan" {
+  description = "VLAN carrying IoT devices."
+  type        = number
+  default     = 10
+
+  validation {
+    condition     = var.proxmox_iot_vlan >= 1 && var.proxmox_iot_vlan <= 4094
+    error_message = "proxmox_iot_vlan must be between 1 and 4094."
+  }
+}
+
 variable "chimera_address" {
   description = "Static IPv4 CIDR assigned to the Chimera node."
   type        = string
@@ -71,6 +82,28 @@ variable "chimera_address" {
   validation {
     condition     = can(cidrnetmask(var.chimera_address))
     error_message = "chimera_address must be an IPv4 CIDR."
+  }
+}
+
+variable "chimera_iot_address" {
+  description = "Static IPv4 CIDR assigned to the Chimera IoT VLAN interface."
+  type        = string
+  default     = "192.168.10.3/24"
+
+  validation {
+    condition     = can(cidrnetmask(var.chimera_iot_address))
+    error_message = "chimera_iot_address must be an IPv4 CIDR."
+  }
+}
+
+variable "chimera_iot_mac_address" {
+  description = "Fixed MAC for the Chimera IoT interface so Talos can select it deterministically."
+  type        = string
+  default     = "BC:24:11:10:00:03"
+
+  validation {
+    condition     = can(regex("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$", var.chimera_iot_mac_address))
+    error_message = "chimera_iot_mac_address must be a MAC address."
   }
 }
 

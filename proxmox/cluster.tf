@@ -134,6 +134,13 @@ resource "proxmox_virtual_environment_vm" "chimera" {
     vlan_id = var.proxmox_management_vlan
   }
 
+  network_device {
+    bridge      = proxmox_network_linux_bridge.management.name
+    model       = "virtio"
+    mac_address = var.chimera_iot_mac_address
+    vlan_id     = var.proxmox_iot_vlan
+  }
+
   hostpci {
     device  = "hostpci0"
     mapping = proxmox_hardware_mapping_pci.intel_igpu.name
@@ -190,6 +197,16 @@ resource "talos_machine_configuration_apply" "chimera" {
           nodeIP = {
             validSubnets = [local.chimera_subnet, local.chimera_ipv6_subnet]
           }
+        }
+        network = {
+          interfaces = [
+            {
+              deviceSelector = {
+                hardwareAddr = lower(var.chimera_iot_mac_address)
+              }
+              addresses = [var.chimera_iot_address]
+            },
+          ]
         }
         nodeLabels = {
           "intel.feature.node.kubernetes.io/gpu"                    = "true"
