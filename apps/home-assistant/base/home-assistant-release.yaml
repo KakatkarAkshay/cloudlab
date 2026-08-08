@@ -11,7 +11,7 @@ spec:
   chart:
     spec:
       chart: home-assistant
-      version: 0.3.73
+      version: 0.3.74
       interval: 24h
       sourceRef:
         kind: HelmRepository
