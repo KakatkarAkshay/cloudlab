@@ -51,11 +51,11 @@ spec:
       labels:
         app.kubernetes.io/name: matter-server
       annotations:
-        k8s.v1.cni.cncf.io/networks: iot
+        k8s.v1.cni.cncf.io/networks: |
+          [{"name":"iot","namespace":"home-assistant","ips":["192.168.10.34/24"]}]
     spec:
       serviceAccountName: matter-server
       automountServiceAccountToken: false
-      # macvlan attachments only exist on the node carrying the IoT VLAN interface.
       nodeSelector:
         kubernetes.io/hostname: chimera
       securityContext:
