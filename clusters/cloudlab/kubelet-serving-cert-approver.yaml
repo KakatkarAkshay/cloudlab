@@ -7,7 +7,7 @@ spec:
   interval: 24h
   ref:
     branch: main
-    commit: c3b17c68c01b3a528c78dde49f14c90257650bad
+    commit: 85d8f784851873a93c4898576404d06fc72f23cd
   url: https://github.com/alex1989hu/kubelet-serving-cert-approver.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
