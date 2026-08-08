@@ -50,11 +50,14 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: matter-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: iot
     spec:
       serviceAccountName: matter-server
       automountServiceAccountToken: false
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+      # macvlan attachments only exist on the node carrying the IoT VLAN interface.
+      nodeSelector:
+        kubernetes.io/hostname: chimera
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
