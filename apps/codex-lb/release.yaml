@@ -24,7 +24,7 @@ spec:
     image:
       registry: ghcr.io
       repository: abyssal-labs/codex-lb
-      tag: latest@sha256:e4ca0b8bcf740b594ed7a4b7e430f1c632b517a15a83a0d0745087b10d503924
+      tag: latest@sha256:a89339cbc545d51fe3d5754d73c1853852afffaebc4f214b2ae058194fb6bfcb
       pullPolicy: IfNotPresent
     replicaCount: 2
     serviceAccount:
