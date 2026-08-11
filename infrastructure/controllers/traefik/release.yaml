@@ -117,6 +117,10 @@ spec:
         expose:
           default: true
           scorpion: true
+        forwardedHeaders:
+          trustedIPs:
+            - 10.244.0.0/16
+            - fd00:10:244::/56
     podDisruptionBudget:
       enabled: true
       maxUnavailable: 25%
