@@ -1,6 +1,6 @@
 provider "flux" {
   kubernetes = {
-    host                   = talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.host
+    host                   = "https://${local.infra.cluster_api_ip}:6443"
     cluster_ca_certificate = base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.ca_certificate)
     client_certificate     = base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.client_certificate)
     client_key             = base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.client_key)
@@ -22,7 +22,7 @@ provider "github" {
 }
 
 provider "kubernetes" {
-  host                   = talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.host
+  host                   = "https://${local.infra.cluster_api_ip}:6443"
   cluster_ca_certificate = base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.ca_certificate)
   client_certificate     = base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.client_certificate)
   client_key             = base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.client_key)
