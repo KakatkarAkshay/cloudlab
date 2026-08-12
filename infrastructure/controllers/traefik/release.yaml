@@ -31,13 +31,6 @@ spec:
   values:
     deployment:
       replicas: 2
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: oci.oraclecloud.com/fault-domain
-                  operator: Exists
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
