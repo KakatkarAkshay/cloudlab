@@ -26,3 +26,23 @@ resource "proxmox_storage_lvmthin" "local_lvm" {
   thin_pool    = "data"
   content      = ["images", "rootdir"]
 }
+
+resource "proxmox_hardware_mapping_pci" "intel_igpu" {
+  name             = "intel-igpu"
+  comment          = "Intel N150 integrated GPU"
+  mediated_devices = false
+  map = [{
+    id           = var.proxmox_igpu_pci_id
+    iommu_group  = var.proxmox_igpu_iommu_group
+    node         = local.node_name
+    path         = var.proxmox_igpu_pci_path
+    subsystem_id = var.proxmox_igpu_subsystem_id
+  }]
+
+  lifecycle {
+    precondition {
+      condition     = var.proxmox_igpu_iommu_group != null && var.proxmox_igpu_subsystem_id != null
+      error_message = "Set proxmox_igpu_iommu_group and proxmox_igpu_subsystem_id after inspecting the Proxmox host."
+    }
+  }
+}

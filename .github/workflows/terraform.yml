@@ -179,7 +179,6 @@ jobs:
     env:
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
-      TF_VAR_oci_region: ${{ vars.TF_VAR_OCI_REGION }}
       TF_VAR_oci_fingerprint: ${{ vars.TF_VAR_OCI_FINGERPRINT }}
       TF_VAR_oci_private_key: ${{ secrets.TF_VAR_OCI_PRIVATE_KEY }}
       TF_VAR_tenancy_1_ocid: ${{ secrets.TF_VAR_TENANCY_1_OCID }}
@@ -207,9 +206,7 @@ jobs:
           use-cache: "true"
 
       - name: Verify Proxmox network access
-        run: |
-          curl --insecure --silent --show-error --output /dev/null --connect-timeout 10 https://192.168.20.2:8006/api2/json/version
-          timeout 10 bash -c '</dev/tcp/192.168.20.3/50000'
+        run: curl --insecure --silent --show-error --output /dev/null --connect-timeout 10 https://192.168.20.2:8006/api2/json/version
 
       - name: Check formatting
         run: terraform fmt -check -recursive
