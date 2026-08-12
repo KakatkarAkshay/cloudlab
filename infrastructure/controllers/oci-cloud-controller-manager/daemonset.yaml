@@ -18,13 +18,6 @@ spec:
         component: oci-cloud-controller-manager
         tier: control-plane
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: oci.oraclecloud.com/fault-domain
-                    operator: Exists
       serviceAccountName: cloud-controller-manager
       hostNetwork: true
       tolerations:
