@@ -7,11 +7,10 @@ resources:
   - ../controllers/cert-manager
   - ../controllers/cloudnative-pg
   - ../controllers/metrics-server
-  - ../controllers/multus
   - ../controllers/oci-cloud-controller-manager
   - ../controllers/reloader
   - ../controllers/traefik
-  - ../controllers/cloudflare
+  - ../controllers/external-dns
   - ../controllers/oauth2-proxy
   - infisical-kubernetes-auth.yaml
   - infisical-store.yaml

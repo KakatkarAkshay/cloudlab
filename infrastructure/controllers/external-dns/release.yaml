@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 30m
   releaseName: external-dns
-  targetNamespace: cloudflare
+  targetNamespace: external-dns
   dependsOn:
     - name: traefik
   chart:
