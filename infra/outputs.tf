@@ -28,18 +28,6 @@ output "peering_status" {
   value       = module.cross_tenancy_peering.peering_status
 }
 
-output "tenancy_1_vpn_tunnels" {
-  description = "Tenancy 1 VPN endpoints and generated pre-shared keys for OpenWrt."
-  value       = module.tenancy_1_site_to_site_vpn.tunnels
-  sensitive   = true
-}
-
-output "tenancy_2_vpn_tunnels" {
-  description = "Tenancy 2 VPN endpoints and generated pre-shared keys for OpenWrt."
-  value       = module.tenancy_2_site_to_site_vpn.tunnels
-  sensitive   = true
-}
-
 output "control_plane_endpoint" {
   description = "Public Kubernetes API endpoint."
   value       = "https://${local.cluster_api_ip}:6443"

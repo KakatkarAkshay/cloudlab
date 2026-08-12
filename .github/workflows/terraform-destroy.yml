@@ -96,8 +96,6 @@ jobs:
       TF_VAR_tenancy_2_ocid: ${{ secrets.TF_VAR_TENANCY_2_OCID }}
       TF_VAR_tenancy_2_user_ocid: ${{ secrets.TF_VAR_TENANCY_2_USER_OCID }}
       TF_VAR_tenancy_2_compartment_ocid: ${{ secrets.TF_VAR_TENANCY_2_COMPARTMENT_OCID }}
-      TF_VAR_openwrt_public_ip: ${{ secrets.TF_VAR_OPENWRT_PUBLIC_IP }}
-      TF_VAR_local_network_cidrs: ${{ vars.TF_VAR_LOCAL_NETWORK_CIDRS }}
       TF_VAR_requestor_group_name: ${{ vars.TF_VAR_REQUESTOR_GROUP_NAME }}
       TF_VAR_infisical_org_id: ${{ vars.TF_VAR_INFISICAL_ORG_ID }}
       TF_VAR_infisical_host: ${{ vars.TF_VAR_INFISICAL_HOST }}
