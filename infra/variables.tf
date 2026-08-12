@@ -180,6 +180,12 @@ variable "oauth2_client_secret" {
   sensitive   = true
 }
 
+variable "oauth2_authorized_emails" {
+  description = "Newline/comma-separated emails allowed through oauth2-proxy."
+  type        = string
+  sensitive   = true
+}
+
 variable "cloudflare_zone" {
   description = "Cloudflare DNS zone served by the cluster."
   type        = string

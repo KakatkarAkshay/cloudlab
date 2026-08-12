@@ -51,20 +51,3 @@ variable "infisical_auth_method" {
   }
 }
 
-variable "oauth2_client_id" {
-  description = "Google OAuth client ID for oauth2-proxy."
-  type        = string
-  sensitive   = true
-}
-
-variable "oauth2_client_secret" {
-  description = "Google OAuth client secret for oauth2-proxy."
-  type        = string
-  sensitive   = true
-}
-
-variable "oauth2_authorized_emails" {
-  description = "Newline/comma-separated emails allowed through oauth2-proxy."
-  type        = string
-  sensitive   = true
-}

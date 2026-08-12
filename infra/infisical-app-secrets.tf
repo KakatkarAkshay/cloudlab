@@ -96,6 +96,26 @@ resource "infisical_secret" "oauth2_client_secret" {
   value        = var.oauth2_client_secret
 }
 
+resource "random_bytes" "oauth2_proxy_cookie_secret" {
+  length = 24
+}
+
+resource "infisical_secret" "oauth2_cookie_secret" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.oauth2_proxy.path
+  name         = "COOKIE_SECRET"
+  value        = random_bytes.oauth2_proxy_cookie_secret.base64
+}
+
+resource "infisical_secret" "oauth2_restricted_user_access" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.oauth2_proxy.path
+  name         = "RESTRICTED_USER_ACCESS"
+  value        = var.oauth2_authorized_emails
+}
+
 resource "infisical_secret" "github_packages_username" {
   workspace_id = infisical_project.cloudlab.id
   env_slug     = var.infisical_environment_slug
