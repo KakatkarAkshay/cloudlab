@@ -27,7 +27,6 @@ The Flux bootstrap configuration, including `kubernetes/clusters/cloudlab/flux-s
 terraform/
   infra/                     # OCI networking, compute, Talos image and nodes
   cluster/                   # Kubernetes bootstrap and Flux installation
-  proxmox/                   # LAN Proxmox node configuration
 kubernetes/
   clusters/cloudlab/         # Flux cluster entrypoints
   infrastructure/
