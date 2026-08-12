@@ -3,8 +3,8 @@ resource "oci_identity_dynamic_group" "ccm_tenancy_1" {
 
   compartment_id = var.tenancy_1_ocid
   name           = "CloudLabCCM"
-  description    = "Allow the CloudLab Triton instance to run OCI CCM."
-  matching_rule  = "ALL {instance.id = '${oci_core_instance.triton.id}'}"
+  description    = "Allow the CloudLab tenancy 1 instances to run OCI CCM."
+  matching_rule  = "ANY {${join(", ", [for instance in oci_core_instance.tenancy_1 : "instance.id = '${instance.id}'"])}}"
 }
 
 resource "oci_identity_policy" "ccm_tenancy_1" {
@@ -25,7 +25,7 @@ resource "oci_identity_policy" "ccm_cross_tenancy_requestor" {
 
   compartment_id = var.tenancy_1_ocid
   name           = "CloudLabCCMCrossTenancy"
-  description    = "Endorse Triton's OCI CCM principal to manage load balancers and inspect resources in the peer tenancy."
+  description    = "Endorse tenancy 1's OCI CCM principals to manage load balancers and inspect resources in the peer tenancy."
   statements = [
     "Define tenancy Acceptor as ${var.tenancy_2_ocid}",
     "Endorse dynamic-group ${oci_identity_dynamic_group.ccm_tenancy_1.name} to read instance-family in tenancy Acceptor",
@@ -39,7 +39,7 @@ resource "oci_identity_policy" "ccm_cross_tenancy_acceptor" {
 
   compartment_id = var.tenancy_2_ocid
   name           = "CloudLabCCMCrossTenancy"
-  description    = "Admit Triton's OCI CCM principal to manage load balancers and inspect resources in this tenancy."
+  description    = "Admit tenancy 1's OCI CCM principals to manage load balancers and inspect resources in this tenancy."
   statements = [
     "Define tenancy Requestor as ${var.tenancy_1_ocid}",
     "Define dynamic-group RequestorCCM as ${oci_identity_dynamic_group.ccm_tenancy_1.id}",
@@ -54,8 +54,8 @@ resource "oci_identity_dynamic_group" "ccm_tenancy_2" {
 
   compartment_id = var.tenancy_2_ocid
   name           = "CloudLabCCM"
-  description    = "Allow the CloudLab Scorpion instance to run OCI CCM."
-  matching_rule  = "ALL {instance.id = '${oci_core_instance.scorpion.id}'}"
+  description    = "Allow the CloudLab tenancy 2 instances to run OCI CCM."
+  matching_rule  = "ANY {${join(", ", [for instance in oci_core_instance.tenancy_2 : "instance.id = '${instance.id}'"])}}"
 }
 
 resource "oci_identity_policy" "ccm_tenancy_2" {
@@ -76,7 +76,7 @@ resource "oci_identity_policy" "ccm_cross_tenancy_acceptor_endorsement" {
 
   compartment_id = var.tenancy_2_ocid
   name           = "CloudLabCCMCrossTenancyEndorsement"
-  description    = "Endorse Scorpion's OCI CCM principal to manage load balancers and inspect resources in the peer tenancy."
+  description    = "Endorse tenancy 2's OCI CCM principals to manage load balancers and inspect resources in the peer tenancy."
   statements = [
     "Define tenancy Requestor as ${var.tenancy_1_ocid}",
     "Endorse dynamic-group ${oci_identity_dynamic_group.ccm_tenancy_2.name} to read instance-family in tenancy Requestor",
@@ -90,7 +90,7 @@ resource "oci_identity_policy" "ccm_cross_tenancy_requestor_admission" {
 
   compartment_id = var.tenancy_1_ocid
   name           = "CloudLabCCMCrossTenancyAdmission"
-  description    = "Admit Scorpion's OCI CCM principal to manage load balancers and inspect resources in this tenancy."
+  description    = "Admit tenancy 2's OCI CCM principals to manage load balancers and inspect resources in this tenancy."
   statements = [
     "Define tenancy Acceptor as ${var.tenancy_2_ocid}",
     "Define dynamic-group AcceptorCCM as ${oci_identity_dynamic_group.ccm_tenancy_2.id}",

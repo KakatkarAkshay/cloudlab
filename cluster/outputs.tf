@@ -11,7 +11,7 @@ output "talosconfig" {
     contexts = {
       cloudlab = {
         endpoints = [local.infra.cluster_api_ip]
-        nodes     = [local.infra.triton_private_ip, local.infra.scorpion_private_ip]
+        nodes     = [for node in local.infra.nodes : node.private_ip]
         ca        = local.infra.talos_client_configuration.ca_certificate
         crt       = local.infra.talos_client_configuration.client_certificate
         key       = local.infra.talos_client_configuration.client_key

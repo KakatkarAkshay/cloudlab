@@ -1,8 +1,8 @@
-resource "oci_core_volume_backup_policy" "triton" {
+resource "oci_core_volume_backup_policy" "tenancy_1" {
   provider = oci.tenancy_1
 
   compartment_id = var.tenancy_1_compartment_ocid
-  display_name   = "cloudlab-triton-daily"
+  display_name   = "cloudlab-tenancy-1-daily"
 
   schedules {
     backup_type       = "INCREMENTAL"
@@ -14,11 +14,11 @@ resource "oci_core_volume_backup_policy" "triton" {
   }
 }
 
-resource "oci_core_volume_backup_policy" "scorpion" {
+resource "oci_core_volume_backup_policy" "tenancy_2" {
   provider = oci.tenancy_2
 
   compartment_id = var.tenancy_2_compartment_ocid
-  display_name   = "cloudlab-scorpion-daily"
+  display_name   = "cloudlab-tenancy-2-daily"
 
   schedules {
     backup_type       = "INCREMENTAL"
@@ -30,16 +30,18 @@ resource "oci_core_volume_backup_policy" "scorpion" {
   }
 }
 
-resource "oci_core_volume_backup_policy_assignment" "triton" {
+resource "oci_core_volume_backup_policy_assignment" "tenancy_1" {
   provider = oci.tenancy_1
+  for_each = oci_core_instance.tenancy_1
 
-  asset_id  = oci_core_instance.triton.boot_volume_id
-  policy_id = oci_core_volume_backup_policy.triton.id
+  asset_id  = each.value.boot_volume_id
+  policy_id = oci_core_volume_backup_policy.tenancy_1.id
 }
 
-resource "oci_core_volume_backup_policy_assignment" "scorpion" {
+resource "oci_core_volume_backup_policy_assignment" "tenancy_2" {
   provider = oci.tenancy_2
+  for_each = oci_core_instance.tenancy_2
 
-  asset_id  = oci_core_instance.scorpion.boot_volume_id
-  policy_id = oci_core_volume_backup_policy.scorpion.id
+  asset_id  = each.value.boot_volume_id
+  policy_id = oci_core_volume_backup_policy.tenancy_2.id
 }

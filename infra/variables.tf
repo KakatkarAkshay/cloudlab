@@ -76,28 +76,6 @@ variable "local_ipv6_cidrs" {
   }
 }
 
-variable "chimera_control_plane_ip" {
-  description = "IPv4 address of the Chimera control-plane node reachable over the site-to-site VPN."
-  type        = string
-  default     = "192.168.20.3"
-
-  validation {
-    condition     = can(cidrhost("${var.chimera_control_plane_ip}/32", 0))
-    error_message = "chimera_control_plane_ip must be a valid IPv4 address."
-  }
-}
-
-variable "chimera_control_plane_ipv6" {
-  description = "IPv6 address of the Chimera control-plane node reachable over the site-to-site VPN."
-  type        = string
-  default     = "fd51:86b9:78d0:20::3"
-
-  validation {
-    condition     = can(cidrhost("${var.chimera_control_plane_ipv6}/128", 0))
-    error_message = "chimera_control_plane_ipv6 must be a valid IPv6 address."
-  }
-}
-
 variable "openwrt_bgp_asn" {
   description = "BGP ASN used by OpenWrt for the OCI VPN sessions."
   type        = number
@@ -360,5 +338,55 @@ variable "tenancy_2_subnet_cidr" {
   validation {
     condition     = can(cidrhost(var.tenancy_2_subnet_cidr, 0))
     error_message = "tenancy_2_subnet_cidr must be a valid IPv4 CIDR."
+  }
+}
+
+variable "node_defaults" {
+  description = "Shape and boot-volume defaults applied to any cluster node that does not override them."
+  type = object({
+    shape                   = optional(string, "VM.Standard.A1.Flex")
+    ocpus                   = optional(number, 2)
+    memory_in_gbs           = optional(number, 12)
+    boot_volume_size_in_gbs = optional(number, 100)
+    boot_volume_vpus_per_gb = optional(number, 120)
+  })
+  default = {}
+}
+
+variable "control_plane_count" {
+  description = "Number of Talos control-plane nodes. Nodes are spread alternately across the two tenancies, starting with tenancy 1."
+  type        = number
+  default     = 3
+
+  validation {
+    condition     = var.control_plane_count >= 1
+    error_message = "control_plane_count must be at least 1."
+  }
+
+  validation {
+    condition     = var.control_plane_count % 2 == 1
+    error_message = "control_plane_count must be odd so etcd can form a quorum."
+  }
+}
+
+variable "worker_count" {
+  description = "Number of Talos worker nodes. Workers continue the same alternating tenancy placement after the control-plane nodes."
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.worker_count >= 0
+    error_message = "worker_count cannot be negative."
+  }
+}
+
+variable "node_host_index_base" {
+  description = "First host bit assigned within each tenancy's subnet. Each additional node in that tenancy takes the next index."
+  type        = number
+  default     = 10
+
+  validation {
+    condition     = var.node_host_index_base >= 2 && var.node_host_index_base <= 254
+    error_message = "node_host_index_base must be between 2 and 254."
   }
 }

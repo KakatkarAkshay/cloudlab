@@ -13,8 +13,6 @@ openwrt_public_ip   = "203.0.113.10"
 local_network_cidrs = ["192.168.10.0/24"]
 local_ipv6_cidrs    = ["fd51:86b9:78d0:20::/64"]
 openwrt_bgp_asn      = 64512
-chimera_control_plane_ip   = "192.168.20.3"
-chimera_control_plane_ipv6 = "fd51:86b9:78d0:20::3"
 
 tenancy_1_vpn_tunnel_bgp_sessions = [
   {

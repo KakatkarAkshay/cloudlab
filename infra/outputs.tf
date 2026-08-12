@@ -50,24 +50,23 @@ output "control_plane_endpoints" {
   value       = local.cluster_api_addresses
 }
 
-output "triton_private_ip" {
-  description = "Private IP of the Talos control-plane node."
-  value       = local.triton_ip
+output "nodes" {
+  description = "Cluster nodes keyed by slot, with the generated hostname, addressing and instance OCID."
+  value = {
+    for name, node in local.nodes : name => {
+      hostname    = random_pet.node[name].id
+      role        = node.role
+      tenancy     = node.tenancy
+      private_ip  = node.ip
+      ipv6        = node.ipv6
+      instance_id = merge(oci_core_instance.tenancy_1, oci_core_instance.tenancy_2)[name].id
+    }
+  }
 }
 
-output "triton_ipv6" {
-  description = "IPv6 address of the Talos control-plane node."
-  value       = local.triton_ipv6
-}
-
-output "scorpion_private_ip" {
-  description = "Private IP of the Talos worker node."
-  value       = local.scorpion_ip
-}
-
-output "scorpion_ipv6" {
-  description = "IPv6 address of the Talos worker node."
-  value       = local.scorpion_ipv6
+output "bootstrap_node_private_ip" {
+  description = "Private IP of the node the cluster stage bootstraps Talos against."
+  value       = local.bootstrap_ip
 }
 
 output "talos_schematic_id" {
@@ -82,7 +81,7 @@ output "talosconfig" {
     contexts = {
       (var.cluster_name) = {
         endpoints = [local.cluster_api_ip]
-        nodes     = [local.triton_ip, local.scorpion_ip]
+        nodes     = [for node in local.nodes : node.ip]
         ca        = talos_machine_secrets.cluster.client_configuration.ca_certificate
         crt       = talos_machine_secrets.cluster.client_configuration.client_certificate
         key       = talos_machine_secrets.cluster.client_configuration.client_key
@@ -97,16 +96,6 @@ output "talosconfig" {
 output "cluster_api_ip" {
   description = "Public IPv4 the Kubernetes/Talos API is reached on (reserved NLB IP)."
   value       = local.cluster_api_ip
-}
-
-output "triton_instance_id" {
-  description = "OCID of the control-plane instance (for the kubelet provider-id)."
-  value       = oci_core_instance.triton.id
-}
-
-output "scorpion_instance_id" {
-  description = "OCID of the worker instance (for the kubelet provider-id)."
-  value       = oci_core_instance.scorpion.id
 }
 
 output "talos_client_configuration" {
