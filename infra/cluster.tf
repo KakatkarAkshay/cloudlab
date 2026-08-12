@@ -175,9 +175,12 @@ resource "oci_core_image" "talos_tenancy_1" {
     source_image_type        = "QCOW2"
   }
 
+  # Attributes are ignored because OCI normalises them; a new uploaded object
+  # is what should actually roll the image.
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [display_name, image_source_details]
+    replace_triggered_by  = [oci_objectstorage_object.talos_tenancy_1]
   }
 }
 
@@ -198,9 +201,12 @@ resource "oci_core_image" "talos_tenancy_2" {
     source_image_type        = "QCOW2"
   }
 
+  # Attributes are ignored because OCI normalises them; a new uploaded object
+  # is what should actually roll the image.
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [display_name, image_source_details]
+    replace_triggered_by  = [oci_objectstorage_object.talos_tenancy_2]
   }
 }
 

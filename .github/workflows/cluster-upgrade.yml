@@ -27,6 +27,7 @@ jobs:
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
       TF_VAR_oci_private_key: ${{ secrets.TF_VAR_OCI_PRIVATE_KEY }}
+      TF_VAR_oci_region: ${{ vars.TF_VAR_OCI_REGION }}
       TF_VAR_oci_fingerprint: ${{ vars.TF_VAR_OCI_FINGERPRINT }}
       TF_VAR_tenancy_1_ocid: ${{ secrets.TF_VAR_TENANCY_1_OCID }}
       TF_VAR_tenancy_1_user_ocid: ${{ secrets.TF_VAR_TENANCY_1_USER_OCID }}
@@ -52,20 +53,26 @@ jobs:
           printf '%s' "$TF_VAR_oci_private_key" > "$RUNNER_TEMP/oci_api_key.pem"
 
       - name: Initialize Terraform
-        working-directory: infra
-        run: >-
-          terraform init -input=false
-          -backend-config="tenancy_ocid=$TF_VAR_tenancy_1_ocid"
-          -backend-config="user_ocid=$TF_VAR_tenancy_1_user_ocid"
-          -backend-config="fingerprint=$TF_VAR_oci_fingerprint"
-          -backend-config="private_key_path=$RUNNER_TEMP/oci_api_key.pem"
-
-      - name: Load cluster credentials
-        working-directory: infra
         run: |
-          terraform output -raw talosconfig > "$RUNNER_TEMP/talosconfig"
-          terraform output -raw kubeconfig > "$RUNNER_TEMP/kubeconfig"
+          for stage in infra cluster; do
+            terraform -chdir="$stage" init -input=false \
+              -backend-config="tenancy_ocid=$TF_VAR_tenancy_1_ocid" \
+              -backend-config="user_ocid=$TF_VAR_tenancy_1_user_ocid" \
+              -backend-config="fingerprint=$TF_VAR_oci_fingerprint" \
+              -backend-config="private_key_path=$RUNNER_TEMP/oci_api_key.pem"
+          done
+
+      - name: Load cluster credentials and node addresses
+        id: cluster
+        run: |
+          set -euo pipefail
+          terraform -chdir=infra output -raw talosconfig > "$RUNNER_TEMP/talosconfig"
+          terraform -chdir=cluster output -raw kubeconfig > "$RUNNER_TEMP/kubeconfig"
           chmod 600 "$RUNNER_TEMP/talosconfig" "$RUNNER_TEMP/kubeconfig"
+
+          nodes="$(terraform -chdir=infra output -json nodes)"
+          echo "nodes=$(jq -r '[.[].private_ip] | join(" ")' <<< "$nodes")" >> "$GITHUB_OUTPUT"
+          echo "control_plane=$(terraform -chdir=infra output -raw bootstrap_node_private_ip)" >> "$GITHUB_OUTPUT"
 
       - name: Install clients
         env:
@@ -99,8 +106,8 @@ jobs:
           KUBECONFIG: ${{ runner.temp }}/kubeconfig
           TARGET_TALOS: ${{ steps.versions.outputs.talos }}
           TARGET_KUBERNETES: ${{ steps.versions.outputs.kubernetes }}
-          CONTROL_PLANE: 10.0.0.10
-          NODES: 10.0.0.10 10.1.0.10 192.168.20.3
+          CONTROL_PLANE: ${{ steps.cluster.outputs.control_plane }}
+          NODES: ${{ steps.cluster.outputs.nodes }}
         run: |
           set -euo pipefail
 
