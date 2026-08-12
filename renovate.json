@@ -54,6 +54,12 @@
       "matchDatasources": ["git-refs"],
       "matchFileNames": ["kubernetes/clusters/cloudlab/gateway-api.yaml"],
       "enabled": false
+    },
+    {
+      "matchManagers": ["custom.jsonata"],
+      "matchFileNames": ["cluster-versions.json"],
+      "groupName": "talos + kubernetes",
+      "separateMultipleMinor": true
     }
   ],
   "customManagers": [
