@@ -17,7 +17,7 @@ resource "infisical_identity_kubernetes_auth" "external_secrets" {
   identity_id         = local.infra.infisical_external_secrets_identity_id
   token_reviewer_mode = "api"
 
-  kubernetes_host           = talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.host
+  kubernetes_host           = "https://${local.infra.cluster_api_ip}:6443"
   kubernetes_ca_certificate = trimspace(base64decode(talos_cluster_kubeconfig.cluster.kubernetes_client_configuration.ca_certificate))
 
   allowed_namespaces            = ["external-secrets"]
