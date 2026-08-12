@@ -36,9 +36,6 @@ jobs:
       TF_VAR_tenancy_1_ocid: ${{ secrets.TF_VAR_TENANCY_1_OCID }}
       TF_VAR_tenancy_1_user_ocid: ${{ secrets.TF_VAR_TENANCY_1_USER_OCID }}
       TF_VAR_infisical_host: ${{ vars.TF_VAR_INFISICAL_HOST }}
-      TF_VAR_oauth2_client_id: ${{ secrets.TF_VAR_OAUTH2_CLIENT_ID }}
-      TF_VAR_oauth2_client_secret: ${{ secrets.TF_VAR_OAUTH2_CLIENT_SECRET }}
-      TF_VAR_oauth2_authorized_emails: ${{ secrets.TF_VAR_OAUTH2_AUTHORIZED_EMAILS }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       INFISICAL_MACHINE_IDENTITY_ID: ${{ vars.INFISICAL_MACHINE_IDENTITY_ID }}
       GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
@@ -106,6 +103,7 @@ jobs:
       TF_VAR_infisical_host: ${{ vars.TF_VAR_INFISICAL_HOST }}
       TF_VAR_oauth2_client_id: ${{ secrets.TF_VAR_OAUTH2_CLIENT_ID }}
       TF_VAR_oauth2_client_secret: ${{ secrets.TF_VAR_OAUTH2_CLIENT_SECRET }}
+      TF_VAR_oauth2_authorized_emails: ${{ secrets.TF_VAR_OAUTH2_AUTHORIZED_EMAILS }}
       TF_VAR_cloudflare_zone: ${{ vars.TF_VAR_CLOUDFLARE_ZONE }}
       TF_VAR_idrive_aws_region: ${{ vars.TF_VAR_IDRIVE_AWS_REGION }}
       TF_VAR_idrive_access_key_id: ${{ secrets.TF_VAR_IDRIVE_ACCESS_KEY_ID }}
