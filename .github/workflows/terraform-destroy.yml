@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: cluster
+        working-directory: terraform/cluster
 
     env:
       TF_IN_AUTOMATION: "true"
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: infra
+        working-directory: terraform/infra
 
     env:
       TF_IN_AUTOMATION: "true"

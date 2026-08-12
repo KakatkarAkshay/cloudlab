@@ -54,7 +54,7 @@ jobs:
 
       - name: Initialize Terraform
         run: |
-          for stage in infra cluster; do
+          for stage in terraform/infra terraform/cluster; do
             terraform -chdir="$stage" init -input=false \
               -backend-config="tenancy_ocid=$TF_VAR_tenancy_1_ocid" \
               -backend-config="user_ocid=$TF_VAR_tenancy_1_user_ocid" \
@@ -66,13 +66,13 @@ jobs:
         id: cluster
         run: |
           set -euo pipefail
-          terraform -chdir=infra output -raw talosconfig > "$RUNNER_TEMP/talosconfig"
-          terraform -chdir=cluster output -raw kubeconfig > "$RUNNER_TEMP/kubeconfig"
+          terraform -chdir=terraform/infra output -raw talosconfig > "$RUNNER_TEMP/talosconfig"
+          terraform -chdir=terraform/cluster output -raw kubeconfig > "$RUNNER_TEMP/kubeconfig"
           chmod 600 "$RUNNER_TEMP/talosconfig" "$RUNNER_TEMP/kubeconfig"
 
-          nodes="$(terraform -chdir=infra output -json nodes)"
+          nodes="$(terraform -chdir=terraform/infra output -json nodes)"
           echo "nodes=$(jq -r '[.[].private_ip] | join(" ")' <<< "$nodes")" >> "$GITHUB_OUTPUT"
-          echo "control_plane=$(terraform -chdir=infra output -raw bootstrap_node_private_ip)" >> "$GITHUB_OUTPUT"
+          echo "control_plane=$(terraform -chdir=terraform/infra output -raw bootstrap_node_private_ip)" >> "$GITHUB_OUTPUT"
 
       - name: Install clients
         env:

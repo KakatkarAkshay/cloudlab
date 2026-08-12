@@ -15,18 +15,25 @@ GitHub Actions and Renovate automate infrastructure validation and deployment, d
 
 ## Reuse and Scope
 
-The Terraform configuration in `infra/` is intended to be reusable. It can be used as a foundation for another OCI and Talos deployment by supplying the required Terraform inputs, GitHub Actions variables, and secrets.
+The Terraform configuration in `terraform/infra/` is intended to be reusable. It can be used as a foundation for another OCI and Talos deployment by supplying the required Terraform inputs, GitHub Actions variables, and secrets.
 
-The Flux and Kubernetes configuration in `clusters/`, `infrastructure/`, and `apps/` represents the desired state of my personal cluster. It intentionally contains deployment-specific choices such as domains, GitHub organization references, enabled applications, routing, and platform policy. These manifests are included as a working GitOps example rather than a generic distribution; reuse them by replacing or adapting that configuration for your own environment.
+The Flux and Kubernetes configuration under `kubernetes/` represents the desired state of my personal cluster. It intentionally contains deployment-specific choices such as domains, GitHub organization references, enabled applications, routing, and platform policy. These manifests are included as a working GitOps example rather than a generic distribution; reuse them by replacing or adapting that configuration for your own environment.
 
-The Flux bootstrap configuration, including `clusters/cloudlab/flux-system/gotk-sync.yaml`, is tied to this repository by design.
+The Flux bootstrap configuration, including `kubernetes/clusters/cloudlab/flux-system/gotk-sync.yaml`, is tied to this repository by design.
 
 ## Repository Layout
 
 ```text
-infra/                       # Terraform infrastructure and cluster bootstrap
-clusters/                    # Flux cluster entrypoints
-infrastructure/controllers/  # Reusable platform controllers
-infrastructure/cloudlab/     # Platform components enabled for the cluster
-apps/cloudlab/               # Applications enabled for the cluster
+terraform/
+  infra/                     # OCI networking, compute, Talos image and nodes
+  cluster/                   # Kubernetes bootstrap and Flux installation
+  proxmox/                   # LAN Proxmox node configuration
+kubernetes/
+  clusters/cloudlab/         # Flux cluster entrypoints
+  infrastructure/
+    controllers/             # Reusable platform controllers
+    configs/                 # Cluster-wide platform configuration
+    cloudlab/                # Platform components enabled for the cluster
+  observability/             # Monitoring, logging, and metrics stack
+  apps/                      # Applications enabled for the cluster
 ```

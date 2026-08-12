@@ -3,7 +3,7 @@
 *.tfstate
 *.tfstate.*
 *.tfplan
-infra/build/
+terraform/infra/build/
 
 # Local variable and override files
 *.tfvars

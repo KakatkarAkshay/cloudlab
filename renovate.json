@@ -16,26 +16,26 @@
   ],
   "flux": {
     "managerFilePatterns": [
-      "clusters/**/*.yaml",
-      "clusters/**/*.yml",
-      "apps/**/*.yaml",
-      "apps/**/*.yml",
-      "infrastructure/**/*.yaml",
-      "infrastructure/**/*.yml",
-      "observability/**/*.yaml",
-      "observability/**/*.yml"
+      "kubernetes/clusters/**/*.yaml",
+      "kubernetes/clusters/**/*.yml",
+      "kubernetes/apps/**/*.yaml",
+      "kubernetes/apps/**/*.yml",
+      "kubernetes/infrastructure/**/*.yaml",
+      "kubernetes/infrastructure/**/*.yml",
+      "kubernetes/observability/**/*.yaml",
+      "kubernetes/observability/**/*.yml"
     ]
   },
   "kubernetes": {
     "managerFilePatterns": [
-      "clusters/**/*.yaml",
-      "clusters/**/*.yml",
-      "apps/**/*.yaml",
-      "apps/**/*.yml",
-      "infrastructure/**/*.yaml",
-      "infrastructure/**/*.yml",
-      "observability/**/*.yaml",
-      "observability/**/*.yml"
+      "kubernetes/clusters/**/*.yaml",
+      "kubernetes/clusters/**/*.yml",
+      "kubernetes/apps/**/*.yaml",
+      "kubernetes/apps/**/*.yml",
+      "kubernetes/infrastructure/**/*.yaml",
+      "kubernetes/infrastructure/**/*.yml",
+      "kubernetes/observability/**/*.yaml",
+      "kubernetes/observability/**/*.yml"
     ]
   },
   "packageRules": [
@@ -52,7 +52,7 @@
     {
       "matchManagers": ["flux"],
       "matchDatasources": ["git-refs"],
-      "matchFileNames": ["clusters/cloudlab/gateway-api.yaml"],
+      "matchFileNames": ["kubernetes/clusters/cloudlab/gateway-api.yaml"],
       "enabled": false
     }
   ],
@@ -60,7 +60,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "yaml",
-      "managerFilePatterns": ["clusters/cloudlab/gateway-api.yaml"],
+      "managerFilePatterns": ["kubernetes/clusters/cloudlab/gateway-api.yaml"],
       "matchStrings": [
         "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
       ],

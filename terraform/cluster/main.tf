@@ -61,7 +61,7 @@ resource "flux_bootstrap_git" "cluster" {
 
   embedded_manifests     = true
   kustomization_override = file("${path.module}/flux-kustomization.yaml")
-  path                   = "clusters/cloudlab"
+  path                   = "kubernetes/clusters/cloudlab"
   components_extra = [
     "image-automation-controller",
     "image-reflector-controller",
