@@ -1085,8 +1085,14 @@ resource "oci_core_instance" "tenancy_1" {
     remote_data_volume_type             = "PARAVIRTUALIZED"
   }
 
+  # OCI stores in-transit encryption on the boot volume attachment but reports
+  # it false here, so the attribute never converges.
   lifecycle {
-    ignore_changes = [metadata["user_data"], source_details]
+    ignore_changes = [
+      metadata["user_data"],
+      source_details,
+      launch_options[0].is_pv_encryption_in_transit_enabled,
+    ]
   }
 }
 
@@ -1143,7 +1149,13 @@ resource "oci_core_instance" "tenancy_2" {
     remote_data_volume_type             = "PARAVIRTUALIZED"
   }
 
+  # OCI stores in-transit encryption on the boot volume attachment but reports
+  # it false here, so the attribute never converges.
   lifecycle {
-    ignore_changes = [metadata["user_data"], source_details]
+    ignore_changes = [
+      metadata["user_data"],
+      source_details,
+      launch_options[0].is_pv_encryption_in_transit_enabled,
+    ]
   }
 }
