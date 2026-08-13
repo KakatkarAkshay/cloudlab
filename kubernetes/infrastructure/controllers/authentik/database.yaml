@@ -71,7 +71,8 @@ spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
   bootstrap:
-    initdb:
+    recovery:
+      source: authentik-postgresql-backup
       database: authentik
       owner: authentik
   postgresql:
@@ -95,6 +96,13 @@ spec:
       parameters:
         barmanObjectName: authentik-idrive-e2
         serverName: authentik-postgresql
+  externalClusters:
+    - name: authentik-postgresql-backup
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: authentik-idrive-e2
+          serverName: authentik-postgresql
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup

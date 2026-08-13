@@ -71,7 +71,8 @@ spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
   bootstrap:
-    initdb:
+    recovery:
+      source: pangolin-postgresql-backup
       database: pangolin
       owner: pangolin
   storage:
@@ -91,6 +92,13 @@ spec:
       parameters:
         barmanObjectName: pangolin-idrive-e2
         serverName: pangolin-postgresql
+  externalClusters:
+    - name: pangolin-postgresql-backup
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: pangolin-idrive-e2
+          serverName: pangolin-postgresql
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
