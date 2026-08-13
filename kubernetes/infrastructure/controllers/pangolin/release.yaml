@@ -63,6 +63,10 @@ spec:
         app:
           dashboard_url: https://pangolin.kakatkarakshay.dev
           log_level: info
+        domains:
+          domain1:
+            base_domain: kakatkarakshay.dev
+            cert_resolver: letsencrypt
         gerbil:
           base_endpoint: tunnel.kakatkarakshay.dev
         traefik:
