@@ -138,15 +138,6 @@ data:
           meta_launch_url: https://traefik.kakatkarakshay.dev/dashboard/
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
 
-      - model: authentik_core.application
-        state: absent
-        identifiers:
-          slug: pangolin
-      - model: authentik_providers_oauth2.oauth2provider
-        state: absent
-        identifiers:
-          name: pangolin
-
       - model: authentik_outposts.outpost
         identifiers:
           managed: goauthentik.io/outposts/embedded
@@ -164,12 +155,3 @@ data:
             object_naming_template: ak-outpost-%(name)s
             refresh_interval: minutes=5
 
-      # Superseded by the per-application providers above.
-      - model: authentik_core.application
-        state: absent
-        identifiers:
-          slug: cloudlab
-      - model: authentik_providers_proxy.proxyprovider
-        state: absent
-        identifiers:
-          name: cloudlab-forward-auth
