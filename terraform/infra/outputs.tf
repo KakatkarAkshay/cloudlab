@@ -124,3 +124,31 @@ output "cloudflare_api_token" {
   value       = cloudflare_account_token.external_dns.value
   sensitive   = true
 }
+
+output "idrive_access_key_id" {
+  description = "iDrive E2 access key ID, shared with the homelab cluster."
+  value       = var.idrive_access_key_id
+  sensitive   = true
+}
+
+output "idrive_secret_access_key" {
+  description = "iDrive E2 secret access key, shared with the homelab cluster."
+  value       = var.idrive_secret_access_key
+  sensitive   = true
+}
+
+output "idrive_e2_endpoint" {
+  description = "iDrive E2 endpoint URL, shared with the homelab cluster."
+  value       = var.idrive_e2_endpoint
+}
+
+output "idrive_aws_region" {
+  description = "AWS-compatible region for the iDrive E2 credentials, shared with the homelab cluster."
+  value       = var.idrive_aws_region
+}
+
+output "volsync_restic_password" {
+  description = "VolSync restic repository password; must match across clusters or backups become unreadable."
+  value       = var.volsync_restic_password
+  sensitive   = true
+}
