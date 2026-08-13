@@ -11,7 +11,7 @@ resources:
   - ../controllers/reloader
   - ../controllers/traefik
   - ../controllers/external-dns
-  - ../controllers/oauth2-proxy
+  - ../controllers/authentik
   - ../controllers/pangolin
   - infisical-kubernetes-auth.yaml
   - infisical-store.yaml
