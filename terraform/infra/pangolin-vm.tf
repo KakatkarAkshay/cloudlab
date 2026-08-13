@@ -272,6 +272,15 @@ resource "cloudflare_dns_record" "pangolin_node" {
   proxied = false
 }
 
+resource "cloudflare_dns_record" "homelab_gateway" {
+  zone_id = data.cloudflare_zone.cloudlab.id
+  name    = "homelab-gateway.${var.cloudflare_zone}"
+  type    = "CNAME"
+  content = local.pangolin_node_hostname
+  ttl     = 60
+  proxied = false
+}
+
 output "pangolin_node_hostname" {
   description = "Public name clients and sites reach the Pangolin node on."
   value       = local.pangolin_node_hostname
