@@ -56,6 +56,9 @@ data:
         attrs:
           name: Headlamp
           provider: !KeyOf headlamp
+          meta_description: Kubernetes cluster UI
+          meta_launch_url: https://headlamp.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/headlamp.svg
 
       - model: authentik_providers_proxy.proxyprovider
         id: longhorn
@@ -74,6 +77,9 @@ data:
         attrs:
           name: Longhorn
           provider: !KeyOf longhorn
+          meta_description: Distributed block storage
+          meta_launch_url: https://longhorn.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
 
       - model: authentik_providers_proxy.proxyprovider
         id: codex
@@ -92,6 +98,9 @@ data:
         attrs:
           name: Codex LB
           provider: !KeyOf codex
+          meta_description: Codex load balancer
+          meta_launch_url: https://codex.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/openai.svg
 
       - model: authentik_providers_proxy.proxyprovider
         id: traefik
@@ -110,6 +119,9 @@ data:
         attrs:
           name: Traefik
           provider: !KeyOf traefik
+          meta_description: Ingress controller dashboard
+          meta_launch_url: https://traefik.kakatkarakshay.dev/dashboard/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
 
       - model: authentik_outposts.outpost
         identifiers:
