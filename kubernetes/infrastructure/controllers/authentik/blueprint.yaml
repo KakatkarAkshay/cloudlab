@@ -23,6 +23,20 @@ data:
           user_matching_mode: email_link
           authentication_flow:
             !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      - model: authentik_core.group
+        id: admin
+        identifiers:
+          name: admin
+        attrs:
+          is_superuser: true
+      - model: authentik_core.group
+        id: member
+        identifiers:
+          name: member
+      - model: authentik_core.group
+        id: guest
+        identifiers:
+          name: guest
       - model: authentik_core.user
         identifiers:
           username: akshay
@@ -32,6 +46,7 @@ data:
           is_active: true
           groups:
             - !Find [authentik_core.group, [name, authentik Admins]]
+            - !KeyOf admin
       - model: authentik_stages_identification.identificationstage
         identifiers:
           name: default-authentication-identification
