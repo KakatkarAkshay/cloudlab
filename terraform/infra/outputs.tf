@@ -118,3 +118,9 @@ output "infisical_external_secrets_identity_id" {
   description = "Infisical identity ID for external-secrets; the cluster stage attaches k8s auth to it once the API server is reachable."
   value       = infisical_identity.external_secrets.id
 }
+
+output "cloudflare_api_token" {
+  description = "External-DNS Cloudflare API token, consumed by the homelab cluster so both share one token."
+  value       = cloudflare_account_token.external_dns.value
+  sensitive   = true
+}
