@@ -24,12 +24,8 @@ log:
 entryPoints:
   web:
     address: ":80"
-  websecure:
+  tcp-443:
     address: ":443"
-    proxyProtocol:
-      trustedIPs:
-        - 0.0.0.0/0 # This is coming from gerbil
-        - ::1/128
     transport:
       respondingTimeouts:
         readTimeout: "30m"
