@@ -1,0 +1,70 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: authentik
+  targetNamespace: authentik
+  dependsOn:
+    - name: traefik
+    - name: cert-manager
+    - name: cloudnative-pg
+  chart:
+    spec:
+      chart: authentik
+      version: 2026.5.6
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    global:
+      envFrom:
+        - secretRef:
+            name: authentik-secrets
+      env:
+        # CloudNativePG names its key `password`, so envFrom cannot map it.
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-postgresql-app
+              key: password
+    authentik:
+      log_level: info
+      postgresql:
+        host: authentik-postgresql-rw
+        name: authentik
+        user: authentik
+    blueprints:
+      configMaps:
+        - authentik-blueprints
+    server:
+      replicas: 2
+      route:
+        main:
+          enabled: true
+          hostnames:
+            - auth.kakatkarakshay.dev
+          parentRefs:
+            - name: authentik
+              namespace: authentik
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+    worker:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+    postgresql:
+      enabled: false

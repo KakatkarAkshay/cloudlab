@@ -1,0 +1,113 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: idrive-e2-credentials
+  namespace: authentik
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical
+  target:
+    name: idrive-e2-credentials
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: ACCESS_KEY_ID
+      remoteRef:
+        key: /platform/idrive-credentials/ACCESS_KEY_ID
+    - secretKey: ACCESS_SECRET_KEY
+      remoteRef:
+        key: /platform/idrive-credentials/ACCESS_SECRET_KEY
+    - secretKey: AWS_REGION
+      remoteRef:
+        key: /platform/idrive-credentials/AWS_REGION
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: authentik-idrive-e2
+  namespace: authentik
+spec:
+  configuration:
+    destinationPath: s3://cloudnativepg-backup/authentik/
+    endpointURL: https://s3.eu-central-2.idrivee2.com
+    s3Credentials:
+      accessKeyId:
+        name: idrive-e2-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: idrive-e2-credentials
+        key: ACCESS_SECRET_KEY
+      region:
+        name: idrive-e2-credentials
+        key: AWS_REGION
+    data:
+      compression: gzip
+    wal:
+      compression: gzip
+      maxParallel: 2
+  retentionPolicy: 30d
+  instanceSidecarConfiguration:
+    retentionPolicyIntervalSeconds: 3600
+    env:
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: when_required
+      - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+        value: when_required
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: authentik-postgresql
+  namespace: authentik
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: enabled
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
+  bootstrap:
+    initdb:
+      database: authentik
+      owner: authentik
+  postgresql:
+    parameters:
+      # authentik dropped Redis in 2025.10, needing ~50% more connections.
+      max_connections: "200"
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+  affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: required
+    topologyKey: kubernetes.io/hostname
+  resources:
+    requests:
+      cpu: 50m
+      memory: 512Mi
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: authentik-idrive-e2
+        serverName: authentik-postgresql
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: authentik-postgresql
+  namespace: authentik
+spec:
+  schedule: "0 0 2 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: authentik-postgresql
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+    parameters:
+      barmanObjectName: authentik-idrive-e2

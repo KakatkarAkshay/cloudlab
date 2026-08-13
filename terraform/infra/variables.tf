@@ -169,6 +169,12 @@ variable "codex_lb_encryption_key" {
   sensitive   = true
 }
 
+variable "authentik_secret_key" {
+  description = "authentik secret key. Must outlive the cluster and Terraform state, or encrypted columns in a restored authentik database become unreadable."
+  type        = string
+  sensitive   = true
+}
+
 variable "volsync_restic_password" {
   description = "Encryption key for the VolSync restic repositories; losing it makes every backup unrecoverable."
   type        = string

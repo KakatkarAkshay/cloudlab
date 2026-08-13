@@ -12,6 +12,14 @@ resource "infisical_secret_folder" "oauth2_proxy" {
   name             = "oauth2-proxy"
 }
 
+resource "infisical_secret_folder" "authentik" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "authentik"
+  description      = "authentik server secret key and bootstrap credentials."
+}
+
 resource "infisical_secret_folder" "github_packages" {
   project_id       = infisical_project.cloudlab.id
   environment_slug = var.infisical_environment_slug
@@ -114,6 +122,40 @@ resource "infisical_secret" "oauth2_restricted_user_access" {
   folder_path  = infisical_secret_folder.oauth2_proxy.path
   name         = "RESTRICTED_USER_ACCESS"
   value        = var.oauth2_authorized_emails
+}
+
+resource "infisical_secret" "authentik_secret_key" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.authentik.path
+  name         = "SECRET_KEY"
+  value        = var.authentik_secret_key
+}
+
+resource "random_password" "authentik_bootstrap_password" {
+  length  = 32
+  special = false
+}
+
+resource "infisical_secret" "authentik_bootstrap_password" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.authentik.path
+  name         = "BOOTSTRAP_PASSWORD"
+  value        = random_password.authentik_bootstrap_password.result
+}
+
+resource "random_password" "authentik_bootstrap_token" {
+  length  = 60
+  special = false
+}
+
+resource "infisical_secret" "authentik_bootstrap_token" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.authentik.path
+  name         = "BOOTSTRAP_TOKEN"
+  value        = random_password.authentik_bootstrap_token.result
 }
 
 resource "infisical_secret" "github_packages_username" {
