@@ -9,7 +9,7 @@ metadata:
     oci.oraclecloud.com/load-balancer-type: nlb
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: Cluster
+  externalTrafficPolicy: Local
   selector:
     app.kubernetes.io/name: pangolin
     app.kubernetes.io/instance: pangolin
