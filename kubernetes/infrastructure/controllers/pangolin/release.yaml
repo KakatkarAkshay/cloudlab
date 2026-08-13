@@ -33,7 +33,17 @@ spec:
       traefikNamespace: traefik
     images:
       pangolin:
-        tag: ee-postgresql-1.18.4
+        registry: docker.io
+        repository: fosrl/pangolin
+        tag: ee-postgresql-1.21.1
+      gerbil:
+        registry: docker.io
+        repository: fosrl/gerbil
+        tag: 1.4.3
+      controller:
+        registry: ghcr.io
+        repository: fosrl/pangolin-kube-controller
+        tag: 0.1.0-alpha.1
     runtime:
       updateStrategy:
         type: Recreate

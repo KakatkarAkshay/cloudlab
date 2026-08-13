@@ -42,6 +42,11 @@
       "automerge": false
     },
     {
+      "description": "Pangolin publishes edition/database variants as tag prefixes; keep updates within the ee-postgresql family",
+      "matchPackageNames": ["fosrl/pangolin", "docker.io/fosrl/pangolin"],
+      "versioning": "regex:^ee-postgresql-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
+    },
+    {
       "matchManagers": ["custom.jsonata"],
       "matchFileNames": ["cluster-versions.json"],
       "groupName": "talos + kubernetes",
