@@ -34,10 +34,7 @@
     {
       "matchManagers": ["flux"],
       "matchDatasources": ["git-refs"],
-      "matchFileNames": [
-        "kubernetes/clusters/*/gateway-api.yaml",
-        "kubernetes/clusters/*/external-snapshotter.yaml"
-      ],
+      "matchFileNames": ["kubernetes/clusters/*/*.yaml"],
       "enabled": false
     },
     {
@@ -55,10 +52,7 @@
     {
       "customType": "jsonata",
       "fileFormat": "yaml",
-      "managerFilePatterns": [
-        "kubernetes/clusters/*/gateway-api.yaml",
-        "kubernetes/clusters/*/external-snapshotter.yaml"
-      ],
+      "managerFilePatterns": ["kubernetes/clusters/*/*.yaml"],
       "matchStrings": [
         "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
       ],
