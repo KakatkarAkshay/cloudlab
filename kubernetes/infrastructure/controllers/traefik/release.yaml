@@ -99,7 +99,7 @@ spec:
               - IPv4
               - IPv6
     ports:
-      hometunnel-web:
+      tcp-9443-web:
         port: 9080
         exposedPort: 80
         protocol: TCP
@@ -113,7 +113,7 @@ spec:
               to: websecure
               scheme: https
               permanent: true
-      hometunnel:
+      tcp-9443:
         port: 9443
         exposedPort: 443
         protocol: TCP
