@@ -34,15 +34,6 @@ spec:
     podLogsViaLoki:
       enabled: true
       collector: alloy-logs
-      # pangolin-kube-controller re-warns every 15s and has no log level setting.
-      extraLogProcessingStages: |
-        stage.match {
-          selector = "{namespace=\"pangolin\", container=\"controller\"}"
-          stage.drop {
-            expression = ".*CONFIG_ALLOW_INSECURE_HTTP=true.*"
-            drop_counter_reason = "pangolin_controller_insecure_http"
-          }
-        }
     clusterEvents:
       enabled: true
       collector: alloy-singleton

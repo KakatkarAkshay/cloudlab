@@ -12,6 +12,5 @@ resources:
   - ../controllers/traefik
   - ../controllers/external-dns
   - ../controllers/authentik
-  - ../controllers/pangolin
   - infisical-kubernetes-auth.yaml
   - infisical-store.yaml
