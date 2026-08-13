@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pangolin-gerbil-wireguard
+  namespace: pangolin
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: tunnel.kakatkarakshay.dev
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    oci.oraclecloud.com/load-balancer-type: nlb
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  selector:
+    app.kubernetes.io/name: pangolin
+    app.kubernetes.io/instance: pangolin
+    app.kubernetes.io/component: gerbil
+  ports:
+    - name: wg1
+      port: 51820
+      targetPort: wg1
+      protocol: UDP
+    - name: wg2
+      port: 21820
+      targetPort: wg2
+      protocol: UDP
