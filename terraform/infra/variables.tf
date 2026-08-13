@@ -372,7 +372,7 @@ variable "pangolin_node_traefik_version" {
   description = "Traefik version running alongside the node."
   type        = string
   # renovate: datasource=docker depName=docker.io/library/traefik
-  default = "v3.5"
+  default = "v3.7"
 }
 
 variable "pangolin_node_badger_version" {
