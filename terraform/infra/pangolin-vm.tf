@@ -299,8 +299,8 @@ resource "cloudflare_dns_record" "homelab_gateway" {
   name    = "homelab-gateway.${var.cloudflare_zone}"
   type    = "A"
   content = oci_core_public_ip.pangolin.ip_address
-  ttl     = 60
-  proxied = false
+  ttl     = 1
+  proxied = true
 }
 
 output "pangolin_node_hostname" {
