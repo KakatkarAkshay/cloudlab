@@ -210,7 +210,7 @@ resource "oci_core_subnet" "pangolin_public" {
   compartment_id             = var.tenancy_2_compartment_ocid
   vcn_id                     = module.tenancy_2_vcn.id
   cidr_block                 = var.pangolin_vm_subnet_cidr
-  ipv6cidr_block             = cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 1)
+  ipv6cidr_block             = cidrsubnet(module.tenancy_2_vcn.ipv6_cidr_block, 8, 2)
   display_name               = "cloudlab-pangolin-public"
   dns_label                  = "pangolin"
   prohibit_public_ip_on_vnic = false
