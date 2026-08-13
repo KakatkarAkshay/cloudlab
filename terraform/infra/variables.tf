@@ -169,6 +169,12 @@ variable "codex_lb_encryption_key" {
   sensitive   = true
 }
 
+variable "authentik_root_email" {
+  description = "Email of the authentik superuser that Google logins link to."
+  type        = string
+  sensitive   = true
+}
+
 variable "authentik_secret_key" {
   description = "authentik secret key. Must outlive the cluster and Terraform state, or encrypted columns in a restored authentik database become unreadable."
   type        = string

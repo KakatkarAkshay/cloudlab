@@ -132,6 +132,30 @@ resource "infisical_secret" "authentik_secret_key" {
   value        = var.authentik_secret_key
 }
 
+resource "infisical_secret" "authentik_root_email" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.authentik.path
+  name         = "ROOT_EMAIL"
+  value        = var.authentik_root_email
+}
+
+resource "infisical_secret" "authentik_google_client_id" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.authentik.path
+  name         = "GOOGLE_CLIENT_ID"
+  value        = var.oauth2_client_id
+}
+
+resource "infisical_secret" "authentik_google_client_secret" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.authentik.path
+  name         = "GOOGLE_CLIENT_SECRET"
+  value        = var.oauth2_client_secret
+}
+
 resource "random_password" "authentik_bootstrap_password" {
   length  = 32
   special = false

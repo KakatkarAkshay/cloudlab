@@ -27,6 +27,35 @@ data:
         attrs:
           name: Cloudlab
           provider: !KeyOf cloudlab-forward-auth
+      - model: authentik_sources_oauth.oauthsource
+        id: google
+        identifiers:
+          slug: google
+        attrs:
+          name: Google
+          enabled: true
+          provider_type: google
+          consumer_key: !Env GOOGLE_CLIENT_ID
+          consumer_secret: !Env GOOGLE_CLIENT_SECRET
+          # Enrollment is deliberately unset: only existing users may link.
+          user_matching_mode: email_link
+          authentication_flow:
+            !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      - model: authentik_core.user
+        identifiers:
+          username: akshay
+        attrs:
+          name: Akshay Kakatkar
+          email: !Env ROOT_EMAIL
+          is_active: true
+          groups:
+            - !Find [authentik_core.group, [name, authentik Admins]]
+      - model: authentik_stages_identification.identificationstage
+        identifiers:
+          name: default-authentication-identification
+        attrs:
+          sources:
+            - !KeyOf google
       - model: authentik_outposts.outpost
         identifiers:
           managed: goauthentik.io/outposts/embedded
