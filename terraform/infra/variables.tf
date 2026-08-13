@@ -343,9 +343,9 @@ variable "pangolin_vm_boot_volume_size_in_gbs" {
 }
 
 variable "pangolin_vm_boot_volume_vpus_per_gb" {
-  description = "Boot volume performance units. 0 selects the lowest cost tier."
+  description = "Boot volume performance units. Boot volumes reject the 0 VPU tier that block volumes accept, so 10 is the floor."
   type        = number
-  default     = 0
+  default     = 10
 }
 
 variable "pangolin_vm_ssh_source_cidr" {
