@@ -15,26 +15,47 @@
     }
   ],
   "flux": {
-    "managerFilePatterns": ["kubernetes/**/*.yaml", "kubernetes/**/*.yml"]
+    "managerFilePatterns": [
+      "kubernetes/**/*.yaml",
+      "kubernetes/**/*.yml"
+    ]
   },
   "kubernetes": {
-    "managerFilePatterns": ["kubernetes/**/*.yaml", "kubernetes/**/*.yml"]
+    "managerFilePatterns": [
+      "kubernetes/**/*.yaml",
+      "kubernetes/**/*.yml"
+    ]
   },
   "packageRules": [
     {
-      "matchManagers": ["kubernetes"],
-      "matchFileNames": ["**/gotk-components.yaml"],
+      "matchManagers": [
+        "kubernetes"
+      ],
+      "matchFileNames": [
+        "**/gotk-components.yaml"
+      ],
       "enabled": false
     },
     {
-      "matchManagers": ["flux", "kubernetes"],
-      "matchDatasources": ["docker"],
+      "matchManagers": [
+        "flux",
+        "kubernetes"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
       "pinDigests": true
     },
     {
-      "matchManagers": ["flux"],
-      "matchDatasources": ["git-refs"],
-      "matchFileNames": ["kubernetes/clusters/*/*.yaml"],
+      "matchManagers": [
+        "flux"
+      ],
+      "matchDatasources": [
+        "git-refs"
+      ],
+      "matchFileNames": [
+        "kubernetes/clusters/*/*.yaml"
+      ],
       "enabled": false
     },
     {
@@ -43,12 +64,19 @@
     },
     {
       "description": "Pangolin publishes edition/database variants as tag prefixes; keep updates within the ee-postgresql family",
-      "matchPackageNames": ["fosrl/pangolin", "docker.io/fosrl/pangolin"],
+      "matchPackageNames": [
+        "fosrl/pangolin",
+        "docker.io/fosrl/pangolin"
+      ],
       "versioning": "regex:^ee-postgresql-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     },
     {
-      "matchManagers": ["custom.jsonata"],
-      "matchFileNames": ["cluster-versions.json"],
+      "matchManagers": [
+        "custom.jsonata"
+      ],
+      "matchFileNames": [
+        "cluster-versions.json"
+      ],
       "groupName": "talos + kubernetes",
       "separateMultipleMinor": true
     }
@@ -57,7 +85,9 @@
     {
       "customType": "jsonata",
       "fileFormat": "yaml",
-      "managerFilePatterns": ["kubernetes/clusters/*/*.yaml"],
+      "managerFilePatterns": [
+        "kubernetes/clusters/*/*.yaml"
+      ],
       "matchStrings": [
         "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
       ],
@@ -67,19 +97,36 @@
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["cluster-versions.json"],
-      "matchStrings": ["{'depName': 'siderolabs/talos', 'currentValue': talos}"],
+      "managerFilePatterns": [
+        "cluster-versions.json"
+      ],
+      "matchStrings": [
+        "{'depName': 'siderolabs/talos', 'currentValue': talos}"
+      ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
     },
     {
       "customType": "jsonata",
       "fileFormat": "json",
-      "managerFilePatterns": ["cluster-versions.json"],
-      "matchStrings": ["{'depName': 'siderolabs/kubelet', 'currentValue': kubernetes}"],
+      "managerFilePatterns": [
+        "cluster-versions.json"
+      ],
+      "matchStrings": [
+        "{'depName': 'siderolabs/kubelet', 'currentValue': kubernetes}"
+      ],
       "datasourceTemplate": "docker",
       "packageNameTemplate": "ghcr.io/siderolabs/kubelet",
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "terraform/infra/variables.tf"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+default\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
     }
   ]
 }

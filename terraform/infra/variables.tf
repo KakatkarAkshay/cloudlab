@@ -357,25 +357,29 @@ variable "pangolin_vm_ssh_source_cidr" {
 variable "pangolin_node_version" {
   description = "Pangolin remote node version."
   type        = string
-  default     = "1.5.0"
+  # renovate: datasource=docker depName=docker.io/fosrl/pangolin-node
+  default = "1.5.0"
 }
 
 variable "gerbil_version" {
   description = "gerbil WireGuard gateway version."
   type        = string
-  default     = "1.4.3"
+  # renovate: datasource=docker depName=docker.io/fosrl/gerbil
+  default = "1.4.3"
 }
 
 variable "pangolin_node_traefik_version" {
   description = "Traefik version running alongside the node."
   type        = string
-  default     = "v3.5"
+  # renovate: datasource=docker depName=docker.io/library/traefik
+  default = "v3.5"
 }
 
 variable "pangolin_node_badger_version" {
   description = "badger Traefik plugin version."
   type        = string
-  default     = "v1.5.0"
+  # renovate: datasource=github-releases depName=fosrl/badger
+  default = "v1.5.0"
 }
 
 variable "pangolin_node_hybrid_id" {

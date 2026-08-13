@@ -138,6 +138,42 @@ data:
           meta_launch_url: https://traefik.kakatkarakshay.dev/dashboard/
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
 
+      - model: authentik_providers_proxy.proxyprovider
+        id: node-red
+        identifiers:
+          name: node-red
+        attrs:
+          mode: forward_single
+          external_host: https://node-red.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: node-red
+        attrs:
+          name: Node-RED
+          provider: !KeyOf node-red
+          meta_description: Flow based automation
+          meta_launch_url: https://node-red.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/node-red.svg
+
+      - model: authentik_outposts.outpost
+        identifiers:
+          name: homelab
+        attrs:
+          type: proxy
+          providers:
+            - !KeyOf node-red
+          config:
+            authentik_host: https://auth.kakatkarakshay.dev
+            authentik_host_browser: https://auth.kakatkarakshay.dev
+            authentik_host_insecure: false
+            log_level: info
+            object_naming_template: ak-outpost-%(name)s
+            refresh_interval: minutes=5
+
       - model: authentik_outposts.outpost
         identifiers:
           managed: goauthentik.io/outposts/embedded
