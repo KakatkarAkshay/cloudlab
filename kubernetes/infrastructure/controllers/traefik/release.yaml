@@ -99,6 +99,20 @@ spec:
               - IPv4
               - IPv6
     ports:
+      hometunnel-web:
+        port: 9080
+        exposedPort: 80
+        protocol: TCP
+        expose:
+          default: false
+          scorpion: false
+          hometunnel: true
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
       hometunnel:
         port: 9443
         exposedPort: 443
