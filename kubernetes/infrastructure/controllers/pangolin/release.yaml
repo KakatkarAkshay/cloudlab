@@ -43,8 +43,8 @@ spec:
         tag: 1.4.3
       controller:
         registry: ghcr.io
-        repository: fosrl/pangolin-kube-controller
-        tag: 0.1.0-alpha.1
+        repository: kakatkarakshay/pangolin-kube-controller
+        tag: 0.1.0-alpha.1-tcpfix.1
     global:
       affinity:
         nodeAffinity:
