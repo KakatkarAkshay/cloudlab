@@ -95,6 +95,58 @@ resource "oci_core_security_list" "nlb" {
   }
 
   ingress_security_rules {
+    protocol    = "17"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "WireGuard tunnel for Pangolin sites"
+
+    udp_options {
+      min = 51820
+      max = 51820
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "WireGuard tunnel for Pangolin sites over IPv6"
+
+    udp_options {
+      min = 51820
+      max = 51820
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "NAT hole punch for Pangolin sites"
+
+    udp_options {
+      min = 21820
+      max = 21820
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "NAT hole punch for Pangolin sites over IPv6"
+
+    udp_options {
+      min = 21820
+      max = 21820
+    }
+  }
+
+  ingress_security_rules {
     protocol    = "6"
     source      = "0.0.0.0/0"
     source_type = "CIDR_BLOCK"
@@ -211,6 +263,58 @@ resource "oci_core_security_list" "nlb_tenancy_2" {
     tcp_options {
       min = 443
       max = 443
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "WireGuard tunnel for Pangolin sites"
+
+    udp_options {
+      min = 51820
+      max = 51820
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "WireGuard tunnel for Pangolin sites over IPv6"
+
+    udp_options {
+      min = 51820
+      max = 51820
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "NAT hole punch for Pangolin sites"
+
+    udp_options {
+      min = 21820
+      max = 21820
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "17"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "NAT hole punch for Pangolin sites over IPv6"
+
+    udp_options {
+      min = 21820
+      max = 21820
     }
   }
 
