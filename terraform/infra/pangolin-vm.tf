@@ -240,7 +240,7 @@ resource "oci_core_instance" "pangolin" {
 
   create_vnic_details {
     assign_ipv6ip    = true
-    assign_public_ip = "true"
+    assign_public_ip = "false"
     hostname_label   = "pangolin"
     subnet_id        = oci_core_subnet.pangolin_public.id
   }
@@ -263,11 +263,33 @@ resource "oci_core_instance" "pangolin" {
   }
 }
 
+data "oci_core_vnic_attachments" "pangolin" {
+  provider = oci.tenancy_2
+
+  compartment_id = var.tenancy_2_compartment_ocid
+  instance_id    = oci_core_instance.pangolin.id
+}
+
+data "oci_core_private_ips" "pangolin" {
+  provider = oci.tenancy_2
+
+  vnic_id = data.oci_core_vnic_attachments.pangolin.vnic_attachments[0].vnic_id
+}
+
+resource "oci_core_public_ip" "pangolin" {
+  provider = oci.tenancy_2
+
+  compartment_id = var.tenancy_2_compartment_ocid
+  display_name   = "cloudlab-pangolin"
+  lifetime       = "RESERVED"
+  private_ip_id  = one([for ip in data.oci_core_private_ips.pangolin.private_ips : ip.id if ip.is_primary])
+}
+
 resource "cloudflare_dns_record" "pangolin_node" {
   zone_id = data.cloudflare_zone.cloudlab.id
   name    = local.pangolin_node_hostname
   type    = "A"
-  content = oci_core_instance.pangolin.public_ip
+  content = oci_core_public_ip.pangolin.ip_address
   ttl     = 60
   proxied = false
 }
@@ -287,8 +309,8 @@ output "pangolin_node_hostname" {
 }
 
 output "pangolin_vm_public_ip" {
-  description = "Public IPv4 address of the Pangolin host."
-  value       = oci_core_instance.pangolin.public_ip
+  description = "Reserved public IPv4 address. Survives instance replacement."
+  value       = oci_core_public_ip.pangolin.ip_address
 }
 
 output "pangolin_vm_private_ip" {
