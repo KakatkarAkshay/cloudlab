@@ -32,6 +32,14 @@ spec:
   hostnames:
     - headlamp.kakatkarakshay.dev
   rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /outpost.goauthentik.io/
+      backendRefs:
+        - name: authentik-server
+          namespace: authentik
+          port: 80
     - filters:
         - type: ExtensionRef
           extensionRef:

@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: codex-lb-outpost
+  namespace: codex-lb
+spec:
+  parentRefs:
+    - name: codex-lb
+  hostnames:
+    - codex.kakatkarakshay.dev
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /outpost.goauthentik.io/
+      backendRefs:
+        - name: authentik-server
+          namespace: authentik
+          port: 80

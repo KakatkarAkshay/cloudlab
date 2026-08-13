@@ -9,24 +9,6 @@ data:
     metadata:
       name: cloudlab-forward-auth
     entries:
-      - model: authentik_providers_proxy.proxyprovider
-        id: cloudlab-forward-auth
-        identifiers:
-          name: cloudlab-forward-auth
-        attrs:
-          mode: forward_domain
-          external_host: https://auth.kakatkarakshay.dev
-          cookie_domain: kakatkarakshay.dev
-          authorization_flow:
-            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
-          invalidation_flow:
-            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
-      - model: authentik_core.application
-        identifiers:
-          slug: cloudlab
-        attrs:
-          name: Cloudlab
-          provider: !KeyOf cloudlab-forward-auth
       - model: authentik_sources_oauth.oauthsource
         id: google
         identifiers:
@@ -56,12 +38,88 @@ data:
         attrs:
           sources:
             - !KeyOf google
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: headlamp
+        identifiers:
+          name: headlamp
+        attrs:
+          mode: forward_single
+          external_host: https://headlamp.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: headlamp
+        attrs:
+          name: Headlamp
+          provider: !KeyOf headlamp
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: longhorn
+        identifiers:
+          name: longhorn
+        attrs:
+          mode: forward_single
+          external_host: https://longhorn.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: longhorn
+        attrs:
+          name: Longhorn
+          provider: !KeyOf longhorn
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: codex
+        identifiers:
+          name: codex
+        attrs:
+          mode: forward_single
+          external_host: https://codex.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: codex
+        attrs:
+          name: Codex LB
+          provider: !KeyOf codex
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: traefik
+        identifiers:
+          name: traefik
+        attrs:
+          mode: forward_single
+          external_host: https://traefik.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: traefik
+        attrs:
+          name: Traefik
+          provider: !KeyOf traefik
+
       - model: authentik_outposts.outpost
         identifiers:
           managed: goauthentik.io/outposts/embedded
         attrs:
           providers:
-            - !KeyOf cloudlab-forward-auth
+            - !KeyOf headlamp
+            - !KeyOf longhorn
+            - !KeyOf codex
+            - !KeyOf traefik
           config:
             authentik_host: https://auth.kakatkarakshay.dev
             authentik_host_browser: https://auth.kakatkarakshay.dev
@@ -69,3 +127,13 @@ data:
             log_level: info
             object_naming_template: ak-outpost-%(name)s
             refresh_interval: minutes=5
+
+      # Superseded by the per-application providers above.
+      - model: authentik_core.application
+        state: absent
+        identifiers:
+          slug: cloudlab
+      - model: authentik_providers_proxy.proxyprovider
+        state: absent
+        identifiers:
+          name: cloudlab-forward-auth

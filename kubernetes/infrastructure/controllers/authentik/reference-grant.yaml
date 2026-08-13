@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: outpost-from-protected-apps
+  namespace: authentik
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: headlamp
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: longhorn-system
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: codex-lb
+  to:
+    - group: ""
+      kind: Service
+      name: authentik-server

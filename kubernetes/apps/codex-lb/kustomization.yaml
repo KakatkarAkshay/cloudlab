@@ -9,3 +9,4 @@ resources:
   - repository.yaml
   - release.yaml
   - middleware.yaml
+  - outpost-route.yaml

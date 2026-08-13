@@ -6,5 +6,6 @@ resources:
   - database.yaml
   - external-secret.yaml
   - blueprint.yaml
+  - reference-grant.yaml
   - gateway.yaml
   - release.yaml
