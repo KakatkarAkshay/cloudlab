@@ -80,6 +80,13 @@ spec:
           - IPv4
           - IPv6
       additionalServices:
+        hometunnel:
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: home-gateway.kakatkarakshay.dev
+            oci.oraclecloud.com/load-balancer-type: nlb
+          spec:
+            type: LoadBalancer
+            externalTrafficPolicy: Cluster
         scorpion:
           annotations:
             external-dns.alpha.kubernetes.io/hostname: gateway.kakatkarakshay.dev
@@ -92,6 +99,14 @@ spec:
               - IPv4
               - IPv6
     ports:
+      hometunnel:
+        port: 9443
+        exposedPort: 443
+        protocol: TCP
+        expose:
+          default: false
+          scorpion: false
+          hometunnel: true
       web:
         port: 80
         expose:
