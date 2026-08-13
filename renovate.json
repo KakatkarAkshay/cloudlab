@@ -15,28 +15,10 @@
     }
   ],
   "flux": {
-    "managerFilePatterns": [
-      "kubernetes/clusters/**/*.yaml",
-      "kubernetes/clusters/**/*.yml",
-      "kubernetes/apps/**/*.yaml",
-      "kubernetes/apps/**/*.yml",
-      "kubernetes/infrastructure/**/*.yaml",
-      "kubernetes/infrastructure/**/*.yml",
-      "kubernetes/observability/**/*.yaml",
-      "kubernetes/observability/**/*.yml"
-    ]
+    "managerFilePatterns": ["kubernetes/**/*.yaml", "kubernetes/**/*.yml"]
   },
   "kubernetes": {
-    "managerFilePatterns": [
-      "kubernetes/clusters/**/*.yaml",
-      "kubernetes/clusters/**/*.yml",
-      "kubernetes/apps/**/*.yaml",
-      "kubernetes/apps/**/*.yml",
-      "kubernetes/infrastructure/**/*.yaml",
-      "kubernetes/infrastructure/**/*.yml",
-      "kubernetes/observability/**/*.yaml",
-      "kubernetes/observability/**/*.yml"
-    ]
+    "managerFilePatterns": ["kubernetes/**/*.yaml", "kubernetes/**/*.yml"]
   },
   "packageRules": [
     {
@@ -52,8 +34,15 @@
     {
       "matchManagers": ["flux"],
       "matchDatasources": ["git-refs"],
-      "matchFileNames": ["kubernetes/clusters/cloudlab/gateway-api.yaml"],
+      "matchFileNames": [
+        "kubernetes/clusters/*/gateway-api.yaml",
+        "kubernetes/clusters/*/external-snapshotter.yaml"
+      ],
       "enabled": false
+    },
+    {
+      "matchCurrentVersion": "/-(alpha|beta|rc|pre)/",
+      "automerge": false
     },
     {
       "matchManagers": ["custom.jsonata"],
@@ -66,7 +55,10 @@
     {
       "customType": "jsonata",
       "fileFormat": "yaml",
-      "managerFilePatterns": ["kubernetes/clusters/cloudlab/gateway-api.yaml"],
+      "managerFilePatterns": [
+        "kubernetes/clusters/*/gateway-api.yaml",
+        "kubernetes/clusters/*/external-snapshotter.yaml"
+      ],
       "matchStrings": [
         "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
       ],
