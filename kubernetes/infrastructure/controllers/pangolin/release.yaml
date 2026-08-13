@@ -44,6 +44,14 @@ spec:
         registry: ghcr.io
         repository: fosrl/pangolin-kube-controller
         tag: 0.1.0-alpha.1
+    global:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: DoesNotExist
     runtime:
       updateStrategy:
         type: Recreate
