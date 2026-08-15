@@ -399,3 +399,9 @@ variable "tailscale_client_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "headlamp_homelab_kubeconfig" {
+  description = "Kubeconfig Headlamp uses to reach the homelab cluster over the tailnet."
+  type        = string
+  sensitive   = true
+}

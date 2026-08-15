@@ -22,16 +22,22 @@ spec:
     remediation:
       retries: 3
   values:
+    volumes:
+      - name: kubeconfig
+        secret:
+          secretName: headlamp-kubeconfig
+    volumeMounts:
+      - name: kubeconfig
+        mountPath: /kubeconfig
+        readOnly: true
     config:
       inClusterContextName: cloudlab
-      oidc:
-        clientID: kubernetes
-        issuerURL: https://auth.kakatkarakshay.dev/application/o/kubernetes/
-        scopes: profile,email
-        callbackURL: https://headlamp.kakatkarakshay.dev/oidc-callback
-        usePKCE: true
+      extraArgs:
+        - -kubeconfig=/kubeconfig/config
+      unsafeUseServiceAccountToken: true
     clusterRoleBinding:
-      create: false
+      create: true
+      clusterRoleName: cluster-admin
     resources:
       requests:
         cpu: 25m

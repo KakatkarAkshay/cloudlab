@@ -229,3 +229,19 @@ resource "infisical_secret" "codex_lb_encryption_key" {
   name         = "ENCRYPTION_KEY"
   value        = var.codex_lb_encryption_key
 }
+
+resource "infisical_secret_folder" "headlamp" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "headlamp"
+  description      = "Kubeconfig for the homelab cluster, reached over the tailnet."
+}
+
+resource "infisical_secret" "headlamp_homelab_kubeconfig" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.headlamp.path
+  name         = "HOMELAB_KUBECONFIG"
+  value        = var.headlamp_homelab_kubeconfig
+}

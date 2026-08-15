@@ -200,6 +200,27 @@ data:
           meta_launch_url: https://node-red.kakatkarakshay.dev/
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/node-red.svg
 
+      - model: authentik_providers_proxy.proxyprovider
+        id: longhorn-homelab
+        identifiers:
+          name: longhorn-homelab
+        attrs:
+          mode: forward_single
+          external_host: https://longhorn-homelab.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: longhorn-homelab
+        attrs:
+          name: Longhorn (Homelab)
+          provider: !KeyOf longhorn-homelab
+          meta_description: Distributed block storage
+          meta_launch_url: https://longhorn-homelab.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/rancher-longhorn.svg
+
       - model: authentik_outposts.outpost
         identifiers:
           name: homelab
@@ -207,6 +228,7 @@ data:
           type: proxy
           providers:
             - !KeyOf node-red
+            - !KeyOf longhorn-homelab
           config:
             authentik_host: https://auth.kakatkarakshay.dev
             authentik_host_browser: https://auth.kakatkarakshay.dev

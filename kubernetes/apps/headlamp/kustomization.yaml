@@ -6,3 +6,4 @@ resources:
   - release.yaml
   - gateway.yaml
   - route.yaml
+  - homelab-kubeconfig.yaml
