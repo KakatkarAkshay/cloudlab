@@ -25,22 +25,14 @@ spec:
     replicaCount: 2
     config:
       inClusterContextName: cloudlab
-      unsafeUseServiceAccountToken: true
       oidc:
         clientID: kubernetes
         issuerURL: https://auth.kakatkarakshay.dev/application/o/kubernetes/
         scopes: openid,profile,email
         callbackURL: https://headlamp.kakatkarakshay.dev/oidc-callback
         usePKCE: true
-        secret:
-          create: true
-    serviceAccount:
-      create: true
     clusterRoleBinding:
-      create: true
-      clusterRoleName: cluster-admin
-    service:
-      type: ClusterIP
+      create: false
     podDisruptionBudget:
       enabled: true
       maxUnavailable: 1
