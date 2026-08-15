@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "cluster-versions.json"
+      - "terraform/infra/talos-schematic.yaml"
   workflow_dispatch:
 
 permissions:
@@ -108,19 +109,29 @@ jobs:
           TARGET_KUBERNETES: ${{ steps.versions.outputs.kubernetes }}
           CONTROL_PLANE: ${{ steps.cluster.outputs.control_plane }}
           NODES: ${{ steps.cluster.outputs.nodes }}
+          SCHEMATIC_FILE: terraform/infra/talos-schematic.yaml
         run: |
           set -euo pipefail
 
           read -ra nodes <<< "$NODES"
 
+          node_schematic() {
+            talosctl get extensions --nodes "$1" --output json \
+              | jq -rs '[.[] | select(.spec.metadata.name == "schematic")][0].spec.metadata.version'
+          }
+
+          # Resolve the schematic this repo asks for to its Image Factory ID, so a
+          # change to talos-schematic.yaml is an upgrade trigger like a version bump.
+          target_schematic="$(curl --fail --location --silent --show-error \
+            --request POST --data-binary @"$SCHEMATIC_FILE" \
+            https://factory.talos.dev/schematics | jq -r '.id')"
+          test -n "$target_schematic" && test "$target_schematic" != null
+
           installer_image() {
-            local node="$1" platform schematic
+            local node="$1" platform
             platform="$(talosctl get platformmetadata --nodes "$node" --output jsonpath='{.spec.platform}')"
-            schematic="$(talosctl get extensions --nodes "$node" --output json \
-              | jq -rs '[.[] | select(.spec.metadata.name == "schematic")][0].spec.metadata.version')"
             test -n "$platform"
-            test -n "$schematic" && test "$schematic" != null
-            printf 'factory.talos.dev/%s-installer/%s:%s' "$platform" "$schematic" "$TARGET_TALOS"
+            printf 'factory.talos.dev/%s-installer/%s:%s' "$platform" "$target_schematic" "$TARGET_TALOS"
           }
 
           current_talos_version() {
@@ -183,7 +194,7 @@ jobs:
           for node in "${nodes[@]}"; do
             current_talos="$(current_talos_version "$node")"
             check_upgrade_path Talos "$current_talos" "$TARGET_TALOS"
-            if [[ "$current_talos" != "$TARGET_TALOS" ]]; then
+            if [[ "$current_talos" != "$TARGET_TALOS" || "$(node_schematic "$node")" != "$target_schematic" ]]; then
               talosctl upgrade \
                 --nodes "$node" \
                 --image "$(installer_image "$node")" \
@@ -191,6 +202,7 @@ jobs:
                 --wait \
                 --timeout 30m
               test "$(current_talos_version "$node")" = "$TARGET_TALOS"
+              test "$(node_schematic "$node")" = "$target_schematic"
               check_health
             fi
           done

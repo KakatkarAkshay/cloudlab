@@ -4,4 +4,5 @@ customization:
       - siderolabs/binfmt-misc
       - siderolabs/iscsi-tools
       - siderolabs/nfs-utils
+      - siderolabs/tailscale
       - siderolabs/util-linux-tools
