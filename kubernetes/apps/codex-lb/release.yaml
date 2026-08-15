@@ -25,8 +25,6 @@ spec:
       registry: ghcr.io
       repository: abyssal-labs/codex-lb
       tag: latest@sha256:4f1d2bfa1839e5fe1b32d68e1afcf7089847e677c6ad070b0fabde71215a4612
-      pullPolicy: IfNotPresent
-    replicaCount: 2
     serviceAccount:
       create: false
       name: codex-lb
@@ -34,7 +32,6 @@ spec:
       existingSecret: codex-lb
       secretKeys:
         databaseUrl: uri
-        encryptionKey: encryption-key
     postgresql:
       enabled: false
     externalDatabase:
@@ -50,8 +47,6 @@ spec:
         value: 10.244.0.0/16,fd00:10:244::/56
       - name: CODEX_LB_HTTP_RESPONSES_SESSION_BRIDGE_ENABLED
         value: "false"
-    ingress:
-      enabled: false
     gatewayApi:
       enabled: true
       gateway:
@@ -95,10 +90,7 @@ spec:
       requests:
         cpu: 50m
         memory: 384Mi
-      limits:
-        memory: 1Gi
     metrics:
-      enabled: true
       serviceMonitor:
         enabled: true
       prometheusRule:

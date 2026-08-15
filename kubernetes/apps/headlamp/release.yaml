@@ -22,28 +22,16 @@ spec:
     remediation:
       retries: 3
   values:
-    replicaCount: 2
     config:
       inClusterContextName: cloudlab
       oidc:
         clientID: kubernetes
         issuerURL: https://auth.kakatkarakshay.dev/application/o/kubernetes/
-        scopes: openid,profile,email
+        scopes: profile,email
         callbackURL: https://headlamp.kakatkarakshay.dev/oidc-callback
         usePKCE: true
     clusterRoleBinding:
       create: false
-    podDisruptionBudget:
-      enabled: true
-      maxUnavailable: 1
-    topologySpreadConstraints:
-      - labelSelector:
-          matchLabels:
-            app.kubernetes.io/instance: headlamp
-            app.kubernetes.io/name: headlamp
-        maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
     resources:
       requests:
         cpu: 25m

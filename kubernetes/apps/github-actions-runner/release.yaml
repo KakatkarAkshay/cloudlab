@@ -19,7 +19,6 @@ spec:
   values:
     githubConfigUrl: https://github.com/abyssal-labs
     githubConfigSecret: github-actions-runner
-    runnerScaleSetName: abyssal-labs-runner
     controllerServiceAccount:
       name: actions-runner-controller-gha-rs-controller
       namespace: arc-system

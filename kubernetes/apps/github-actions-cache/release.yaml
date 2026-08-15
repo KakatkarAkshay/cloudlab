@@ -20,7 +20,6 @@ spec:
     image:
       repository: ghcr.io/falcondev-oss/github-actions-cache-server
       tag: 9.7.0@sha256:3999b0202ec509f3b2084ef92cc50b408838e0d442b5997dd6dff2d89f4fe7b4
-    replicaCount: 1
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -30,21 +29,11 @@ spec:
                   operator: DoesNotExist
             weight: 100
     config:
-      storage:
-        driver: filesystem
-        filesystem:
-          path: /data/cache
       db:
         driver: postgres
     persistentVolumeClaim:
       enabled: true
-      accessModes:
-        - ReadWriteOnce
-      storage: 20Gi
       storageClassName: longhorn
-    service:
-      type: ClusterIP
-      port: 3000
     resources:
       limits:
         memory: 1Gi
