@@ -42,6 +42,28 @@ spec:
           memory: 128Mi
         limits:
           memory: 512Mi
+    receive:
+      enabled: true
+      replicationFactor: 1
+      retention: 24h
+      ingestor:
+        replicas: 1
+        persistence:
+          size: 10Gi
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+      router:
+        replicas: 1
+        resources:
+          requests:
+            cpu: 25m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
     storeGateway:
       enabled: true
       persistence:

@@ -152,3 +152,27 @@ output "volsync_restic_password" {
   value       = var.volsync_restic_password
   sensitive   = true
 }
+
+
+
+output "thanos_ca_cert" {
+  description = "CA certificate that clients writing to Thanos are issued from."
+  value       = tls_self_signed_cert.thanos_ca.cert_pem
+}
+
+output "thanos_ca_key" {
+  description = "CA private key that clients writing to Thanos are issued from."
+  value       = tls_private_key.thanos_ca.private_key_pem
+  sensitive   = true
+}
+
+output "loki_ca_cert" {
+  description = "CA certificate that clients writing to Loki are issued from."
+  value       = tls_self_signed_cert.loki_ca.cert_pem
+}
+
+output "loki_ca_key" {
+  description = "CA private key that clients writing to Loki are issued from."
+  value       = tls_private_key.loki_ca.private_key_pem
+  sensitive   = true
+}

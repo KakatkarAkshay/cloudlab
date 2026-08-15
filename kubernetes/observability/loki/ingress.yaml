@@ -1,0 +1,67 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: loki-ca
+  namespace: observability
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical
+  target:
+    name: loki-ca
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: tls.ca
+      remoteRef:
+        key: /platform/observability/loki/CA_CERT
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: loki-mtls
+  namespace: observability
+spec:
+  minVersion: VersionTLS13
+  clientAuth:
+    secretNames:
+      - loki-ca
+    clientAuthType: RequireAndVerifyClientCert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loki-kakatkarakshay-dev
+  namespace: observability
+spec:
+  secretName: loki-kakatkarakshay-dev-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production
+  dnsNames:
+    - loki.kakatkarakshay.dev
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: loki-push
+  namespace: observability
+  annotations:
+    external-dns.alpha.kubernetes.io/target: gateway.kakatkarakshay.dev
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: loki-kakatkarakshay-dev-tls
+    options:
+      name: loki-mtls
+      namespace: observability
+  routes:
+    - kind: Rule
+      match: Host(`loki.kakatkarakshay.dev`) && PathPrefix(`/loki/api/v1/push`)
+      services:
+        - kind: Service
+          name: loki
+          port: 3100

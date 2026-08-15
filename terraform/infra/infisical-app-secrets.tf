@@ -245,3 +245,35 @@ resource "infisical_secret" "headlamp_homelab_kubeconfig" {
   name         = "HOMELAB_KUBECONFIG"
   value        = var.headlamp_homelab_kubeconfig
 }
+
+
+
+resource "infisical_secret_folder" "thanos" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = infisical_secret_folder.observability.path
+  name             = "thanos"
+}
+
+resource "infisical_secret" "thanos_ca_cert" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.thanos.path
+  name         = "CA_CERT"
+  value        = tls_self_signed_cert.thanos_ca.cert_pem
+}
+
+resource "infisical_secret_folder" "loki" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = infisical_secret_folder.observability.path
+  name             = "loki"
+}
+
+resource "infisical_secret" "loki_ca_cert" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.loki.path
+  name         = "CA_CERT"
+  value        = tls_self_signed_cert.loki_ca.cert_pem
+}

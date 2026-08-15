@@ -405,3 +405,4 @@ variable "headlamp_homelab_kubeconfig" {
   type        = string
   sensitive   = true
 }
+
