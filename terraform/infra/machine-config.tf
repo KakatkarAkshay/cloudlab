@@ -60,6 +60,14 @@ data "talos_machine_configuration" "control_plane" {
         }
         apiServer = {
           certSANs = local.cluster_api_addresses
+          extraArgs = {
+            oidc-client-id       = "kubernetes"
+            oidc-groups-claim    = "groups"
+            oidc-groups-prefix   = "authentik:"
+            oidc-issuer-url      = "https://auth.kakatkarakshay.dev/application/o/kubernetes/"
+            oidc-username-claim  = "preferred_username"
+            oidc-username-prefix = "authentik:"
+          }
         }
         controllerManager = {
           extraArgs = {
