@@ -118,6 +118,16 @@ data "talos_machine_configuration" "control_plane" {
       name       = "longhorn"
       volumeType = "directory"
     }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "ExtensionServiceConfig"
+      name       = "tailscale"
+      environment = [
+        "TS_AUTHKEY=${var.tailscale_client_secret}?preauthorized=true&ephemeral=false",
+        "TS_EXTRA_ARGS=--advertise-tags=tag:k8s-cloudlab",
+        "TS_ACCEPT_DNS=false",
+      ]
+    }),
   ]
 }
 
@@ -194,6 +204,16 @@ data "talos_machine_configuration" "worker" {
       kind       = "UserVolumeConfig"
       name       = "longhorn"
       volumeType = "directory"
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "ExtensionServiceConfig"
+      name       = "tailscale"
+      environment = [
+        "TS_AUTHKEY=${var.tailscale_client_secret}?preauthorized=true&ephemeral=false",
+        "TS_EXTRA_ARGS=--advertise-tags=tag:k8s-cloudlab",
+        "TS_ACCEPT_DNS=false",
+      ]
     }),
   ]
 }

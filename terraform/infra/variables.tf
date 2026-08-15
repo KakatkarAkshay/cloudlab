@@ -393,3 +393,9 @@ variable "pangolin_node_hybrid_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "tailscale_client_secret" {
+  description = "Tailscale OAuth client secret used as the node auth key; tags come from --advertise-tags."
+  type        = string
+  sensitive   = true
+}
