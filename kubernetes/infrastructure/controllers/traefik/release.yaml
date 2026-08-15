@@ -154,7 +154,7 @@ spec:
         spec:
           redirectRegex:
             regex: ^https?://traefik\.kakatkarakshay\.dev/?$
-            replacement: https://traefik.kakatkarakshay.dev/dashboard/
+            replacement: https://cloudlab.kakatkarakshay.dev/dashboard/
             permanent: true
       - apiVersion: traefik.io/v1alpha1
         kind: IngressRoute
@@ -167,17 +167,17 @@ spec:
           entryPoints:
             - websecure
           tls:
-            secretName: traefik-kakatkarakshay-dev-tls
+            secretName: cloudlab-kakatkarakshay-dev-tls
           routes:
             - kind: Rule
-              match: Host(`traefik.kakatkarakshay.dev`) && Path(`/`)
+              match: Host(`cloudlab.kakatkarakshay.dev`) && Path(`/`)
               middlewares:
                 - name: dashboard-redirect
               services:
                 - kind: TraefikService
                   name: api@internal
             - kind: Rule
-              match: Host(`traefik.kakatkarakshay.dev`) && PathPrefix(`/outpost.goauthentik.io/`)
+              match: Host(`cloudlab.kakatkarakshay.dev`) && PathPrefix(`/outpost.goauthentik.io/`)
               priority: 100
               services:
                 - kind: Service
@@ -185,7 +185,7 @@ spec:
                   namespace: authentik
                   port: 80
             - kind: Rule
-              match: Host(`traefik.kakatkarakshay.dev`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+              match: Host(`cloudlab.kakatkarakshay.dev`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
               middlewares:
                 - name: authentik-forward-auth
               services:
