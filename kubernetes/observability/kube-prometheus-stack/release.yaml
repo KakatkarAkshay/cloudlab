@@ -141,6 +141,11 @@ spec:
         existingClaim: kube-prometheus-stack-grafana
       sidecar:
         dashboards:
+          multicluster:
+            global:
+              enabled: true
+            etcd:
+              enabled: true
           folderAnnotation: grafana_folder
           skipReload: true
           provider:

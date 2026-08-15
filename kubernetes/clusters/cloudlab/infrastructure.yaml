@@ -11,7 +11,7 @@ spec:
     - name: external-secrets
   interval: 10m
   retryInterval: 1m
-  path: ./kubernetes/infrastructure/cloudlab
+  path: ./kubernetes/infrastructure/controllers
   prune: true
   wait: true
   timeout: 5m

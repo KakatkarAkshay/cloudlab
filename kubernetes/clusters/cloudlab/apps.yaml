@@ -8,7 +8,7 @@ spec:
     - name: infrastructure
   interval: 10m
   retryInterval: 1m
-  path: ./kubernetes/apps/cloudlab
+  path: ./kubernetes/apps
   prune: true
   wait: true
   timeout: 5m

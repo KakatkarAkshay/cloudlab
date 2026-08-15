@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - actions-runner-controller
+  - longhorn
+  - volsync
+  - cert-manager
+  - cloudnative-pg
+  - metrics-server
+  - oci-cloud-controller-manager
+  - reloader
+  - traefik
+  - external-dns
+  - authentik
+  - infisical-kubernetes-auth.yaml
+  - infisical-store.yaml
