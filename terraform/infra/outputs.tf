@@ -153,6 +153,18 @@ output "volsync_restic_password" {
   sensitive   = true
 }
 
+output "immich_oauth_client_id" {
+  description = "OAuth client ID shared by Authentik and the homelab Immich deployment."
+  value       = random_password.immich_oauth_client_id.result
+  sensitive   = true
+}
+
+output "immich_oauth_client_secret" {
+  description = "OAuth client secret shared by Authentik and the homelab Immich deployment."
+  value       = random_password.immich_oauth_client_secret.result
+  sensitive   = true
+}
+
 
 
 output "thanos_ca_cert" {
