@@ -5,12 +5,12 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  url: oci://ghcr.io/abyssal-labs/charts/codex-lb
+  url: oci://ghcr.io/soju06/charts/codex-lb
   secretRef:
     name: ghcr
   ref:
-    tag: latest
-    digest: sha256:c5370fc1655dbee2bd86acfe68a5d6ae12b492e5ae63ae2062bf5e3fb3490fab
+    tag: 1.23.0
+    digest: sha256:dfb436df3a0e68aa6c9536190302974db875fee1eebf7308840e2f076da9c0ea
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
