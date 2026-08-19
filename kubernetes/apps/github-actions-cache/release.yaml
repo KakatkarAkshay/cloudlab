@@ -16,6 +16,17 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: github-actions-cache-server
+            patch: |
+              - op: add
+                path: /spec/strategy
+                value:
+                  type: Recreate
   values:
     image:
       repository: ghcr.io/falcondev-oss/github-actions-cache-server
