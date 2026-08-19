@@ -13,10 +13,28 @@ permissions:
   contents: read
 
 jobs:
+  queue:
+    name: Queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Wait for other infrastructure runs
+        uses: ./.github/actions/infra-queue
+        with:
+          workflows: |
+            terraform.yml
+            terraform-destroy.yml
+            cluster-upgrade.yml
+
   upgrade:
     name: Upgrade Cluster
+    needs: queue
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 90
     defaults:
       run:
         shell: bash
@@ -33,14 +51,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Queue behind other infrastructure runs
-        uses: ./.github/actions/infra-queue
-        with:
-          workflows: |
-            terraform.yml
-            terraform-destroy.yml
-            cluster-upgrade.yml
 
       - name: Read target versions
         id: versions
