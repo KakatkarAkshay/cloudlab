@@ -50,6 +50,14 @@ patches:
       spec:
         template:
           spec:
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - preference:
+                      matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: DoesNotExist
+                    weight: 100
             containers:
               - name: manager
                 resources:
