@@ -1,0 +1,66 @@
+name: Infrastructure Queue
+description: Block until every older run of the infrastructure workflows has finished.
+
+inputs:
+  workflows:
+    description: Newline-separated workflow file names sharing the queue.
+    required: true
+  timeout-minutes:
+    description: How long to wait before failing.
+    default: "120"
+  poll-seconds:
+    description: Interval between polls.
+    default: "15"
+
+runs:
+  using: composite
+  steps:
+    - name: Wait for older infrastructure runs
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      env:
+        QUEUE_WORKFLOWS: ${{ inputs.workflows }}
+        QUEUE_TIMEOUT_MINUTES: ${{ inputs['timeout-minutes'] }}
+        QUEUE_POLL_SECONDS: ${{ inputs['poll-seconds'] }}
+      with:
+        script: |
+          const workflows = process.env.QUEUE_WORKFLOWS.split("\n").map(name => name.trim()).filter(Boolean)
+          const pollMs = Number(process.env.QUEUE_POLL_SECONDS) * 1000
+          const deadline = Date.now() + Number(process.env.QUEUE_TIMEOUT_MINUTES) * 60000
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+          // Run ids are globally increasing, so waiting only on lower ids cannot deadlock.
+          async function runsAhead () {
+            const ahead = []
+
+            for (const workflow of workflows) {
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflow,
+                per_page: 100,
+              })
+
+              ahead.push(...data.workflow_runs.filter(run => run.id < context.runId && run.status !== "completed"))
+            }
+
+            return ahead.sort((a, b) => a.id - b.id)
+          }
+
+          for (;;) {
+            const blocking = await runsAhead()
+
+            if (blocking.length === 0) {
+              core.info("Queue is clear")
+              return
+            }
+
+            const summary = blocking.map(run => `${run.name} #${run.run_number} (${run.status})`).join(", ")
+
+            if (Date.now() >= deadline) {
+              core.setFailed(`Timed out waiting for ${summary}`)
+              return
+            }
+
+            core.info(`Waiting for ${summary}`)
+            await sleep(pollMs)
+          }
