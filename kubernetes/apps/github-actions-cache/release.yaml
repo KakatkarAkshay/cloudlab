@@ -31,14 +31,6 @@ spec:
     image:
       repository: ghcr.io/falcondev-oss/github-actions-cache-server
       tag: 9.7.0@sha256:3999b0202ec509f3b2084ef92cc50b408838e0d442b5997dd6dff2d89f4fe7b4
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - preference:
-              matchExpressions:
-                - key: node-role.kubernetes.io/control-plane
-                  operator: DoesNotExist
-            weight: 100
     config:
       db:
         driver: postgres

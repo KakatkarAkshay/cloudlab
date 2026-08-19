@@ -69,14 +69,6 @@ metadata:
     cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
   instances: 1
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - preference:
-            matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: DoesNotExist
-          weight: 100
   bootstrap:
     recovery:
       source: github-actions-cache-postgresql-backup
