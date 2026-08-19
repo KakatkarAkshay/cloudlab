@@ -365,7 +365,7 @@ variable "gerbil_version" {
   description = "gerbil WireGuard gateway version."
   type        = string
   # renovate: datasource=docker depName=docker.io/fosrl/gerbil
-  default = "1.4.3"
+  default = "1.5.0"
 }
 
 variable "pangolin_node_traefik_version" {
