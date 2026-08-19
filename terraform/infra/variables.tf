@@ -319,81 +319,6 @@ variable "node_host_index_base" {
   }
 }
 
-variable "pangolin_vm_shape" {
-  description = "Compute shape for the Pangolin host. VM.Standard.E2.1.Micro is Always Free and separate from the Ampere allocation."
-  type        = string
-  default     = "VM.Standard.E2.1.Micro"
-}
-
-variable "pangolin_vm_subnet_cidr" {
-  description = "IPv4 CIDR for the public subnet the Pangolin host sits in."
-  type        = string
-  default     = "10.1.2.0/24"
-
-  validation {
-    condition     = can(cidrhost(var.pangolin_vm_subnet_cidr, 0))
-    error_message = "pangolin_vm_subnet_cidr must be a valid IPv4 CIDR."
-  }
-}
-
-variable "pangolin_vm_boot_volume_size_in_gbs" {
-  description = "Boot volume for the Pangolin host. OCI enforces a 50 GB minimum."
-  type        = number
-  default     = 50
-}
-
-variable "pangolin_vm_boot_volume_vpus_per_gb" {
-  description = "Boot volume performance units. Boot volumes reject the 0 VPU tier that block volumes accept, so 10 is the floor."
-  type        = number
-  default     = 10
-}
-
-variable "pangolin_vm_ssh_source_cidr" {
-  description = "CIDR allowed to reach SSH on the Pangolin host."
-  type        = string
-  default     = "0.0.0.0/0"
-}
-
-variable "pangolin_node_version" {
-  description = "Pangolin remote node version."
-  type        = string
-  # renovate: datasource=docker depName=docker.io/fosrl/pangolin-node
-  default = "1.5.0"
-}
-
-variable "gerbil_version" {
-  description = "gerbil WireGuard gateway version."
-  type        = string
-  # renovate: datasource=docker depName=docker.io/fosrl/gerbil
-  default = "1.5.0"
-}
-
-variable "pangolin_node_traefik_version" {
-  description = "Traefik version running alongside the node."
-  type        = string
-  # renovate: datasource=docker depName=docker.io/library/traefik
-  default = "v3.7"
-}
-
-variable "pangolin_node_badger_version" {
-  description = "badger Traefik plugin version."
-  type        = string
-  # renovate: datasource=github-releases depName=fosrl/badger
-  default = "v1.6.1"
-}
-
-variable "pangolin_node_hybrid_id" {
-  description = "Managed node ID issued by Pangolin Cloud. Minted once in the dashboard and reused across VM rebuilds."
-  type        = string
-  sensitive   = true
-}
-
-variable "pangolin_node_hybrid_secret" {
-  description = "Managed node secret issued by Pangolin Cloud."
-  type        = string
-  sensitive   = true
-}
-
 variable "tailscale_client_secret" {
   description = "Tailscale OAuth client secret used as the node auth key; tags come from --advertise-tags."
   type        = string
@@ -406,3 +331,7 @@ variable "headlamp_homelab_kubeconfig" {
   sensitive   = true
 }
 
+variable "homelab_public_ip" {
+  description = "Static public IPv4 of the home connection, DMZ'd to the homelab Traefik load balancer."
+  type        = string
+}
