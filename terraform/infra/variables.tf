@@ -330,8 +330,3 @@ variable "headlamp_homelab_kubeconfig" {
   type        = string
   sensitive   = true
 }
-
-variable "homelab_public_ip" {
-  description = "Static public IPv4 of the home connection, DMZ'd to the homelab Traefik load balancer."
-  type        = string
-}

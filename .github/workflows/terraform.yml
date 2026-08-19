@@ -54,7 +54,6 @@ jobs:
       TF_VAR_authentik_secret_key: ${{ secrets.TF_VAR_AUTHENTIK_SECRET_KEY }}
       TF_VAR_authentik_root_email: ${{ secrets.TF_VAR_AUTHENTIK_ROOT_EMAIL }}
       TF_VAR_volsync_restic_password: ${{ secrets.TF_VAR_VOLSYNC_RESTIC_PASSWORD }}
-      TF_VAR_homelab_public_ip: ${{ secrets.TF_VAR_HOMELAB_PUBLIC_IP }}
       TF_VAR_tailscale_client_secret: ${{ secrets.TF_VAR_TAILSCALE_CLIENT_SECRET }}
       TF_VAR_headlamp_homelab_kubeconfig: ${{ secrets.TF_VAR_HEADLAMP_HOMELAB_KUBECONFIG }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
