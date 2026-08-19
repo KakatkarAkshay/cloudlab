@@ -379,7 +379,7 @@ variable "pangolin_node_badger_version" {
   description = "badger Traefik plugin version."
   type        = string
   # renovate: datasource=github-releases depName=fosrl/badger
-  default = "v1.6.0"
+  default = "v1.6.1"
 }
 
 variable "pangolin_node_hybrid_id" {
