@@ -55,6 +55,8 @@ spec:
                   target: ${DB_URI}
                   logRetentionDays: 30
                   flushInterval: 30s
+                  creationAttempts: 30
+                  creationCooldown: 10s
                 EOF
             env:
               - name: DB_URI
