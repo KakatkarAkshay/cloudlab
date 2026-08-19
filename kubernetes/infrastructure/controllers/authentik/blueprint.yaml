@@ -211,6 +211,27 @@ data:
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/openai.svg
 
       - model: authentik_providers_proxy.proxyprovider
+        id: blocky
+        identifiers:
+          name: blocky
+        attrs:
+          mode: forward_single
+          external_host: https://blocky.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: blocky
+        attrs:
+          name: Blocky
+          provider: !KeyOf blocky
+          meta_description: DNS resolver and ad blocker
+          meta_launch_url: https://blocky.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/blocky.svg
+
+      - model: authentik_providers_proxy.proxyprovider
         id: traefik
         identifiers:
           name: traefik
@@ -251,6 +272,27 @@ data:
           meta_description: Flow based automation
           meta_launch_url: https://node-red.kakatkarakshay.dev/
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/node-red.svg
+
+      - model: authentik_providers_proxy.proxyprovider
+        id: blocky-homelab
+        identifiers:
+          name: blocky-homelab
+        attrs:
+          mode: forward_single
+          external_host: https://blocky-homelab.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: blocky-homelab
+        attrs:
+          name: Blocky (Homelab)
+          provider: !KeyOf blocky-homelab
+          meta_description: DNS resolver and ad blocker
+          meta_launch_url: https://blocky-homelab.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/blocky.svg
 
       - model: authentik_providers_proxy.proxyprovider
         id: longhorn-homelab
@@ -301,6 +343,7 @@ data:
           type: proxy
           providers:
             - !KeyOf node-red
+            - !KeyOf blocky-homelab
             - !KeyOf longhorn-homelab
             - !KeyOf traefik-homelab
           config:
@@ -319,6 +362,7 @@ data:
             - !KeyOf headlamp
             - !KeyOf longhorn
             - !KeyOf codex
+            - !KeyOf blocky
             - !KeyOf traefik
           config:
             authentik_host: https://auth.kakatkarakshay.dev

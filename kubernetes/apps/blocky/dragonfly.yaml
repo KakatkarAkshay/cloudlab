@@ -1,0 +1,25 @@
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: dragonfly
+  namespace: blocky
+spec:
+  replicas: 2
+  image: ghcr.io/dragonflydb/dragonfly:v1.40.1
+  imagePullPolicy: IfNotPresent
+  args:
+    - --proactor_threads=1
+  enableReplicationReadinessGate: true
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app: dragonfly

@@ -1,0 +1,45 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: blocky-ui
+  namespace: blocky
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      hostname: blocky.kakatkarakshay.dev
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: blocky.kakatkarakshay.dev-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: blocky-dns
+  namespace: blocky
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      hostname: dns.kakatkarakshay.dev
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: dns-kakatkarakshay-dev-tls
+    - name: https-wildcard
+      hostname: "*.dns.kakatkarakshay.dev"
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: dns-kakatkarakshay-dev-tls

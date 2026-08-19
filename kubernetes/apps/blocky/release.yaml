@@ -1,0 +1,125 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blocky
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: blocky
+  targetNamespace: blocky
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 100
+        runAsGroup: 100
+        runAsNonRoot: true
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: blocky
+    controllers:
+      blocky:
+        replicas: 2
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          render-config:
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: 1.37.0
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                set -eu
+                cp /etc/blocky/base/*.yaml /config/
+                cat > /config/50-querylog.yaml <<EOF
+                queryLog:
+                  type: postgresql
+                  target: ${DB_URI}
+                  logRetentionDays: 30
+                  flushInterval: 30s
+                EOF
+            env:
+              - name: DB_URI
+                valueFrom:
+                  secretKeyRef:
+                    name: blocky-postgresql-app
+                    key: uri
+        containers:
+          app:
+            image:
+              repository: ghcr.io/0xerr0r/blocky
+              tag: v0.34.0
+            args:
+              - --config
+              - /config
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/blocking/status
+                    port: 4000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/blocking/status
+                    port: 4000
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  failureThreshold: 3
+            resources:
+              requests:
+                cpu: 50m
+                memory: 192Mi
+              limits:
+                memory: 768Mi
+    service:
+      app:
+        controller: blocky
+        ports:
+          http:
+            port: 4000
+      dns:
+        controller: blocky
+        ports:
+          dns-tcp:
+            port: 53
+            protocol: TCP
+          dns-udp:
+            port: 53
+            protocol: UDP
+    persistence:
+      config-base:
+        type: configMap
+        name: blocky-config
+        globalMounts:
+          - path: /etc/blocky/base
+            readOnly: true
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /config

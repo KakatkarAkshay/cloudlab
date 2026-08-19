@@ -6,6 +6,7 @@ resources:
   - volsync
   - cert-manager
   - cloudnative-pg
+  - dragonfly-operator
   - metrics-server
   - oci-cloud-controller-manager
   - reloader
