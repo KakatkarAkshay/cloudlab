@@ -102,6 +102,8 @@ spec:
                 path: /metadata/labels/grafana_dashboard
   values:
     grafana:
+      deploymentStrategy:
+        type: Recreate
       # admin password is chart-generated; read it from the kube-prometheus-stack-grafana secret
       grafana.ini:
         auth:
