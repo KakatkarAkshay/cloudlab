@@ -5,7 +5,7 @@ metadata:
   namespace: blocky
 spec:
   replicas: 2
-  image: ghcr.io/dragonflydb/dragonfly:v1.40.1
+  image: ghcr.io/dragonflydb/dragonfly:v1.40.1@sha256:ebf3c6c213e82fb51b4521660cca13f06f3421dc5b1ed14f2f474c50b5e29986
   imagePullPolicy: IfNotPresent
   args:
     - --proactor_threads=1

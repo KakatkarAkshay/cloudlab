@@ -34,7 +34,7 @@ spec:
           app:
             image:
               repository: ghcr.io/gabeduartem/blocky-ui
-              tag: 2.0.0
+              tag: 2.0.0@sha256:fb614982e1a28674e242dba14b804a4e19cec54034b9c5f36ef35a245a1758cf
             env:
               - name: BLOCKY_API_URL
                 value: http://blocky-app.blocky.svc.cluster.local:4000

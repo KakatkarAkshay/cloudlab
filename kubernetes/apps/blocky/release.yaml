@@ -41,7 +41,7 @@ spec:
           render-config:
             image:
               repository: public.ecr.aws/docker/library/busybox
-              tag: 1.37.0
+              tag: 1.37.0@sha256:9db7b59979c38555a39def84a31fb98b5296952f9e3afd4f6f11f05b07adfab0
             command:
               - /bin/sh
               - -c
@@ -68,7 +68,7 @@ spec:
           app:
             image:
               repository: ghcr.io/0xerr0r/blocky
-              tag: v0.34.0
+              tag: v0.34.0@sha256:595136fb127f4c952b621113e668c09acdcf15ac054d96ee6d4c51a76c35f5fd
             args:
               - --config
               - /config
