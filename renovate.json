@@ -59,6 +59,14 @@
       "enabled": false
     },
     {
+      "matchPackageNames": [
+        "ghcr.io/soju06/charts/codex-lb",
+        "ghcr.io/soju06/codex-lb"
+      ],
+      "ignoreUnstable": false,
+      "respectLatest": false
+    },
+    {
       "matchCurrentVersion": "/-(alpha|beta|rc|pre)/",
       "automerge": false
     },
