@@ -68,7 +68,7 @@ metadata:
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
-  instances: 2
+  instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
   bootstrap:
     recovery:
@@ -80,7 +80,7 @@ spec:
       # authentik dropped Redis in 2025.10, needing ~50% more connections.
       max_connections: "200"
   storage:
-    size: 5Gi
+    size: 2Gi
     storageClass: longhorn
   affinity:
     enablePodAntiAffinity: true

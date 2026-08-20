@@ -14,6 +14,6 @@ parameters:
   dataLocality: disabled
   disableRevisionCounter: "true"
   fsType: ext4
-  numberOfReplicas: "1"
+  numberOfReplicas: "3"
   staleReplicaTimeout: "30"
   strictTopology: "true"

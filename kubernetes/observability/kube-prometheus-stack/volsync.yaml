@@ -66,7 +66,7 @@ metadata:
   namespace: observability
 spec:
   trigger:
-    manual: restore-1
+    manual: restore-2
   restic:
     repository: volsync-grafana
     copyMethod: Snapshot
@@ -81,4 +81,4 @@ spec:
     cacheStorageClassName: longhorn
     accessModes:
       - ReadWriteOnce
-    capacity: 5Gi
+    capacity: 2Gi

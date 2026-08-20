@@ -76,7 +76,7 @@ spec:
       database: grafana
       owner: grafana
   storage:
-    size: 5Gi
+    size: 2Gi
     storageClass: longhorn
   resources:
     requests:

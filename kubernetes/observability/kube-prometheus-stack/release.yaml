@@ -195,7 +195,7 @@ spec:
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 20Gi
+                  storage: 10Gi
         resources:
           requests:
             cpu: 200m

@@ -68,7 +68,7 @@ metadata:
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: enabled
 spec:
-  instances: 2
+  instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-system-trixie
   bootstrap:
     recovery:
@@ -76,7 +76,7 @@ spec:
       database: blocky
       owner: blocky
   storage:
-    size: 10Gi
+    size: 2Gi
     storageClass: longhorn
   walStorage:
     size: 2Gi

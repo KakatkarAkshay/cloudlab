@@ -145,24 +145,6 @@ variable "github_packages_token" {
   sensitive   = true
 }
 
-variable "github_runner_app_id" {
-  description = "GitHub App ID for the Actions Runner Controller."
-  type        = string
-  sensitive   = true
-}
-
-variable "github_runner_app_installation_id" {
-  description = "GitHub App installation ID for the Actions Runner Controller."
-  type        = string
-  sensitive   = true
-}
-
-variable "github_runner_app_private_key" {
-  description = "GitHub App private key (PEM) for the Actions Runner Controller."
-  type        = string
-  sensitive   = true
-}
-
 variable "codex_lb_encryption_key" {
   description = "Fernet key used by codex-lb to encrypt application data."
   type        = string

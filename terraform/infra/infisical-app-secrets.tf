@@ -34,13 +34,6 @@ resource "infisical_secret_folder" "apps" {
   name             = "apps"
 }
 
-resource "infisical_secret_folder" "github_actions_runner" {
-  project_id       = infisical_project.cloudlab.id
-  environment_slug = var.infisical_environment_slug
-  folder_path      = infisical_secret_folder.apps.path
-  name             = "github-actions-runner"
-}
-
 resource "infisical_secret_folder" "codex_lb" {
   project_id       = infisical_project.cloudlab.id
   environment_slug = var.infisical_environment_slug
@@ -224,30 +217,6 @@ resource "infisical_secret" "github_packages_token" {
   value        = var.github_packages_token
 }
 
-resource "infisical_secret" "github_runner_app_id" {
-  workspace_id = infisical_project.cloudlab.id
-  env_slug     = var.infisical_environment_slug
-  folder_path  = infisical_secret_folder.github_actions_runner.path
-  name         = "GITHUB_APP_ID"
-  value        = var.github_runner_app_id
-}
-
-resource "infisical_secret" "github_runner_app_installation_id" {
-  workspace_id = infisical_project.cloudlab.id
-  env_slug     = var.infisical_environment_slug
-  folder_path  = infisical_secret_folder.github_actions_runner.path
-  name         = "GITHUB_APP_INSTALLATION_ID"
-  value        = var.github_runner_app_installation_id
-}
-
-resource "infisical_secret" "github_runner_app_private_key" {
-  workspace_id = infisical_project.cloudlab.id
-  env_slug     = var.infisical_environment_slug
-  folder_path  = infisical_secret_folder.github_actions_runner.path
-  name         = "GITHUB_APP_PRIVATE_KEY"
-  value        = var.github_runner_app_private_key
-}
-
 resource "infisical_secret" "codex_lb_encryption_key" {
   workspace_id = infisical_project.cloudlab.id
   env_slug     = var.infisical_environment_slug
@@ -271,8 +240,6 @@ resource "infisical_secret" "headlamp_homelab_kubeconfig" {
   name         = "HOMELAB_KUBECONFIG"
   value        = var.headlamp_homelab_kubeconfig
 }
-
-
 
 resource "infisical_secret_folder" "thanos" {
   project_id       = infisical_project.cloudlab.id

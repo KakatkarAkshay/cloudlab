@@ -34,7 +34,7 @@ spec:
       csiAllowedTopologyKeys: topology.cloudlab.io/location
       createDefaultDiskLabeledNodes: true
       defaultDataPath: /var/lib/longhorn
-      defaultReplicaCount: 1
+      defaultReplicaCount: 3
       replicaAutoBalance: disabled
       restoreConcurrentLimit: 2
       storageMinimalAvailablePercentage: 0
