@@ -35,7 +35,7 @@ spec:
       createDefaultDiskLabeledNodes: true
       defaultDataPath: /var/lib/longhorn
       defaultReplicaCount: 3
-      replicaAutoBalance: disabled
+      replicaAutoBalance: best-effort
       restoreConcurrentLimit: 2
       storageMinimalAvailablePercentage: 0
       storageOverProvisioningPercentage: 100
