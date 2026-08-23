@@ -27,6 +27,14 @@ resource "infisical_secret_folder" "github_packages" {
   name             = "github-packages"
 }
 
+resource "infisical_secret_folder" "dns_credential_gateway" {
+  project_id       = infisical_project.cloudlab.id
+  environment_slug = var.infisical_environment_slug
+  folder_path      = "/platform"
+  name             = "dns-credential-gateway"
+  description      = "Shared signing key for authenticated DoH and DoT device credentials."
+}
+
 resource "infisical_secret_folder" "apps" {
   project_id       = infisical_project.cloudlab.id
   environment_slug = var.infisical_environment_slug
@@ -107,6 +115,18 @@ resource "infisical_secret" "oauth2_cookie_secret" {
   folder_path  = infisical_secret_folder.oauth2_proxy.path
   name         = "COOKIE_SECRET"
   value        = random_bytes.oauth2_proxy_cookie_secret.base64
+}
+
+resource "random_bytes" "dns_credential_key" {
+  length = 32
+}
+
+resource "infisical_secret" "dns_credential_key" {
+  workspace_id = infisical_project.cloudlab.id
+  env_slug     = var.infisical_environment_slug
+  folder_path  = infisical_secret_folder.dns_credential_gateway.path
+  name         = "CREDENTIAL_KEY"
+  value        = random_bytes.dns_credential_key.base64
 }
 
 resource "infisical_secret" "oauth2_restricted_user_access" {

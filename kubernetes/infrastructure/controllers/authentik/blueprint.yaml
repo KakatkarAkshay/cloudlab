@@ -232,6 +232,27 @@ data:
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/blocky.svg
 
       - model: authentik_providers_proxy.proxyprovider
+        id: dns-credential-gateway
+        identifiers:
+          name: dns-credential-gateway
+        attrs:
+          mode: forward_single
+          external_host: https://dns-config.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: dns-credential-gateway
+        attrs:
+          name: Private DNS
+          provider: !KeyOf dns-credential-gateway
+          meta_description: Provision authenticated encrypted DNS credentials
+          meta_launch_url: https://dns-config.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/blocky.svg
+
+      - model: authentik_providers_proxy.proxyprovider
         id: traefik
         identifiers:
           name: traefik
@@ -363,6 +384,7 @@ data:
             - !KeyOf longhorn
             - !KeyOf codex
             - !KeyOf blocky
+            - !KeyOf dns-credential-gateway
             - !KeyOf traefik
           config:
             authentik_host: https://auth.kakatkarakshay.dev

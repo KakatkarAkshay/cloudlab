@@ -165,6 +165,12 @@ output "immich_oauth_client_secret" {
   sensitive   = true
 }
 
+output "dns_credential_key" {
+  description = "Signing key shared by the cloudlab and homelab DNS credential gateways."
+  value       = random_bytes.dns_credential_key.base64
+  sensitive   = true
+}
+
 
 
 output "thanos_ca_cert" {

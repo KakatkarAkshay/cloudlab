@@ -8,5 +8,6 @@ resources:
   - configuration.yaml
   - release.yaml
   - ui-release.yaml
+  - dns-gateway-release.yaml
   - gateway.yaml
   - route.yaml

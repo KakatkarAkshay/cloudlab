@@ -1,0 +1,230 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dns-credential-portal
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: dns-credential-portal
+  targetNamespace: blocky
+  chart:
+    spec:
+      chart: application
+      version: 9.3.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: stakater
+  values:
+    deployment:
+      image:
+        repository: ghcr.io/kakatkarakshay/dns-credential-gateway
+        tag: 1.2.0
+        digest: sha256:7360b4d547aec0260888e4c952507612d216a96e9d04a2d53fb4dd2079f41e9a
+      args:
+        - portal
+      env:
+        DNS_HOSTNAME:
+          value: dns.kakatkarakshay.dev
+        CREDENTIAL_KEY_FILE:
+          value: /secrets/credential-key
+        DATABASE_URL:
+          value: "postgresql://dns_credentials@blocky-postgresql-rw.blocky.svc.cluster.local:5432/dns_credentials?sslmode=verify-full&sslrootcert=/postgres-ca/ca.crt&sslcert=/postgres/tls.crt&sslkey=/postgres/tls.key"
+      volumes:
+        credential-key:
+          secret:
+            secretName: dns-credential-portal-credential-key
+        postgres-client-certificate:
+          secret:
+            secretName: dns-credentials-client-cert
+        postgres-ca:
+          secret:
+            secretName: blocky-postgresql-ca
+            items:
+              - key: ca.crt
+                path: ca.crt
+      volumeMounts:
+        credential-key:
+          mountPath: /secrets
+          readOnly: true
+        postgres-client-certificate:
+          mountPath: /postgres
+          readOnly: true
+        postgres-ca:
+          mountPath: /postgres-ca
+          readOnly: true
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      ports:
+        - name: http
+          containerPort: 8080
+      readinessProbe:
+        enabled: true
+        httpGet:
+          path: /healthz
+          port: http
+      livenessProbe:
+        enabled: true
+        httpGet:
+          path: /healthz
+          port: http
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
+    externalSecret:
+      enabled: true
+      refreshInterval: 1h
+      secretStore:
+        kind: ClusterSecretStore
+        name: infisical
+      files:
+        credential-key:
+          data:
+            credential-key:
+              remoteRef:
+                key: /platform/dns-credential-gateway/CREDENTIAL_KEY
+    extraObjects:
+      - apiVersion: postgresql.cnpg.io/v1
+        kind: DatabaseRole
+        metadata:
+          name: dns-credentials
+        spec:
+          name: dns_credentials
+          cluster:
+            name: blocky-postgresql
+          login: true
+          clientCertificate:
+            enabled: true
+          databaseRoleReclaimPolicy: retain
+      - apiVersion: postgresql.cnpg.io/v1
+        kind: Database
+        metadata:
+          name: dns-credentials
+        spec:
+          name: dns_credentials
+          owner: dns_credentials
+          cluster:
+            name: blocky-postgresql
+          databaseReclaimPolicy: retain
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dns-credential-proxy
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: dns-credential-proxy
+  targetNamespace: blocky
+  chart:
+    spec:
+      chart: application
+      version: 9.3.1
+      interval: 24h
+      sourceRef:
+        kind: HelmRepository
+        name: stakater
+  values:
+    deployment:
+      replicas: 2
+      image:
+        repository: ghcr.io/kakatkarakshay/dns-credential-gateway
+        tag: 1.2.0
+        digest: sha256:7360b4d547aec0260888e4c952507612d216a96e9d04a2d53fb4dd2079f41e9a
+      args:
+        - proxy
+      env:
+        DNS_HOSTNAME:
+          value: dns.kakatkarakshay.dev
+        CREDENTIAL_KEY_FILE:
+          value: /secrets/credential-key
+        BLOCKY_DOH_URL:
+          value: http://blocky-app.blocky.svc.cluster.local:4000/dns-query
+        REVOCATION_URL:
+          value: https://dns-config.kakatkarakshay.dev/api/revocations
+        TLS_CERT_FILE:
+          value: /tls/tls.crt
+        TLS_KEY_FILE:
+          value: /tls/tls.key
+      volumes:
+        credential-key:
+          secret:
+            secretName: dns-credential-proxy-credential-key
+        tls:
+          secret:
+            secretName: dns-kakatkarakshay-dev-tls
+        cache:
+          emptyDir: {}
+      volumeMounts:
+        credential-key:
+          mountPath: /secrets
+          readOnly: true
+        tls:
+          mountPath: /tls
+          readOnly: true
+        cache:
+          mountPath: /cache
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      ports:
+        - name: http
+          containerPort: 8080
+        - name: dot
+          containerPort: 8853
+      readinessProbe:
+        enabled: true
+        httpGet:
+          path: /healthz
+          port: http
+      livenessProbe:
+        enabled: true
+        httpGet:
+          path: /healthz
+          port: http
+      resources:
+        requests:
+          cpu: 20m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
+    service:
+      ports:
+        - name: http
+          port: 8080
+          targetPort: http
+        - name: dot
+          port: 8853
+          targetPort: dot
+    externalSecret:
+      enabled: true
+      refreshInterval: 1h
+      secretStore:
+        kind: ClusterSecretStore
+        name: infisical
+      files:
+        credential-key:
+          data:
+            credential-key:
+              remoteRef:
+                key: /platform/dns-credential-gateway/CREDENTIAL_KEY

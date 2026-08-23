@@ -75,6 +75,9 @@ spec:
       source: blocky-postgresql-backup
       database: blocky
       owner: blocky
+  postgresql:
+    pg_hba:
+      - hostssl dns_credentials dns_credentials all cert
   storage:
     size: 2Gi
     storageClass: longhorn

@@ -43,3 +43,22 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: dns-kakatkarakshay-dev-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: dns-credential-portal
+  namespace: blocky
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      hostname: dns-config.kakatkarakshay.dev
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: dns-config-kakatkarakshay-dev-tls

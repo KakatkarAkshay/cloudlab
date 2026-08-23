@@ -116,6 +116,12 @@ spec:
           trustedIPs:
             - 10.244.0.0/16
             - fd00:10:244::/56
+      dot:
+        port: 853
+        expose:
+          default: true
+          scorpion: true
+        protocol: TCP
     podDisruptionBudget:
       enabled: true
       maxUnavailable: 25%

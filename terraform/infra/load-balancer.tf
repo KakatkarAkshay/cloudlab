@@ -94,9 +94,31 @@ resource "oci_core_security_list" "nlb" {
     }
   }
 
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "DNS-over-TLS ingress"
 
+    tcp_options {
+      min = 853
+      max = 853
+    }
+  }
 
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "DNS-over-TLS ingress over IPv6"
 
+    tcp_options {
+      min = 853
+      max = 853
+    }
+  }
 
   ingress_security_rules {
     protocol    = "6"
@@ -218,9 +240,31 @@ resource "oci_core_security_list" "nlb_tenancy_2" {
     }
   }
 
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "DNS-over-TLS ingress"
 
+    tcp_options {
+      min = 853
+      max = 853
+    }
+  }
 
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "::/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    description = "DNS-over-TLS ingress over IPv6"
 
+    tcp_options {
+      min = 853
+      max = 853
+    }
+  }
 
   egress_security_rules {
     protocol         = "all"
