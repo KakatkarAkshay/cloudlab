@@ -378,6 +378,27 @@ data:
           meta_launch_url: https://homelab.kakatkarakshay.dev/dashboard/
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/traefik.svg
 
+      - model: authentik_providers_proxy.proxyprovider
+        id: immich-accelerator
+        identifiers:
+          name: immich-accelerator
+        attrs:
+          mode: forward_single
+          external_host: https://immich-accelerator.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: immich-accelerator
+        attrs:
+          name: Immich Accelerator
+          provider: !KeyOf immich-accelerator
+          meta_description: Apple Silicon processing dashboard for Immich
+          meta_launch_url: https://immich-accelerator.kakatkarakshay.dev/
+          meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/immich.svg
+
       - model: authentik_outposts.outpost
         identifiers:
           name: homelab
@@ -385,6 +406,7 @@ data:
           type: proxy
           providers:
             - !KeyOf node-red
+            - !KeyOf immich-accelerator
             - !KeyOf bluebubbles
             - !KeyOf blocky-homelab
             - !KeyOf longhorn-homelab
