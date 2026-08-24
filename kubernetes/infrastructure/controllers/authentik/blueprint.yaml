@@ -316,6 +316,27 @@ data:
           meta_icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/blocky.svg
 
       - model: authentik_providers_proxy.proxyprovider
+        id: bluebubbles
+        identifiers:
+          name: bluebubbles
+        attrs:
+          mode: forward_single
+          external_host: https://bluebubbles.kakatkarakshay.dev
+          authorization_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow:
+            !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      - model: authentik_core.application
+        identifiers:
+          slug: bluebubbles
+        attrs:
+          name: BlueBubbles
+          provider: !KeyOf bluebubbles
+          meta_description: iMessage server
+          meta_launch_url: https://bluebubbles.kakatkarakshay.dev/
+          meta_icon: https://raw.githubusercontent.com/BlueBubblesApp/bluebubbles-server/master/icons/regular/icon-512.png
+
+      - model: authentik_providers_proxy.proxyprovider
         id: longhorn-homelab
         identifiers:
           name: longhorn-homelab
@@ -364,6 +385,7 @@ data:
           type: proxy
           providers:
             - !KeyOf node-red
+            - !KeyOf bluebubbles
             - !KeyOf blocky-homelab
             - !KeyOf longhorn-homelab
             - !KeyOf traefik-homelab
