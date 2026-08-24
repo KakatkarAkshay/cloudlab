@@ -35,6 +35,16 @@ data "talos_machine_configuration" "control_plane" {
             rotate-server-certificates = "true"
           }
           extraConfig = {
+            evictionHard = {
+              "imagefs.available"  = "15%"
+              "imagefs.inodesFree" = "5%"
+              "memory.available"   = "1Gi"
+              "nodefs.available"   = "10%"
+              "nodefs.inodesFree"  = "5%"
+            }
+            kubeReserved = {
+              memory = "512Mi"
+            }
             shutdownGracePeriod             = "0s"
             shutdownGracePeriodCriticalPods = "0s"
             shutdownGracePeriodByPodPriority = [
@@ -43,6 +53,12 @@ data "talos_machine_configuration" "control_plane" {
               { priority = 2000000000, shutdownGracePeriodSeconds = 20 },
               { priority = 2000001000, shutdownGracePeriodSeconds = 20 },
             ]
+            systemReserved = {
+              cpu                 = "50m"
+              "ephemeral-storage" = "256Mi"
+              memory              = "1Gi"
+              pid                 = "100"
+            }
           }
           extraMounts = [
             {
@@ -174,6 +190,16 @@ data "talos_machine_configuration" "worker" {
             rotate-server-certificates = "true"
           }
           extraConfig = {
+            evictionHard = {
+              "imagefs.available"  = "15%"
+              "imagefs.inodesFree" = "5%"
+              "memory.available"   = "1Gi"
+              "nodefs.available"   = "10%"
+              "nodefs.inodesFree"  = "5%"
+            }
+            kubeReserved = {
+              memory = "512Mi"
+            }
             shutdownGracePeriod             = "0s"
             shutdownGracePeriodCriticalPods = "0s"
             shutdownGracePeriodByPodPriority = [
@@ -182,6 +208,12 @@ data "talos_machine_configuration" "worker" {
               { priority = 2000000000, shutdownGracePeriodSeconds = 20 },
               { priority = 2000001000, shutdownGracePeriodSeconds = 20 },
             ]
+            systemReserved = {
+              cpu                 = "50m"
+              "ephemeral-storage" = "256Mi"
+              memory              = "1Gi"
+              pid                 = "100"
+            }
           }
           extraMounts = [
             {
