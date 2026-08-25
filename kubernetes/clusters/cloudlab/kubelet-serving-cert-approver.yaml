@@ -6,8 +6,8 @@ metadata:
 spec:
   interval: 24h
   ref:
-    tag: v0.11.0
-    commit: 48be2ff71bbdfc464763fe6dba58b43a8ec5996a
+    tag: v0.11.1
+    commit: 489aad3ab2fd382076a9a16d67da5752795f6271
   url: https://github.com/alex1989hu/kubelet-serving-cert-approver.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
