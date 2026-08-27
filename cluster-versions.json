@@ -1,4 +1,4 @@
 {
   "talos": "v1.13.9",
-  "kubernetes": "v1.36.4"
+  "kubernetes": "v1.37.0"
 }
