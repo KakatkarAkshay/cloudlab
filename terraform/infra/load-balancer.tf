@@ -433,10 +433,8 @@ resource "oci_network_load_balancer_backend_set" "kubernetes" {
   ip_version               = "IPV4"
 
   health_checker {
-    protocol           = "HTTPS"
+    protocol           = "TCP"
     port               = 6443
-    url_path           = "/readyz"
-    return_code        = 401
     interval_in_millis = 10000
     timeout_in_millis  = 3000
     retries            = 3
@@ -453,10 +451,8 @@ resource "oci_network_load_balancer_backend_set" "kubernetes_ipv6" {
   ip_version               = "IPV6"
 
   health_checker {
-    protocol           = "HTTPS"
+    protocol           = "TCP"
     port               = 6443
-    url_path           = "/readyz"
-    return_code        = 401
     interval_in_millis = 10000
     timeout_in_millis  = 3000
     retries            = 3

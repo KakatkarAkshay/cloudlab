@@ -9,30 +9,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
   contents: read
 
+concurrency:
+  group: infrastructure
+  queue: max
+
 jobs:
-  queue:
-    name: Queue
-    runs-on: ubuntu-latest
-    timeout-minutes: 130
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Wait for other infrastructure runs
-        uses: ./.github/actions/infra-queue
-        with:
-          workflows: |
-            terraform.yml
-            terraform-destroy.yml
-            cluster-upgrade.yml
-
   upgrade:
     name: Upgrade Cluster
-    needs: queue
     runs-on: ubuntu-latest
     timeout-minutes: 90
     defaults:
@@ -55,7 +40,7 @@ jobs:
       - name: Read target versions
         id: versions
         run: |
-          TALOS_VERSION="$(jq -er '.talos | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))' cluster-versions.json)"
+          TALOS_VERSION="$(jq -er '.talos | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$"))' cluster-versions.json)"
           KUBERNETES_VERSION="$(jq -er '.kubernetes | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))' cluster-versions.json)"
           echo "talos=$TALOS_VERSION" >> "$GITHUB_OUTPUT"
           echo "kubernetes=$KUBERNETES_VERSION" >> "$GITHUB_OUTPUT"
@@ -135,6 +120,7 @@ jobs:
           TARGET_TALOS: ${{ steps.versions.outputs.talos }}
           TARGET_KUBERNETES: ${{ steps.versions.outputs.kubernetes }}
           CONTROL_PLANE: ${{ steps.cluster.outputs.control_plane }}
+          ENDPOINT: ${{ steps.cluster.outputs.endpoint }}
           NODES: ${{ steps.cluster.outputs.nodes }}
           SCHEMATIC_FILE: terraform/infra/talos-schematic.yaml
         run: |
@@ -164,13 +150,15 @@ jobs:
           current_talos_version() {
             local output version
             output="$(talosctl version --short --nodes "$1")"
-            version="$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+' <<< "$output" | tail -n 1)"
+            version="$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?' <<< "$output" | tail -n 1)"
             test -n "$version"
             printf '%s' "$version"
           }
 
           check_upgrade_path() {
             local component="$1" current="${2#v}" target="${3#v}"
+            current="${current%%-*}"
+            target="${target%%-*}"
             local current_major current_minor current_patch target_major target_minor target_patch
             IFS=. read -r current_major current_minor current_patch <<< "$current"
             IFS=. read -r target_major target_minor target_patch <<< "$target"
@@ -239,10 +227,12 @@ jobs:
           if [[ "$current_kubernetes" != "$TARGET_KUBERNETES" ]]; then
             talosctl upgrade-k8s \
               --nodes "$CONTROL_PLANE" \
+              --endpoint "$ENDPOINT" \
               --to "${TARGET_KUBERNETES#v}" \
               --dry-run
             talosctl upgrade-k8s \
               --nodes "$CONTROL_PLANE" \
+              --endpoint "$ENDPOINT" \
               --to "${TARGET_KUBERNETES#v}"
             check_health
             test "$(kubectl version -o json | jq -r '.serverVersion.gitVersion')" = "$TARGET_KUBERNETES"

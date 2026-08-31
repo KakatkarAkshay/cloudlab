@@ -9,32 +9,16 @@ on:
         type: string
 
 permissions:
-  actions: read
   contents: read
   id-token: write
 
+concurrency:
+  group: infrastructure
+  queue: max
+
 jobs:
-  queue:
-    name: Queue
-    runs-on: ubuntu-latest
-    timeout-minutes: 130
-    if: inputs.confirmation == 'destroy cloudlab'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Wait for other infrastructure runs
-        uses: ./.github/actions/infra-queue
-        with:
-          workflows: |
-            terraform.yml
-            terraform-destroy.yml
-            cluster-upgrade.yml
-
   cluster:
     name: Cluster Plan and Destroy
-    needs: queue
     if: inputs.confirmation == 'destroy cloudlab'
     runs-on: ubuntu-latest
     defaults:
