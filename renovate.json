@@ -88,7 +88,7 @@
         "kubernetes/clusters/*/*.yaml"
       ],
       "matchStrings": [
-        "$[kind = 'GitRepository'].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
+        "$[kind = 'GitRepository' and $exists(spec.ref.tag)].{'depName': $substringBefore($substringAfter(spec.url, 'https://github.com/'), '.git'), 'currentValue': spec.ref.tag, 'currentDigest': spec.ref.commit}"
       ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
