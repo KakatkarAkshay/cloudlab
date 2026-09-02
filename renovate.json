@@ -6,6 +6,7 @@
     "helpers:pinGitHubActionDigests"
   ],
   "automerge": true,
+  "prHourlyLimit": 5,
   "flux": {
     "managerFilePatterns": [
       "kubernetes/**/*.yaml",
