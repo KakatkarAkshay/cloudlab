@@ -3,6 +3,8 @@ name: Renovate
 on:
   schedule:
     - cron: "47 * * * *"
+  issues:
+    types: [edited]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +17,7 @@ concurrency:
 jobs:
   renovate:
     name: renovate
+    if: github.event_name != 'issues' || github.event.issue.title == 'Dependency Dashboard'
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
