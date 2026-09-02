@@ -17,7 +17,7 @@ concurrency:
 jobs:
   renovate:
     name: renovate
-    if: github.event_name != 'issues' || github.event.issue.title == 'Dependency Dashboard'
+    if: github.event_name != 'issues' || (github.actor == github.repository_owner && github.event.issue.title == 'Dependency Dashboard')
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
