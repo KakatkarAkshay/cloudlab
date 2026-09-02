@@ -6,14 +6,6 @@
     "helpers:pinGitHubActionDigests"
   ],
   "automerge": true,
-  "hostRules": [
-    {
-      "hostType": "docker",
-      "matchHost": "ghcr.io",
-      "username": "x-access-token",
-      "password": "{{ secrets.GHCR_READ_PAT }}"
-    }
-  ],
   "flux": {
     "managerFilePatterns": [
       "kubernetes/**/*.yaml",
