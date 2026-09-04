@@ -15,6 +15,7 @@ data "talos_machine_configuration" "control_plane" {
       machine = {
         nodeLabels = {
           "node.longhorn.io/create-default-disk" = "true"
+          "oci.oraclecloud.com/ip-family-ipv6"   = "true"
           "topology.cloudlab.io/location"        = "oci"
         }
         certSANs = local.cluster_api_addresses
@@ -170,6 +171,7 @@ data "talos_machine_configuration" "worker" {
       machine = {
         nodeLabels = {
           "node.longhorn.io/create-default-disk" = "true"
+          "oci.oraclecloud.com/ip-family-ipv6"   = "true"
           "topology.cloudlab.io/location"        = "oci"
         }
         certSANs = local.cluster_api_addresses
