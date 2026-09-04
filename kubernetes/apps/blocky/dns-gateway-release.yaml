@@ -19,7 +19,7 @@ spec:
     deployment:
       image:
         repository: ghcr.io/kakatkarakshay/dns-credential-gateway
-        tag: 1.2.0@sha256:7360b4d547aec0260888e4c952507612d216a96e9d04a2d53fb4dd2079f41e9a
+        tag: 1.2.0
         digest: sha256:7360b4d547aec0260888e4c952507612d216a96e9d04a2d53fb4dd2079f41e9a
       args:
         - portal
@@ -141,7 +141,7 @@ spec:
       replicas: 2
       image:
         repository: ghcr.io/kakatkarakshay/dns-credential-gateway
-        tag: 1.2.0@sha256:7360b4d547aec0260888e4c952507612d216a96e9d04a2d53fb4dd2079f41e9a
+        tag: 1.2.0
         digest: sha256:7360b4d547aec0260888e4c952507612d216a96e9d04a2d53fb4dd2079f41e9a
       args:
         - proxy
