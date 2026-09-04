@@ -58,11 +58,8 @@
       ],
       "versioning": "semver",
       "ignoreUnstable": false,
-      "respectLatest": false
-    },
-    {
-      "matchCurrentVersion": "/-(alpha|beta|rc|pre)/",
-      "automerge": false
+      "respectLatest": false,
+      "automerge": true
     },
     {
       "matchPackageNames": [
