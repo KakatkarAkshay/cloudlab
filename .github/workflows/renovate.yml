@@ -33,7 +33,7 @@ jobs:
       - name: Run Renovate
         uses: renovatebot/github-action@37beffda261423addd537c33f2d126df7f6ffbab # v46.2.6
         with:
-          renovate-version: 44.69.8
+          renovate-version: 44.69.9
           token: ${{ steps.app-token.outputs.token }}
         env:
           LOG_LEVEL: info
