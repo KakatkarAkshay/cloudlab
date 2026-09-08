@@ -44,6 +44,8 @@ spec:
         value: 10.244.0.0/16,fd00:10:244::/56
       - name: CODEX_LB_HTTP_RESPONSES_SESSION_BRIDGE_ENABLED
         value: "false"
+      - name: CODEX_LB_MODEL_REGISTRY_CLIENT_VERSION
+        value: "0.153.0"
     gatewayApi:
       enabled: true
       gateway:
