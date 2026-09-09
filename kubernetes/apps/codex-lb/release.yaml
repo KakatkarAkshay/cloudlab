@@ -21,7 +21,7 @@ spec:
     image:
       registry: ghcr.io
       repository: soju06/codex-lb
-      tag: 1.25.0-beta.5@sha256:3b583d635416c65c558c4b38b41e3799c9c9824dc0cefdd79f98c6bcd128f792
+      tag: 1.25.0-beta.6@sha256:c4d40ae9855fbb098becaba6bad592604dd1a1615a0bd89a458c1413106794b9
     serviceAccount:
       create: false
       name: codex-lb
