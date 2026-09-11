@@ -22,6 +22,15 @@
   "packageRules": [
     {
       "matchManagers": [
+        "custom.jsonata"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/cloudnative-pg/postgresql"
+      ],
+      "pinDigests": true
+    },
+    {
+      "matchManagers": [
         "kubernetes"
       ],
       "matchFileNames": [
@@ -80,6 +89,19 @@
     }
   ],
   "customManagers": [
+    {
+      "customType": "jsonata",
+      "fileFormat": "yaml",
+      "managerFilePatterns": [
+        "kubernetes/**/*.yaml",
+        "kubernetes/**/*.yml"
+      ],
+      "matchStrings": [
+        "$[apiVersion = 'postgresql.cnpg.io/v1' and kind = 'Cluster' and $exists(spec.imageName)].($image := $split(spec.imageName, '@'); {'depName': $substringBefore($image[0], ':'), 'currentValue': $substringAfter($image[0], ':'), 'currentDigest': $image[1]})"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
     {
       "customType": "jsonata",
       "fileFormat": "yaml",
