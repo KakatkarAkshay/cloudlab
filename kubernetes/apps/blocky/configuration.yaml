@@ -37,6 +37,15 @@ data:
           - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/ultimate.txt
         malware:
           - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.txt
+      allowlists:
+        ads:
+          - |
+            newrelic.com
+            *.newrelic.com
+        malware:
+          - |
+            newrelic.com
+            *.newrelic.com
       clientGroupsBlock:
         default:
           - ads
