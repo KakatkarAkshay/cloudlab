@@ -55,7 +55,7 @@ metadata:
   name: blocky-doh
   namespace: blocky
   annotations:
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.kubernetes.io/cloudflare-proxied: "false"
 spec:
   parentRefs:
     - name: blocky-dns
@@ -80,8 +80,8 @@ metadata:
   name: dns-credential-portal
   namespace: blocky
   annotations:
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-    external-dns.alpha.kubernetes.io/hostname: dns-config.kakatkarakshay.dev
+    external-dns.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.kubernetes.io/hostname: dns-config.kakatkarakshay.dev
 spec:
   parentRefs:
     - name: dns-credential-portal

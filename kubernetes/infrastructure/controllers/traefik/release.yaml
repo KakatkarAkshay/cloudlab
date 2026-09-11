@@ -70,7 +70,7 @@ spec:
     service:
       nameOverride: traefik-triton
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: gateway.kakatkarakshay.dev
+        external-dns.kubernetes.io/hostname: gateway.kakatkarakshay.dev
         oci.oraclecloud.com/load-balancer-type: nlb
       spec:
         type: LoadBalancer
@@ -82,7 +82,7 @@ spec:
       additionalServices:
         scorpion:
           annotations:
-            external-dns.alpha.kubernetes.io/hostname: gateway.kakatkarakshay.dev
+            external-dns.kubernetes.io/hostname: gateway.kakatkarakshay.dev
             oci.oraclecloud.com/load-balancer-type: nlb
           spec:
             type: LoadBalancer
@@ -168,7 +168,7 @@ spec:
           name: traefik-dashboard
           namespace: traefik
           annotations:
-            external-dns.alpha.kubernetes.io/target: gateway.kakatkarakshay.dev
+            external-dns.kubernetes.io/target: gateway.kakatkarakshay.dev
         spec:
           entryPoints:
             - websecure

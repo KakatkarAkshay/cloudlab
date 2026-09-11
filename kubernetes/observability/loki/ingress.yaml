@@ -48,8 +48,8 @@ metadata:
   name: loki-push
   namespace: observability
   annotations:
-    external-dns.alpha.kubernetes.io/target: gateway.kakatkarakshay.dev
-    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.kubernetes.io/target: gateway.kakatkarakshay.dev
+    external-dns.kubernetes.io/cloudflare-proxied: "false"
 spec:
   entryPoints:
     - websecure
