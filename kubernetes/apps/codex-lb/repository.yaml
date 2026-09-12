@@ -7,8 +7,8 @@ spec:
   interval: 30m
   url: oci://ghcr.io/soju06/charts/codex-lb
   ref:
-    tag: 1.25.0-beta.7
-    digest: sha256:2f8c0535af621234f88c23af936f719f853a1a608daa2d25f5c6aac762ebd91e
+    tag: 1.25.0-beta.8
+    digest: sha256:5c4033624d9099afd69909c7213147c27647adda78320b97fd1b0ebb39291816
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
